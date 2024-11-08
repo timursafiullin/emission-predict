@@ -1,6 +1,5 @@
 #include "gui.h"
-#include "Window.h"
-#include "Objects.h"
+#include "graph_lib.h"
 
 int main()
 {
