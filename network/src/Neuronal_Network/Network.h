@@ -12,6 +12,34 @@ namespace NeuralNetwork
     typedef Eigen::RowVectorXf  RowVector;
     typedef Eigen::VectorXf     ColumnVector;
 
+    const std::string exception_message_invalid_data_sizes{
+        "amount of input elements must be "
+        "equal to amount of output elements"
+    };
+    const std::string exception_message_invalid_learning_rate{
+        "learning rate mustn't be less than zero"
+    };
+    const std::string exception_message_invalid_structure_length{
+        "amount of layers mustn't be less than 1"
+    };
+    const std::string exception_message_invalid_neuron_amount{
+        "amount of neurons mustn't be less than 1"
+    };
+    const std::string exception_message_invalid_input_size{
+        "amount of input values must be equal to input neurons"
+    };
+    const std::string exception_message_invalid_output_size{
+        "amount of output values must be equal to output neurons"
+    };
+    const std::string exception_message_invalid_layers_amount{
+        "invalid layers amount given"
+    };
+    const std::string exception_message_invalid_layer_matrix{
+        "invalid layer matrix given"
+    };
+
+    constexpr Scalar default_learning_rate_value{0.005};
+
 
     // will be thrown when invalid values given
     class NetworkInvalidValue : public std::exception {
@@ -21,7 +49,7 @@ namespace NeuralNetwork
 
         const char* what() const throw()
         {
-            return message.c_str();
+            return (message).c_str();
         }
     
     private:
@@ -33,7 +61,7 @@ namespace NeuralNetwork
     public:
 	    NeuralNetwork(
             std::vector<Number> s,
-            Scalar l = Scalar(0.005)
+            Scalar l = default_learning_rate_value
         );
 
         NeuralNetwork(
@@ -41,16 +69,18 @@ namespace NeuralNetwork
             std::vector<Matrix*> w
         );
 
-        std::vector<Scalar> predict(
-            std::vector<Scalar>& input
+        RowVector predict(
+            RowVector& input
         );
 
         Scalar get_error(
-            std::vector<RowVector*> data
+            std::vector<RowVector*> input_data,
+            std::vector<RowVector*> output_data
         );
 
         void train(
-            std::vector<RowVector*> data
+            std::vector<RowVector*> input_data,
+            std::vector<RowVector*> output_data
         );
 
         NeuralNetwork(
@@ -85,7 +115,7 @@ namespace NeuralNetwork
         );
 
         std::vector<Number> validate_structure(
-            std::vector<Number> s
+            const std::vector<Number>& s
         ) const;
 
         Scalar validate_learning_rate(
@@ -96,12 +126,32 @@ namespace NeuralNetwork
             std::vector<Matrix*> w
         ) const;
 
+        void validate_data(
+            std::vector<RowVector*> input_data,
+            std::vector<RowVector*> output_data
+        ) const;
+
+        void validate_input(
+            RowVector& input
+        ) const;
+
+        void validate_output(
+            RowVector& output
+        ) const;
+
         // linear activation function
         static Scalar activation_function(
             Scalar x
         )
         {
             return x;
+        }
+
+        static Scalar activation_function_derivative(
+            Scalar
+        )
+        {
+            return 1;
         }
 
 	    // storage objects for working of neural network
@@ -113,11 +163,11 @@ namespace NeuralNetwork
 		*/
 
         std::vector<Number>     structure;
-	    std::vector<RowVector*> neuron_layers;  // stores the different layers of out network
-	    std::vector<RowVector*> cache_layers;   // stores the unactivated (activation fn not yet applied) values of layers
-	    std::vector<RowVector*> deltas;         // stores the error contribution of each neurons
+        std::vector<RowVector*> neuron_layers;  // stores the different layers of out network
+        std::vector<RowVector*> cache_layers;   // stores the unactivated (activation fn not yet applied) values of layers
+        std::vector<RowVector*> deltas;         // stores the error contribution of each neurons
 	    std::vector<Matrix*>    weights;        // the connection weights itself
-	    Scalar learning_rate;
+        Scalar                  learning_rate;
     };
 }
 
