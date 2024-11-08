@@ -2,6 +2,7 @@
 #define NETWORK_DEFENCE 1
 
 #include "eigen-3.4.0/Eigen/Eigen"
+#include <exception>
 
 namespace NeuralNetwork
 {
@@ -10,6 +11,22 @@ namespace NeuralNetwork
     typedef Eigen::MatrixXf     Matrix;
     typedef Eigen::RowVectorXf  RowVector;
     typedef Eigen::VectorXf     ColumnVector;
+
+
+    // will be thrown when invalid values given
+    class NetworkInvalidValue : public std::exception {
+    public:
+        NetworkInvalidValue(const char* msg)
+        : message(msg)  { }
+
+        const char* what() const throw()
+        {
+            return message.c_str();
+        }
+    
+    private:
+        std::string message;
+    };
 
 
     class NeuralNetwork {
