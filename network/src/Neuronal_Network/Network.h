@@ -49,6 +49,10 @@ namespace NeuralNetwork
             std::vector<RowVector*> data
         );
 
+        void train(
+            std::vector<RowVector*> data
+        );
+
         NeuralNetwork(
             const NeuralNetwork&
         ) = delete;
@@ -58,10 +62,6 @@ namespace NeuralNetwork
         ) = delete;
 
     private:
-	    void train(
-            std::vector<RowVector*> data
-        );
-
 	    void propagate_forward(
             RowVector& input
         );
