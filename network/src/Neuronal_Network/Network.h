@@ -96,6 +96,14 @@ namespace NeuralNetwork
             std::vector<Matrix*> w
         ) const;
 
+        // linear activation function
+        static Scalar activation_function(
+            Scalar x
+        )
+        {
+            return x;
+        }
+
 	    // storage objects for working of neural network
 	    /*
 		use pointers when using std::vector<Class> as std::vector<Class> calls destructor of 
