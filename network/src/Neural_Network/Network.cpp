@@ -1,55 +1,57 @@
 #include "Network.h"
 #include <vector>
+#include <iostream>
 
 namespace NeuralNetwork
 {
-    // ready
     NeuralNetwork::NeuralNetwork(
         std::vector<Number> s,
-        Scalar l = default_learning_rate_value
-    ) 
-    : structure {validate_structure(s)}, learning_rate{validate_learning_rate(l)}
+        Scalar l
+    )
     {
+        validate_structure(s);
+        validate_learning_rate(l);
+        structure = s;
+        learning_rate = l;
         initialize_storage_objects();
     }
 
-    // ready
     NeuralNetwork::NeuralNetwork(
         std::vector<Number> s,
         std::vector<Matrix*> w
     )
-    : structure {validate_structure(s)}, weights{validate_weights(w)}
     {
+        validate_structure(s);
+        validate_weights(w);
+        structure = s;
+        weights = w;
     }
 
-    // ready
     RowVector NeuralNetwork::predict(
         RowVector& input
     )
     {
         propagate_forward(input);
-        return *cache_layers.back();
+        return *neuron_layers.back();
     }
 
-    RowVector NeuralNetwork::get_error(
+    Scalar NeuralNetwork::test(
         std::vector<RowVector*> input_data,
         std::vector<RowVector*> output_data
     )
     {
-        RowVector error{structure.back()};
-        error.setZero();
         validate_data(input_data, output_data);
-        for (Number element{0}; element < input_data.size(); ++element)
-        {
-            RowVector predict_for_element = predict(*input_data[element]);
-            for (Number i{0}; i < structure.back(); ++i) 
-                error[i] = error[i] * element / (element + 1) +
-                (predict_for_element[i] - (*output_data[element])[i]) / (*output_data[element])[i] / (element + 1);
-        }
-        return error;
+
+        Number dataset_size{input_data.size()};
+
+        Scalar main_error{0};
+
+        for (Number element{0}; element < dataset_size; ++element)
+            main_error += get_main_square_error(*input_data[element], *output_data[element]) / dataset_size;
+        
+        return main_error;
     }
 
-    // ready
     void NeuralNetwork::train(
         std::vector<RowVector*> input_data,
         std::vector<RowVector*> output_data
@@ -63,7 +65,6 @@ namespace NeuralNetwork
         }
     }
 
-    // ready
     void NeuralNetwork::propagate_forward(
         RowVector& input
     )
@@ -78,12 +79,10 @@ namespace NeuralNetwork
         // unaryExpr applies the given function to all elements
         for (Number layer{1}; layer < structure.size(); ++layer)
         {
-            (*cache_layers[layer]) = (*neuron_layers[layer - 1]) * (*weights[layer - 1]);
-            cache_layers[layer]->block(0, 0, 1, neuron_layers[layer]).unaryExpr(std::ptr_fun(activation_function));
+            (*neuron_layers[layer]) = (*neuron_layers[layer - 1]) * (*weights[layer - 1]);
         }
     }
 
-    // ready
     void NeuralNetwork::propagate_backward(
         RowVector& output
     )
@@ -93,19 +92,34 @@ namespace NeuralNetwork
         update_weights();
     }
 
-    // ready
     void NeuralNetwork::calculate_errors(
         RowVector& output
     )
     {
-        (*deltas.back()) = output - (*cache_layers.back());
+        (*deltas.back()) = output - (*neuron_layers.back());
 
-        for (Number layer{structure.size() - 2}; layer > 0; --layer) {
+        for (Number layer{structure.size() - 2}; layer > 0; --layer)
             (*deltas[layer]) = (*deltas[layer + 1]) * (weights[layer]->transpose());
-        }
     }
 
-    // ready
+    Scalar NeuralNetwork::get_main_square_error(
+        RowVector& input,
+        RowVector& output
+    )
+    {
+        validate_input(input);
+        validate_output(output);
+
+        Scalar error{};
+
+        RowVector prediction{predict(input)};
+
+        for (Number i{0}; i < output.size(); ++i)
+            error += pow(prediction[i] - output[i], 2) / 2 / output.size();
+
+        return error;
+    }
+
     void NeuralNetwork::update_weights()
     {
         // structure.size()-1 = weights.size()
@@ -119,7 +133,7 @@ namespace NeuralNetwork
                         weights[layer]->coeffRef(r, c) +=
                             learning_rate *
                             deltas[layer + 1]->coeffRef(c) *
-                            activation_function_derivative(cache_layers[layer + 1]->coeffRef(c)) *
+                            activation_function_derivative(neuron_layers[layer + 1]->coeffRef(c)) *
                             neuron_layers[layer]->coeffRef(r);
 
             else
@@ -127,12 +141,11 @@ namespace NeuralNetwork
                     for (Number r = 0; r < weights[layer]->rows(); r++)
                         weights[layer]->coeffRef(r, c) +=
                             learning_rate * deltas[layer + 1]->coeffRef(c) *
-                            activation_function_derivative(cache_layers[layer + 1]->coeffRef(c)) *
+                            activation_function_derivative(neuron_layers[layer + 1]->coeffRef(c)) *
                             neuron_layers[layer]->coeffRef(r);
         }
     }
 
-    // ready
     void NeuralNetwork::initialize_storage_objects()
     {
         for (Number layer{0}; layer < structure.size(); ++layer)
@@ -142,14 +155,12 @@ namespace NeuralNetwork
             else
                 neuron_layers.push_back(new RowVector(structure[layer] + 1));
 
-            cache_layers.push_back(new RowVector(neuron_layers[layer]->size()));
             deltas.push_back(new RowVector(neuron_layers[layer]->size()));
 
             initialize_storage_objects_layer(layer);
         }
     }
 
-    // ready
     void NeuralNetwork::initialize_storage_objects_layer(
         Number layer
     )
@@ -164,7 +175,6 @@ namespace NeuralNetwork
 
         // coeffRef gives the reference of value at that place 
         neuron_layers.back()->coeffRef(structure[layer]) = 1.0;
-        cache_layers.back()->coeffRef(structure[layer]) = 1.0;
 
         // input layer of neurons needn't be initialized
         if (layer == 0)
@@ -178,71 +188,59 @@ namespace NeuralNetwork
         return;
     }
 
-    // ready
-    std::vector<Number> NeuralNetwork::validate_structure(
+    void NeuralNetwork::validate_structure(
         const std::vector<Number>& s
     ) const
     {
         if (s.size() < 2)
-            throw NetworkInvalidValue(exception_message_invalid_structure_length.c_str());
+            throw NetworkInvalidValue(exception_message_invalid_structure_length);
         
         for (Number i{0}; i < s.size(); ++i)
             if (s[i] < 1)
-                throw NetworkInvalidValue(exception_message_invalid_neuron_amount.c_str());
-        
-        return s;
+                throw NetworkInvalidValue(exception_message_invalid_neuron_amount);
     }
 
-    // ready
-    Scalar NeuralNetwork::validate_learning_rate(
+    void NeuralNetwork::validate_learning_rate(
         Scalar l
     ) const
     {
         if (l <= 0)
-            throw NetworkInvalidValue(exception_message_invalid_learning_rate.c_str());
-        
-        return l;
+            throw NetworkInvalidValue(exception_message_invalid_learning_rate);
     }
 
-    // ready
-    std::vector<Matrix*> NeuralNetwork::validate_weights(
+    void NeuralNetwork::validate_weights(
         std::vector<Matrix*> w
     ) const
     {
         if (w.size() != structure.size() - 1)
-            throw NetworkInvalidValue(exception_message_invalid_layers_amount.c_str());
+            throw NetworkInvalidValue(exception_message_invalid_layers_amount);
         for (Number layer{0}; layer < w.size(); ++layer)
-        {
-            if (w[layer]->size() != structure[layer] || w[layer][0].size() != structure[layer + 1])
-                throw NetworkInvalidValue(exception_message_invalid_layer_matrix.c_str());
-        }
+            if (w[layer]->rows() != structure[layer] || w[layer]->cols() != structure[layer + 1])
+                throw NetworkInvalidValue(exception_message_invalid_layer_matrix);
     }
 
-    // ready
     void NeuralNetwork::validate_data(
             std::vector<RowVector*> input_data,
             std::vector<RowVector*> output_data
     ) const
     {
         if (input_data.size() != output_data.size())
-            throw NetworkInvalidValue(exception_message_invalid_data_sizes.c_str());
+            throw NetworkInvalidValue(exception_message_invalid_data_sizes);
     }
 
-    // ready
     void NeuralNetwork::validate_input(
         RowVector& input
     ) const
     {
-        if (input.size() != structure[0])
-            throw NetworkInvalidValue(exception_message_invalid_input_size.c_str());
+        if (input.size() != structure.front())
+            throw NetworkInvalidValue(exception_message_invalid_input_size);
     }
 
-    // ready
     void NeuralNetwork::validate_output(
         RowVector& output
     ) const
     {
-        if (output.size() != structure[0])
-            throw NetworkInvalidValue(exception_message_invalid_output_size.c_str());
+        if (output.size() != structure.back())
+            throw NetworkInvalidValue(exception_message_invalid_output_size);
     }
 }
