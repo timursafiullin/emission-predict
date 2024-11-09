@@ -73,7 +73,7 @@ namespace NeuralNetwork
             RowVector& input
         );
 
-        Scalar get_error(
+        RowVector get_error(
             std::vector<RowVector*> input_data,
             std::vector<RowVector*> output_data
         );
@@ -82,6 +82,11 @@ namespace NeuralNetwork
             std::vector<RowVector*> input_data,
             std::vector<RowVector*> output_data
         );
+
+        std::vector<Matrix*> get_weights()
+        {
+            return weights;
+        }
 
         NeuralNetwork(
             const NeuralNetwork&
