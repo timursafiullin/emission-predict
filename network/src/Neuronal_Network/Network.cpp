@@ -31,13 +31,22 @@ namespace NeuralNetwork
         return *cache_layers.back();
     }
 
-    Scalar NeuralNetwork::get_error(
+    RowVector NeuralNetwork::get_error(
         std::vector<RowVector*> input_data,
         std::vector<RowVector*> output_data
     )
     {
+        RowVector error{structure.back()};
+        error.setZero();
         validate_data(input_data, output_data);
-        //pass
+        for (Number element{0}; element < input_data.size(); ++element)
+        {
+            RowVector predict_for_element = predict(*input_data[element]);
+            for (Number i{0}; i < structure.back(); ++i) 
+                error[i] = error[i] * element / (element + 1) +
+                (predict_for_element[i] - (*output_data[element])[i]) / (*output_data[element])[i] / (element + 1);
+        }
+        return error;
     }
 
     // ready
