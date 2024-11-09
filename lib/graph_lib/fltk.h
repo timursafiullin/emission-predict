@@ -2,6 +2,7 @@
 #define FLTK_GUARD 1
 
 #include <cstdlib>  // for exit(0)
+#include <string>
 
 #include <FL/Fl.H>
 #include <FL/Fl_Box.H>
