@@ -9,8 +9,8 @@ namespace NeuralNetwork
     )
     {
         validate_structure(s);
-        validate_learning_rate(l);
         structure = s;
+        validate_learning_rate(l);
         learning_rate = l;
         initialize_storage_objects();
     }
@@ -81,7 +81,6 @@ namespace NeuralNetwork
     
         // propagate the data forward and then 
         // apply the activation function to your network
-        // unaryExpr applies the given function to all elements
         for (Number layer{1}; layer < structure.size(); ++layer)
         {
             (*neuron_layers[layer]) = (*neuron_layers[layer - 1]) * (*weights[layer - 1]);
@@ -94,11 +93,11 @@ namespace NeuralNetwork
     )
     {
         validate_output(output);
-        calculate_errors(output);
+        calculate_deltas(output);
         update_weights();
     }
 
-    void NeuralNetwork::calculate_errors(
+    void NeuralNetwork::calculate_deltas(
         RowVector& output
     )
     {
@@ -168,6 +167,7 @@ namespace NeuralNetwork
         }
     }
 
+    // initializes layers of neurons and weights
     void NeuralNetwork::initialize_storage_objects_layer(
         Number layer
     )
@@ -191,7 +191,7 @@ namespace NeuralNetwork
         weights.push_back(new Matrix(structure[layer - 1] + 1, structure[layer] + 1));
         weights.back()->setRandom();
         weights.back()->col(structure[layer]).setZero();
-        weights.back()->coeffRef(structure[layer - 1], structure[layer]) = 1.0; // bias neuron
+        weights.back()->coeffRef(structure[layer - 1], structure[layer]) = 1.0;
         return;
     }
 
