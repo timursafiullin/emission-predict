@@ -1,6 +1,5 @@
 #include "Network.h"
 #include <vector>
-#include <iostream>
 
 namespace NeuralNetwork
 {
@@ -58,10 +57,16 @@ namespace NeuralNetwork
     )
     {
         validate_data(input_data, output_data);
+        Scalar previous_error {test(input_data, output_data)};
+        Scalar current_error {};
         for (Number element{0}; element < input_data.size(); ++element)
         {
             propagate_forward(*input_data[element]);
             propagate_backward(*output_data[element]);
+            current_error = test(input_data, output_data);
+            if (previous_error-current_error < critical_difference_between_errors)
+                return;
+            previous_error = current_error;
         }
     }
 
@@ -141,7 +146,8 @@ namespace NeuralNetwork
                 for (Number c = 0; c < weights[layer]->cols(); c++)
                     for (Number r = 0; r < weights[layer]->rows(); r++)
                         weights[layer]->coeffRef(r, c) +=
-                            learning_rate * deltas[layer + 1]->coeffRef(c) *
+                            learning_rate *
+                            deltas[layer + 1]->coeffRef(c) *
                             activation_function_derivative(neuron_layers[layer + 1]->coeffRef(c)) *
                             neuron_layers[layer]->coeffRef(r);
         }

@@ -39,7 +39,7 @@ namespace NeuralNetwork
     };
 
     constexpr Scalar default_learning_rate_value        { 0.005 };
-    constexpr Scalar critical_difference_between_errors { -0.5 };
+    constexpr Scalar critical_difference_between_errors { -0.05 };
 
 
     // will be thrown when invalid values given
