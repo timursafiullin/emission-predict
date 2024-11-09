@@ -57,14 +57,17 @@ namespace NeuralNetwork
     )
     {
         validate_data(input_data, output_data);
+
         Scalar previous_error {test(input_data, output_data)};
         Scalar current_error {};
+
         for (Number element{0}; element < input_data.size(); ++element)
         {
             propagate_forward(*input_data[element]);
             propagate_backward(*output_data[element]);
             current_error = test(input_data, output_data);
-            if (previous_error-current_error < critical_difference_between_errors)
+            // to prevent divergention of gradient decent
+            if (previous_error - current_error < critical_difference_between_errors)
                 return;
             previous_error = current_error;
         }
@@ -80,7 +83,7 @@ namespace NeuralNetwork
         neuron_layers.front()->block(0, 0, 1, neuron_layers.front()->size() - 1) = input;
     
         // propagate the data forward and then 
-        // apply the activation function to your network
+        // apply the activation function to network
         for (Number layer{1}; layer < structure.size(); ++layer)
         {
             (*neuron_layers[layer]) = (*neuron_layers[layer - 1]) * (*weights[layer - 1]);
@@ -129,27 +132,30 @@ namespace NeuralNetwork
     {
         // structure.size()-1 = weights.size()
         for (Number layer{0}; layer < structure.size() - 1; ++layer) {
-            // in this loop we are iterating over the different layers (from first hidden to output layer)
+            // iterating over the different layers (from first hidden to output layer)
             // if this layer is the output layer, there is no bias neuron there, number of neurons specified = number of cols
             // if this layer not the output layer, there is a bias neuron and number of neurons specified = number of cols -1
             if (layer != structure.size() - 2)
                 for (Number c = 0; c < weights[layer]->cols() - 1; ++c)
                     for (Number r = 0; r < weights[layer]->rows(); ++r)
-                        weights[layer]->coeffRef(r, c) +=
-                            learning_rate *
-                            deltas[layer + 1]->coeffRef(c) *
-                            activation_function_derivative(neuron_layers[layer + 1]->coeffRef(c)) *
-                            neuron_layers[layer]->coeffRef(r);
+                        weights[layer]->coeffRef(r, c) += calculate_weights_change(layer, c, r);
 
             else
                 for (Number c = 0; c < weights[layer]->cols(); c++)
                     for (Number r = 0; r < weights[layer]->rows(); r++)
-                        weights[layer]->coeffRef(r, c) +=
-                            learning_rate *
-                            deltas[layer + 1]->coeffRef(c) *
-                            activation_function_derivative(neuron_layers[layer + 1]->coeffRef(c)) *
-                            neuron_layers[layer]->coeffRef(r);
+                        weights[layer]->coeffRef(r, c) += calculate_weights_change(layer, c, r);
         }
+    }
+
+    Scalar NeuralNetwork::calculate_weights_change(
+        Number layer,
+        Number c,
+        Number r
+    )
+    {
+        return learning_rate *deltas[layer + 1]->coeffRef(c) *
+                activation_function_derivative(neuron_layers[layer + 1]->coeffRef(c)) *
+                neuron_layers[layer]->coeffRef(r);
     }
 
     void NeuralNetwork::initialize_storage_objects()

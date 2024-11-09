@@ -4,6 +4,14 @@
 #include "eigen-3.4.0/Eigen/Eigen"
 #include <exception>
 
+/*
+    Neural network class v 1.0
+
+    made Ruslan Sharafutdinov 09.11.2024
+
+    this class implements simple network.
+*/
+
 namespace NeuralNetwork
 {
     typedef size_t              Number;
@@ -206,6 +214,20 @@ namespace NeuralNetwork
          * 
          */
 	    void update_weights();
+
+        /**
+         * @brief   Calculating value of changing single weight.
+         * 
+         * @param layer layer of weight.
+         * @param c column of weight.
+         * @param r row of weight.
+         * @return Scalar
+         */
+        Scalar NeuralNetwork::calculate_weights_change(
+            Number layer,
+            Number c,
+            Number r
+        );
 
         /**
          * @brief   Creates storage obgects layers according to the
