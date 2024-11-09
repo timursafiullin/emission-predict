@@ -125,6 +125,25 @@ namespace NeuralNetwork
             Number layer
         );
 
+        void apply_activation_function_to_neuron_layer(
+            Number layer
+        );
+
+        // linear activation function
+        static Scalar activation_function(
+            Scalar x
+        )
+        {
+            return x;
+        }
+
+        static Scalar activation_function_derivative(
+            Scalar
+        )
+        {
+            return 1;
+        }
+
         void validate_structure(
             const std::vector<Number>& s
         ) const;
@@ -149,21 +168,6 @@ namespace NeuralNetwork
         void validate_output(
             RowVector& output
         ) const;
-
-        // linear activation function
-        static Scalar activation_function(
-            Scalar x
-        )
-        {
-            return x;
-        }
-
-        static Scalar activation_function_derivative(
-            Scalar
-        )
-        {
-            return 1;
-        }
 
 	    // storage objects for working of neural network
 	    /*

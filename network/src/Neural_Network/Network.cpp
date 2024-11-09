@@ -80,6 +80,7 @@ namespace NeuralNetwork
         for (Number layer{1}; layer < structure.size(); ++layer)
         {
             (*neuron_layers[layer]) = (*neuron_layers[layer - 1]) * (*weights[layer - 1]);
+            apply_activation_function_to_neuron_layer(layer);
         }
     }
 
@@ -186,6 +187,14 @@ namespace NeuralNetwork
         weights.back()->col(structure[layer]).setZero();
         weights.back()->coeffRef(structure[layer - 1], structure[layer]) = 1.0; // bias neuron
         return;
+    }
+
+    void NeuralNetwork::apply_activation_function_to_neuron_layer(
+        Number layer
+    )
+    {
+        for (Number neuron{0}; neuron < neuron_layers[layer]->size(); ++neuron)
+            (*neuron_layers[layer])[neuron] = activation_function((*neuron_layers[layer])[neuron]);
     }
 
     void NeuralNetwork::validate_structure(
