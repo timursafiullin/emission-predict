@@ -7,9 +7,8 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Window.H>
-#include <FL/Enumerations.H>
 
-#include <FL/Fl_Double_Window.H>
+#include <FL/Enumerations.H>
 #include <FL/Fl_Scroll.H>
 #include <FL/Fl_Table.H>
 #include <FL/Fl_Tile.H>

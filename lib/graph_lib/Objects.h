@@ -1,7 +1,6 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H 1
 
-#include "FL/Fl_Scroll.H"
 #include "FL/Fl_Table.H"
 #include <iostream>
 
@@ -24,27 +23,22 @@ public:
 
         std::cout << "Creating table..." << std::endl;
         std::cout << "Columns: " << cols << ", Rows: " << rows << std::endl;
+
         int cell_w { w / cols };
         int cell_h { h / rows };
             
         for (int row{0}; row < rows; ++row)
-        {
             for (int col{0}; col < cols; ++col)
             {
                 if (row == 0)
-                {
                     draw_cell(context_header, row, col, x, y, cell_w, cell_h); 
-                }
                 else
-                {
                     draw_cell(context_cell, row, col, x + cell_w*col, y - cell_h*row, cell_w, cell_h);
-                }
             }
-        }
         std::cout << "Table created." << std::endl;
     }
 private:
-    void draw_cell(const char context, int R, int C, int X, int Y, int W, int H);
+    virtual void draw_cell(const char context, int R, int C, int X, int Y, int W, int H);
 };
 
 #endif // OBJECTS_H
