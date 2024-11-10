@@ -46,13 +46,8 @@ namespace NeuralNetwork
         "invalid layer matrix given"
     };
 
-    constexpr Scalar default_learning_rate_value        { 0.005 };
-    /**
-     * @brief   Difference between previous and current errors value,
-     *          when training stops to prevent divergence of gradient decent.
-     * 
-     */
-    constexpr Scalar critical_difference_between_errors { -0.05 };
+    constexpr Scalar default_learning_rate_value                { 0.005 };
+    constexpr Scalar default_critical_difference_between_errors { -0.05 };
 
 
     /**
@@ -99,7 +94,7 @@ namespace NeuralNetwork
          *          ready to train.
          * 
          * @param s structure of network.
-         * @param l learning rate (optional, but recommended).
+         * @param l learning rate. Has default value.
          */
 	    NeuralNetwork(
             std::vector<Number> s,
@@ -129,14 +124,19 @@ namespace NeuralNetwork
         );
 
         /**
-         * @brief   Train model on dataset.
+         * @brief Train model on dataset.
          * 
          * @param input_data 
          * @param output_data 
+         * @param critical_difference_between_errors difference between previous
+         *              and current errors when training stops to prevent
+         *              divergence of gradient decent.
+         * 
          */
         void train(
             std::vector<RowVector*> input_data,
-            std::vector<RowVector*> output_data
+            std::vector<RowVector*> output_data,
+            Scalar critical_difference_between_errors = default_critical_difference_between_errors
         );
 
         /**

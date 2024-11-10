@@ -53,7 +53,8 @@ namespace NeuralNetwork
 
     void NeuralNetwork::train(
         std::vector<RowVector*> input_data,
-        std::vector<RowVector*> output_data
+        std::vector<RowVector*> output_data,
+        Scalar critical_difference_between_errors
     )
     {
         validate_data(input_data, output_data);
@@ -173,7 +174,6 @@ namespace NeuralNetwork
         }
     }
 
-    // initializes layers of neurons and weights
     void NeuralNetwork::initialize_storage_objects_layer(
         Number layer
     )
@@ -205,7 +205,11 @@ namespace NeuralNetwork
         Number layer
     )
     {
-        for (Number neuron{0}; neuron < neuron_layers[layer]->size(); ++neuron)
+        Number neuron_amount{neuron_layers[layer]->size()};
+        if (layer != neuron_layers.size() - 1)
+            neuron_amount -= 1;
+        // activation function shoudn't be applied to bias neuron
+        for (Number neuron{0}; neuron < neuron_amount; ++neuron)
             (*neuron_layers[layer])[neuron] = activation_function((*neuron_layers[layer])[neuron]);
     }
 
