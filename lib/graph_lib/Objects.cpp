@@ -61,38 +61,19 @@ int create_ratetable()
     return 0;
 };
 
- // This is called whenever Fl_Table wants you to draw a cell
 void Table::draw_cell(const char context, int R, int C, int X, int Y, int W, int H) {
     static char s[40];
     sprintf(s, "%d/%d", R, C);
     switch (context)
     {
         case context_header:
-            fl_push_clip(X, Y, W, H);
-            {
-                fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, color());
-                fl_color(COLORS::BRIGHT_BLUE);
-                fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
-            }
-            fl_pop_clip();
+            fl_draw_box(FL_FLAT_BOX, X, Y, W, H, COLORS::BRIGHT_BLUE);
             return;
  
-        case context_cell:                  // Fl_Table telling us to draw cells
-            fl_push_clip(X, Y, W, H);
-            {
-                // BG COLOR
-                fl_color(COLORS::BRIGHT_BLUE);
-                fl_rectf(X, Y, W, H);
- 
-                // TEXT
-                fl_color(FL_BLACK);
-                fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
- 
-                // BORDER
-                fl_color(FL_RED);
-                fl_rect(X, Y, W, H);
-            }
-            fl_pop_clip();
+        case context_cell:
+            fl_draw_box(FL_FLAT_BOX, X, Y, W, H, COLORS::DARK_GRAY);
+            fl_color(COLORS::BRIGHT_BLUE);
+            fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
             return;
  
         default:
