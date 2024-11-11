@@ -9,9 +9,7 @@
 #include <FL/Fl_Window.H>
 
 #include <FL/Enumerations.H>
-#include <FL/Fl_Scroll.H>
 #include <FL/Fl_Table.H>
-#include <FL/Fl_Tile.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Float_Input.H>
 #include <FL/fl_draw.H>
