@@ -13,14 +13,32 @@ class FileIsClosedError : public std::exception
 {
 };
 
+class FileIsNotSpecifiedError : public std::exception
+{
+};
+
 class CsvReader
 {
 public:
+    CsvReader() = default;
     CsvReader(std::string filename) : filename(filename) {}
-    CsvReader(std::string filename, std::string delimiter) : filename(filename), delimiter(delimiter) {}
+    CsvReader(std::string filename, std::string delimiter) : delimiter(delimiter), filename(filename) {}
 
-    void open_file()
+    bool is_open()
     {
+        return file.is_open();
+    }
+
+    void open_file(std::string fn = "")
+    {
+        if (fn != "")
+        {
+            filename = fn;
+        }
+        if (filename == "" and filename == "")
+        {
+            throw FileIsNotSpecifiedError();
+        }
         file.open(filename);
         if (!file.is_open())
             throw FileNotExistsError();
@@ -35,9 +53,9 @@ public:
     std::vector<std::vector<std::string>> read_file();
 
 private:
-    std::string delimiter = ";";
-    std::string filename;
+    std::string delimiter = ",";
     std::ifstream file;
+    std::string filename = "";
 };
 
 #endif
