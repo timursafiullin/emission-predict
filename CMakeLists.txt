@@ -19,6 +19,7 @@ add_executable(
 
 target_link_libraries(${TARGET} PUBLIC
     graph_lib
+    csv_reader
 )
 
 target_include_directories(${TARGET} PUBLIC

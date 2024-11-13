@@ -1,7 +1,7 @@
 #ifndef NETWORK_DEFENCE
 #define NETWORK_DEFENCE 1
 
-#include "eigen-3.4.0/Eigen/Eigen"
+#include "Eigen/Eigen"
 #include <exception>
 
 namespace NeuralNetwork
