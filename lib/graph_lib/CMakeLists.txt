@@ -2,7 +2,8 @@ set(FLTK_ROOT "C:/Program Files (x86)/FLTK/bin")
 find_package(FLTK REQUIRED)
 
 add_library(graph_lib
-    Objects.cpp
+    Graph.cpp
+    GUI.cpp
     Window.cpp
 )
 
