@@ -36,8 +36,9 @@ public:
   }
 };
 
-int create_window(unsigned int width, unsigned int height, std::string title) {
+int create_window(unsigned int width, unsigned int height, std::string title, Fl_Color background_color = FL_WHITE) {
   ProgrammWindow* window = new ProgrammWindow(width, height, title);
+  window->color(background_color);
   window->display();
   return 0;
 }
