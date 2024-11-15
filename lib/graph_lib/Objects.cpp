@@ -5,6 +5,39 @@
 //
 // Table
 //
+Table::Table
+(
+    int x, int y, int w, int h,
+    int table_cols,
+    int table_rows,
+    Fl_Color inner_color,
+    Fl_Color outer_color,
+    Fl_Color background_color
+) : Fl_Table(x, y, w, h), x{x}, y{y}, w{w}, h{h},
+    inner_color{inner_color},
+    outer_color{outer_color},
+    background_color{background_color}
+{
+    cols = table_cols;
+    rows = table_rows;
+
+    if ( cols < 0 || rows < 0 )
+        throw std::invalid_argument("Table: cols and rows must be non-negative");
+    
+    cell_w = w / cols;
+    cell_h = h / rows;
+
+    // Draw background
+    fl_draw_box(FL_FLAT_BOX, x, y, w, h, background_color);
+
+    // Draw borders
+    draw_borders(inner_color, outer_color);
+
+    std::cout << "Creating table..." << std::endl;
+    std::cout << "Columns: " << cols << ", Rows: " << rows << std::endl;
+    std::cout << "Table created." << std::endl;
+} 
+
 void Table::draw_borders(Fl_Color color)
 {
     fl_color(color);
