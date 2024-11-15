@@ -50,11 +50,9 @@ public:
         for ( int col{0}; col < cols; ++col )
             for ( int row{0}; row < rows; ++row )
             {
-                if ( row == 0 )
-                    draw_cell(context_header, row, col, x + col*cell_w, y, cell_w, cell_h); 
-                else
-                    draw_cell(context_cell, row, col, x + cell_w*col, y + cell_h*row, cell_w, cell_h);
+                draw_cell(row, col, x + col*cell_w, y + cell_h*row, cell_w, cell_h); 
             }
+        
         std::cout << "Table created." << std::endl;
     }
 
@@ -89,10 +87,7 @@ public:
         for ( int col{0}; col < cols; ++col )
             for ( int row{0}; row < rows; ++row )
             {
-                if ( row == 0 )
-                    draw_cell(context_header, row, col, x + col*cell_w, y, cell_w, cell_h); 
-                else
-                    draw_cell(context_cell, row, col, x + cell_w*col, y + cell_h*row, cell_w, cell_h);
+                draw_cell(row, col, x + col*cell_w, y + cell_h*row, cell_w, cell_h); 
             }
 
         draw_borders(inner_color, outer_color);
@@ -106,7 +101,7 @@ private:
     int x, y, w, h;
     TableHeader table_header;
     Fl_Color inner_color, outer_color, background_color;
-    virtual void draw_cell(const char context, int R, int C, int X, int Y, int W, int H);
+    virtual void draw_cell(int R, int C, int X, int Y, int W, int H);
     void draw_borders(Fl_Color color);
     void draw_borders(Fl_Color inner_color, Fl_Color outer_color);
 };

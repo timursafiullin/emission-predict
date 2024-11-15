@@ -24,18 +24,14 @@ std::vector<std::string> TableHeader::get()
     return nameList;
 }
 
-void Table::draw_cell(const char context, int R, int C, int X, int Y, int W, int H)
+void Table::draw_cell(int R, int C, int X, int Y, int W, int H)
 {
     fl_push_clip(X, Y, W, H);
-    switch (context)
+    if (R == 0)
     {
-    case (context_header):
         fl_color(COLORS::DARK_GRAY);
         fl_draw(table_header[C].c_str(), X, Y, W, H, FL_ALIGN_CENTER);
-        break;
-    default:
-        break;
-    }   
+    }
     fl_pop_clip();
 }
 
