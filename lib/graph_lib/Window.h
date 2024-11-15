@@ -3,6 +3,7 @@
 
 #include "fltk.h"
 #include <string>
+#include "Objects.h"
 
 class ProgrammWindow : public Fl_Window
 {
@@ -13,6 +14,12 @@ public:
   }
 
   virtual ~ProgrammWindow() {}
+
+  void draw() override 
+  {
+    Fl_Window::draw();
+    Table* tbl = new Table(561, 21, 260, 406, 2, 14);
+  }
 
   void show() 
   {
