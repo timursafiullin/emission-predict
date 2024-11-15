@@ -10,6 +10,7 @@ ProgrammWindow::ProgrammWindow(int w, int h, const std::string& title) : Fl_Wind
 void ProgrammWindow::draw()
 {
   Fl_Window::draw();
+
   LabelsList labels_list
   (
     std::initializer_list<Labels>
@@ -34,7 +35,7 @@ void ProgrammWindow::draw()
   );
 
   tbl->set_label(labels_list);
-  
+
 }
 
 void ProgrammWindow::show() 
@@ -58,10 +59,10 @@ void ProgrammWindow::display()
   Fl::run();
 }
 
-int create_window(unsigned int width, unsigned int height, std::string title, Fl_Color background_color = FL_WHITE)
+ProgrammWindow* create_window(unsigned int width, unsigned int height, std::string title, Fl_Color background_color = FL_WHITE)
 {
   ProgrammWindow* window = new ProgrammWindow(width, height, title);
   window->color(background_color);
   window->display();
-  return 0;
+  return window;
 }
