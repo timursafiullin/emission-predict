@@ -73,33 +73,27 @@ void Table::draw_borders(Fl_Color inner_color, Fl_Color outer_color)
 
 void Table::set_label(Labels& labels)
 {
-    for (auto& label : labels.get())
+    for (unsigned int i{0}; i < labels.get().size(); ++i)
     {
-        fl_color(COLORS::DARK_GRAY);
-        fl_draw(label.c_str(), x + cell_w * labels.col, y + cell_h * labels.row, cell_w, cell_h, FL_ALIGN_CENTER);
+        fl_color(COLORS::BLACK);
+        fl_font(FL_HELVETICA, Fl_Fontsize(cell_h/2.25));
+        fl_draw(labels[i].c_str(), x + cell_w * labels.col, y + cell_h * labels.row, cell_w, cell_h, FL_ALIGN_CENTER);
+        switch (labels.context)
+        {
+            case context_column:
+                ++labels.row;
+                break;
+            case context_row:
+                ++labels.col;
+                break;
+        }
     }
 }
 
 void Table::set_label(LabelsList& labels_list)
 {
     for (Labels& labels : labels_list.get())
-    {
-        for (unsigned int i{0}; i < labels.get().size(); ++i)
-        {
-            fl_color(COLORS::BLACK);
-            fl_font(FL_HELVETICA, Fl_Fontsize(cell_h/2.25));
-            fl_draw(labels[i].c_str(), x + cell_w * labels.col, y + cell_h * labels.row, cell_w, cell_h, FL_ALIGN_CENTER);
-            switch (labels.context)
-            {
-                case context_column:
-                    ++labels.row;
-                    break;
-                case context_row:
-                    ++labels.col;
-                    break;
-            }
-        }  
-    }
+        set_label(labels);
 }
 
 //
