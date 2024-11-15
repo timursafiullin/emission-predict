@@ -14,14 +14,20 @@ add_subdirectory(lib)
 
 add_executable(
     ${TARGET}
+    src/main.cpp
     src/gui/gui.cpp
+    src/dataset/dataset_reader.cpp
+    src/Neural_Network/Network.cpp
 )
 
 target_link_libraries(${TARGET} PUBLIC
     graph_lib
+    csv_reader
 )
 
 target_include_directories(${TARGET} PUBLIC
+    ${CMAKE_SOURCE_DIR}/src/dataset
+    ${CMAKE_SOURCE_DIR}/src/gui
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/lib
 )
