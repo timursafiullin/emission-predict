@@ -77,7 +77,7 @@ void Table::set_label(Labels& labels)
     {
         fl_color(COLORS::BLACK);
         fl_font(FL_HELVETICA, Fl_Fontsize(cell_h/2.25));
-        fl_draw(labels[i].c_str(), x + cell_w * labels.col, y + cell_h * labels.row, cell_w, cell_h, FL_ALIGN_CENTER);
+        fl_draw(labels[i].c_str(), x + cell_w * (labels.col + 0.075), y + cell_h * labels.row, cell_w, cell_h, FL_ALIGN_LEFT);
         switch (labels.context)
         {
             case context_column:
