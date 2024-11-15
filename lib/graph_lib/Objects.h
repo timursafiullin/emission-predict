@@ -9,17 +9,32 @@
 #include <vector>
 #include <string>
 
-constexpr char context_cell = 'C';
-constexpr char context_header = 'H';
+constexpr char context_column = 'C';
+constexpr char context_row = 'R';
 
-struct TableHeader
+struct Labels
 {
-    TableHeader() {};
-    TableHeader(std::initializer_list<std::string> header_names);
+    unsigned int row{};
+    unsigned int col{};
+    const char context{};
+
+    Labels() {};
+    Labels(std::initializer_list<std::string> labels, const char context, unsigned int line);
+
     std::string operator[](const unsigned int index);
     std::vector<std::string> get();
 private:
-    std::vector<std::string> nameList;
+    std::vector<std::string> labelList;
+};
+
+struct LabelsList
+{
+    LabelsList() {};
+    LabelsList(std::initializer_list<Labels> labels);
+
+    std::vector<Labels> get();
+private:
+    std::vector<Labels> labelsList;
 };
 
 class Table : public Fl_Table
@@ -47,11 +62,6 @@ public:
         std::cout << "Columns: " << cols << ", Rows: " << rows << std::endl;
         cell_w = w / cols;
         cell_h = h / rows;
-        for ( int col{0}; col < cols; ++col )
-            for ( int row{0}; row < rows; ++row )
-            {
-                draw_cell(row, col, x + col*cell_w, y + cell_h*row, cell_w, cell_h); 
-            }
         
         std::cout << "Table created." << std::endl;
     }
@@ -61,14 +71,12 @@ public:
         int x, int y, int w, int h,
         int table_cols,
         int table_rows,
-        TableHeader table_header,
         Fl_Color inner_color,
         Fl_Color outer_color,
         Fl_Color background_color = FL_WHITE
     ) : Fl_Table(x, y, w, h), x{x}, y{y}, w{w}, h{h},
         inner_color{inner_color},
         outer_color{outer_color},
-        table_header{table_header},
         background_color{background_color}
     {
         Fl_Table::color(background_color);
@@ -84,24 +92,22 @@ public:
         std::cout << "Columns: " << cols << ", Rows: " << rows << std::endl;
         cell_w = w / cols;
         cell_h = h / rows;
-        for ( int col{0}; col < cols; ++col )
-            for ( int row{0}; row < rows; ++row )
-            {
-                draw_cell(row, col, x + col*cell_w, y + cell_h*row, cell_w, cell_h); 
-            }
 
         draw_borders(inner_color, outer_color);
 
         std::cout << "Table created." << std::endl;
     }
 
+    void set_label(Labels& labels);
+    void set_label(LabelsList& labels_list);
+
 private:
     int rows, cols;
+
     int cell_w, cell_h;
     int x, y, w, h;
-    TableHeader table_header;
     Fl_Color inner_color, outer_color, background_color;
-    virtual void draw_cell(int R, int C, int X, int Y, int W, int H);
+
     void draw_borders(Fl_Color color);
     void draw_borders(Fl_Color inner_color, Fl_Color outer_color);
 };
