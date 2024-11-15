@@ -40,16 +40,7 @@ Table::Table
 
 void Table::draw_borders(Fl_Color color)
 {
-    fl_color(color);
-    for (int row_border{0}; row_border < rows + 1; ++row_border)
-    {
-        fl_line(x, y + row_border*cell_h, x + w, y + row_border*cell_h);
-    }
-
-    for (int col_border{0}; col_border < cols + 1; ++col_border)
-    {
-        fl_line(x + col_border*cell_w, y, x + col_border*cell_w, y + h);
-    }
+    draw_borders(color, color);
 }
 
 void Table::draw_borders(Fl_Color inner_color, Fl_Color outer_color)
