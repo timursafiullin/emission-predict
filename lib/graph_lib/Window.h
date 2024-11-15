@@ -18,7 +18,7 @@ public:
   void draw() override 
   {
     Fl_Window::draw();
-    Table* tbl = new Table(561, 21, 260, 406, 2, 14);
+    Table* tbl = new Table(561, 21, 260, 406, 2, 14, COLORS::GRAY, COLORS::DARK_GRAY);
   }
 
   void show() 
