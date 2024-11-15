@@ -70,6 +70,46 @@ DatasetCell get_cell()
             cell.temperature = std::stold(line[i]);
             break;
         }
+        case 10:
+        {
+            cell.humidity = std::stold(line[i]);
+            break;
+        }
+        case 11:
+        {
+            cell.wind_speed = std::stold(line[i]);
+            break;
+        }
+        case 12:
+        {
+            cell.air_pressure = std::stold(line[i]);
+            break;
+        }
+        case 13:
+        {
+            cell.CO2_emissions = std::stold(line[i]);
+            break;
+        }
+        case 14:
+        {
+            cell.NOx_emissions = std::stold(line[i]);
+            break;
+        }
+        case 15:
+        {
+            cell.PM_emissions = std::stold(line[i]);
+            break;
+        }
+        case 16:
+        {
+            cell.VOC_emissions = std::stold(line[i]);
+            break;
+        }
+        case 17:
+        {
+            cell.CO2_emissions = std::stold(line[i]);
+            break;
+        }
         }
     }
 

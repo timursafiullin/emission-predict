@@ -17,6 +17,7 @@ add_executable(
     src/main.cpp
     src/gui/gui.cpp
     src/dataset/dataset_reader.cpp
+    src/Neural_Network/Network.cpp
 )
 
 target_link_libraries(${TARGET} PUBLIC

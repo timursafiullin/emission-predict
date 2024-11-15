@@ -15,7 +15,7 @@
 namespace NeuralNetwork
 {
     typedef size_t              Number;
-    typedef double              Scalar;
+    typedef long double         Scalar;
     typedef Eigen::MatrixXf     Matrix;
     typedef Eigen::RowVectorXf  RowVector;
     typedef Eigen::VectorXf     ColumnVector;
@@ -146,7 +146,7 @@ namespace NeuralNetwork
          * @param output_data 
          * @return Scalar
          */
-        Scalar test(
+        std::vector<Scalar> test(
             std::vector<RowVector*> input_data,
             std::vector<RowVector*> output_data
         );
@@ -204,7 +204,7 @@ namespace NeuralNetwork
          * @param output 
          * @return Scalar
          */
-        Scalar get_main_square_error(
+        std::vector<Scalar> get_abs_error(
             RowVector& input,
             RowVector& output
         );
@@ -223,7 +223,7 @@ namespace NeuralNetwork
          * @param r row of weight.
          * @return Scalar
          */
-        Scalar NeuralNetwork::calculate_weights_change(
+        Scalar calculate_weights_change(
             Number layer,
             Number c,
             Number r
@@ -387,6 +387,8 @@ namespace NeuralNetwork
          */
         Scalar learning_rate;
     };
+
+    Scalar sum(std::vector<Scalar> a);
 }
 
 #endif

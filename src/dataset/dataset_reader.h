@@ -17,6 +17,14 @@ struct DatasetCell
     std::string road_type;
     std::string traffic_conditions;
     long double temperature;
+    long double humidity;
+    long double wind_speed;
+    long double air_pressure;
+    long double CO2_emissions;
+    long double NOx_emissions;
+    long double PM_emissions;
+    long double VOC_emissions;
+    long double SO2_Emissions;
 };
 
 DatasetCell get_cell();

@@ -1,6 +1,8 @@
 #include "Network.h"
 #include <vector>
 
+#include <iostream>
+
 namespace NeuralNetwork
 {
     NeuralNetwork::NeuralNetwork(
@@ -34,7 +36,7 @@ namespace NeuralNetwork
         return *neuron_layers.back();
     }
 
-    Scalar NeuralNetwork::test(
+    std::vector<Scalar> NeuralNetwork::test(
         std::vector<RowVector*> input_data,
         std::vector<RowVector*> output_data
     )
@@ -43,10 +45,14 @@ namespace NeuralNetwork
 
         Number dataset_size{input_data.size()};
 
-        Scalar main_error{0};
+        std::vector<Scalar> main_error(structure.back());
 
         for (Number element{0}; element < dataset_size; ++element)
-            main_error += get_main_square_error(*input_data[element], *output_data[element]) / dataset_size;
+        {
+            std::vector<Scalar> error{get_abs_error(*input_data[element], *output_data[element])};
+            for (Number i{0}; i < error.size(); ++i)
+                main_error[i] += sqrtl(error[i] / dataset_size);
+        }
         
         return main_error;
     }
@@ -54,24 +60,38 @@ namespace NeuralNetwork
     void NeuralNetwork::train(
         std::vector<RowVector*> input_data,
         std::vector<RowVector*> output_data,
-        Scalar critical_difference_between_errors
+        Scalar l
     )
     {
+        validate_learning_rate(l);
         validate_data(input_data, output_data);
 
-        Scalar previous_error {test(input_data, output_data)};
-        Scalar current_error {};
+        learning_rate = l;
+        std::vector<Matrix*> best_weights{weights};
+
+        Scalar best_error{sum(test(input_data, output_data))};
 
         for (Number element{0}; element < input_data.size(); ++element)
         {
             propagate_forward(*input_data[element]);
             propagate_backward(*output_data[element]);
-            current_error = test(input_data, output_data);
-            // to prevent divergention of gradient decent
-            if (previous_error - current_error < critical_difference_between_errors)
-                return;
-            previous_error = current_error;
+
+            if ((element + 1) % 8000)
+                continue;
+
+            Scalar current_error {sum(test(input_data, output_data))};
+            std::cout << current_error / output_data[element]->size() << "\n";
+
+
+            //to prevent divergention of gradient decent
+            if (best_error > current_error)
+            {
+                best_error = current_error;
+                for (Number i{0}; i < weights.size(); ++i)
+                    *best_weights[i] = *weights[i];
+            }
         }
+        weights = best_weights;
     }
 
     void NeuralNetwork::propagate_forward(
@@ -111,7 +131,7 @@ namespace NeuralNetwork
             (*deltas[layer]) = (*deltas[layer + 1]) * (weights[layer]->transpose());
     }
 
-    Scalar NeuralNetwork::get_main_square_error(
+    std::vector<Scalar> NeuralNetwork::get_abs_error(
         RowVector& input,
         RowVector& output
     )
@@ -119,12 +139,12 @@ namespace NeuralNetwork
         validate_input(input);
         validate_output(output);
 
-        Scalar error{};
+        std::vector<Scalar> error{};
 
         RowVector prediction{predict(input)};
 
         for (Number i{0}; i < output.size(); ++i)
-            error += pow(prediction[i] - output[i], 2) / 2 / output.size();
+            error.push_back(abs(prediction[i] - output[i]));
 
         return error;
     }
@@ -267,5 +287,13 @@ namespace NeuralNetwork
     {
         if (output.size() != structure.back())
             throw NetworkInvalidValue(exception_message_invalid_output_size);
+    }
+
+    Scalar sum(std::vector<Scalar> a)
+    {
+        Scalar summary{0};
+        for (Scalar s : a)
+            summary += s;
+        return summary;
     }
 }
