@@ -6,9 +6,19 @@
 #include "FL/Fl_Box.H"
 #include "fltk_design.h"
 #include <iostream>
+#include <vector>
+#include <string>
 
 constexpr char context_cell = 'C';
 constexpr char context_header = 'H';
+
+struct TableHeader
+{
+    TableHeader(std::initializer_list<std::string> header_names);
+    std::vector<std::string> get();
+private:
+    std::vector<std::string> nameList;
+};
 
 class Table : public Fl_Table
 {
@@ -35,9 +45,9 @@ public:
             for ( int row{0}; row < rows; ++row )
             {
                 if ( row == 0 )
-                    draw_cell(context_header, x + col*cell_w, y, cell_w, cell_h); 
+                    draw_cell(context_header, row, col, x + col*cell_w, y, cell_w, cell_h); 
                 else
-                    draw_cell(context_cell, x + cell_w*col, y + cell_h*row, cell_w, cell_h);
+                    draw_cell(context_cell, row, col, x + cell_w*col, y + cell_h*row, cell_w, cell_h);
             }
         std::cout << "Table created." << std::endl;
     }
@@ -68,9 +78,9 @@ public:
             for ( int row{0}; row < rows; ++row )
             {
                 if ( row == 0 )
-                    draw_cell(context_header, x + col*cell_w, y, cell_w, cell_h); 
+                    draw_cell(context_header, row, col, x + col*cell_w, y, cell_w, cell_h); 
                 else
-                    draw_cell(context_cell, x + cell_w*col, y + cell_h*row, cell_w, cell_h);
+                    draw_cell(context_cell, row, col, x + cell_w*col, y + cell_h*row, cell_w, cell_h);
             }
 
         draw_borders(inner_color, outer_color);
@@ -83,7 +93,7 @@ private:
     int cell_w, cell_h;
     int x, y, w, h;
     Fl_Color inner_color, outer_color, background_color;
-    virtual void draw_cell(const char context, int X, int Y, int W, int H);
+    virtual void draw_cell(const char context, int R, int C, int X, int Y, int W, int H);
     void draw_borders(Fl_Color color);
     void draw_borders(Fl_Color inner_color, Fl_Color outer_color);
 };

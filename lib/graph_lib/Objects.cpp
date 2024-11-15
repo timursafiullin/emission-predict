@@ -1,9 +1,22 @@
 #include "fltk.h"
 #include "Objects.h"
 #include <iostream>
+#include <initializer_list>
 
+TableHeader::TableHeader(std::initializer_list<std::string> header_names)
+{
+    for (const auto& name : header_names)
+    {
+        nameList.push_back(name);
+    }
+}
 
-void Table::draw_cell(const char context, int X, int Y, int W, int H)
+std::vector<std::string> TableHeader::get()
+{
+    return nameList;
+}
+
+void Table::draw_cell(const char context, int R, int C, int X, int Y, int W, int H)
 {
     fl_push_clip(X, Y, W, H);
     switch (context)
