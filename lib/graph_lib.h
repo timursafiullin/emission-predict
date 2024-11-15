@@ -1,3 +1,6 @@
-#include "graph_lib/Objects.h"
+#include "graph_lib/Graph.h"
+#include "graph_lib/GUI.h"
+#include "graph_lib/Point.h"
+#include "graph_lib/Simple_window.h"
 #include "graph_lib/Window.h"
 #include "graph_lib/fltk_design.h"

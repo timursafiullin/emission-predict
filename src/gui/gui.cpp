@@ -1,6 +1,7 @@
 #include "gui.h"
 #include "graph_lib.h"
 #include <exception>
+#include <iostream>
 
 int main()
 try
