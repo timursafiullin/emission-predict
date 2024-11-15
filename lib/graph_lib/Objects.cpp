@@ -1,6 +1,5 @@
 #include "fltk.h"
 #include "Objects.h"
-#include <iostream>
 #include <initializer_list>
 
 TableHeader::TableHeader(std::initializer_list<std::string> header_names)
@@ -9,6 +8,15 @@ TableHeader::TableHeader(std::initializer_list<std::string> header_names)
     {
         nameList.push_back(name);
     }
+}
+
+std::string TableHeader::operator[](const unsigned int index)
+{
+    if (index > nameList.size() - 1)
+    {
+        throw std::runtime_error("Header Names List index out of range");
+    }
+    return nameList[index];
 }
 
 std::vector<std::string> TableHeader::get()
@@ -22,12 +30,12 @@ void Table::draw_cell(const char context, int R, int C, int X, int Y, int W, int
     switch (context)
     {
     case (context_header):
-        fl_draw_box(FL_FLAT_BOX, X, Y, W, H, COLORS::WHITE);
+        fl_color(COLORS::DARK_GRAY);
+        fl_draw(table_header[C].c_str(), X, Y, W, H, FL_ALIGN_CENTER);
         break;
     default:
-        fl_draw_box(FL_FLAT_BOX, X, Y, W, H, COLORS::WHITE);
         break;
-    }
+    }   
     fl_pop_clip();
 }
 
