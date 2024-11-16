@@ -46,6 +46,6 @@ public:
   void display() { show(); Fl::run(); };
 };
 
-ProgramWindow* create_window(unsigned int width, unsigned int height, std::string title, Fl_Color background_color);
+ProgramWindow* run_gui(unsigned int width, unsigned int height, std::string title, Fl_Color background_color);
 
 #endif

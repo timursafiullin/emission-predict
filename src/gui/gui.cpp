@@ -19,7 +19,7 @@ void ProgramWindow::draw()
 }
 
 
-ProgramWindow* create_window(unsigned int width, unsigned int height, std::string title, Fl_Color background_color = FL_WHITE)
+ProgramWindow* run_gui(unsigned int width, unsigned int height, std::string title, Fl_Color background_color = FL_WHITE)
 {
   ProgramWindow* window = new ProgramWindow(width, height, title);
   window->color(background_color);
@@ -31,7 +31,7 @@ ProgramWindow* create_window(unsigned int width, unsigned int height, std::strin
 int main()
 try
 {
-    ProgramWindow* window = create_window
+    ProgramWindow* window = run_gui
     (
         window_width, 
         window_height,
