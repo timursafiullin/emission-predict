@@ -20,8 +20,8 @@ Table::Table
     cols = table_cols;
     rows = table_rows;
 
-    if ( cols < 0 || rows < 0 )
-        throw std::invalid_argument("Table: cols and rows must be non-negative");
+    if ( cols <= 0 || rows <= 0 )
+        throw std::invalid_argument("Table: cols and rows must be more than 0");
     
     cell_w = w / cols;
     cell_h = h / rows;
