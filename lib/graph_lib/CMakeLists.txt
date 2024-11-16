@@ -3,7 +3,6 @@ find_package(FLTK REQUIRED)
 
 add_library(graph_lib
     Objects.cpp
-    Window.cpp
 )
 
 target_include_directories(graph_lib PUBLIC

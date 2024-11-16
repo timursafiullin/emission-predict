@@ -1,11 +1,62 @@
 #include "gui.h"
-#include "graph_lib.h"
 #include <exception>
+
+
+void ProgramWindow::draw()
+{
+  Fl_Window::draw();
+
+  LabelsList labels_list
+  (
+    std::initializer_list<Labels>
+    {
+      Labels(std::initializer_list<std::string>
+      {
+        "Parameters", "Vehicle Type", "Fuel Type",
+        "Engine Size", "Age of Vehicle", "Mileage",
+        "Acceleration", "Road Type",
+        "Traffic Conditions", "Temperature", "Humidity",
+        "Wind Speed", "Air Pressure", "Max speed",
+      }, context_column, 0),
+      Labels(std::initializer_list<std::string>
+      {
+        "Values"
+      }, context_column, 1)
+    }
+  );
+
+  Table* tbl = new Table
+  (
+    table_x, table_y,
+    table_width, table_height,
+    table_cols, table_rows,
+    COLORS::GRAY, COLORS::DARK_GRAY
+  );
+
+  tbl->set_label(labels_list);
+
+}
+
+
+ProgramWindow* create_window(unsigned int width, unsigned int height, std::string title, Fl_Color background_color = FL_WHITE)
+{
+  ProgramWindow* window = new ProgramWindow(width, height, title);
+  window->color(background_color);
+  window->display();
+  return window;
+}
+
 
 int main()
 try
 {
-    ProgrammWindow* window = create_window(window_width, window_height, main_window_title, COLORS::LIGHT_GRAY);
+    ProgramWindow* window = create_window
+    (
+        window_width, 
+        window_height,
+        main_window_title,
+        COLORS::LIGHT_GRAY
+    );
     return 0;
 }
 catch (std::exception& e)
