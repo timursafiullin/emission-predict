@@ -6,26 +6,7 @@ void ProgramWindow::draw()
 {
   Fl_Window::draw();
 
-  LabelsList labels_list
-  (
-    std::initializer_list<Labels>
-    {
-      Labels(std::initializer_list<std::string>
-      {
-        "Parameters", "Vehicle Type", "Fuel Type",
-        "Engine Size", "Age of Vehicle", "Mileage",
-        "Acceleration", "Road Type",
-        "Traffic Conditions", "Temperature", "Humidity",
-        "Wind Speed", "Air Pressure", "Max speed",
-      }, context_column, 0),
-      Labels(std::initializer_list<std::string>
-      {
-        "Values"
-      }, context_column, 1)
-    }
-  );
-
-  Table* tbl = new Table
+  Table* parameters_table = new Table
   (
     table_x, table_y,
     table_width, table_height,
@@ -33,7 +14,7 @@ void ProgramWindow::draw()
     COLORS::GRAY, COLORS::DARK_GRAY
   );
 
-  tbl->set_label(labels_list);
+  parameters_table->set_label(labels_list);
 
 }
 
