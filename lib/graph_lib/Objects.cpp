@@ -2,9 +2,8 @@
 #include "Objects.h"
 #include <initializer_list>
 
-//
+
 // Table
-//
 Table::Table
 (
     int x, int y, int w, int h,
@@ -38,10 +37,12 @@ Table::Table
     std::cout << "Table created." << std::endl;
 } 
 
+
 void Table::draw_borders(Fl_Color color)
 {
     draw_borders(color, color);
 }
+
 
 void Table::draw_borders(Fl_Color inner_color, Fl_Color outer_color)
 {
@@ -62,6 +63,7 @@ void Table::draw_borders(Fl_Color inner_color, Fl_Color outer_color)
     }
 }
 
+
 void Table::set_label(Labels& labels)
 {
     for (unsigned int i{0}; i < labels.get().size(); ++i)
@@ -81,15 +83,15 @@ void Table::set_label(Labels& labels)
     }
 }
 
+
 void Table::set_label(LabelsList& labels_list)
 {
     for (Labels& labels : labels_list.get())
         set_label(labels);
 }
 
-//
+
 // Label
-//
 Labels::Labels(std::initializer_list<std::string> labels, const char context, unsigned int line) : context{context}
 {
     switch (context)
@@ -108,6 +110,7 @@ Labels::Labels(std::initializer_list<std::string> labels, const char context, un
     }    
 }
 
+
 std::string Labels::operator[](const unsigned int index)
 {
     if (index > labelList.size() - 1)
@@ -117,14 +120,14 @@ std::string Labels::operator[](const unsigned int index)
     return labelList[index];
 }
 
+
 std::vector<std::string> Labels::get()
 {
     return labelList;
 }
 
-//
+
 // LabelsList
-//
 LabelsList::LabelsList(std::initializer_list<Labels> labels)
 {
     for (const auto& _labels : labels)
@@ -132,6 +135,7 @@ LabelsList::LabelsList(std::initializer_list<Labels> labels)
         labelsList.push_back(_labels);
     } 
 }
+
 
 std::vector<Labels> LabelsList::get()
 {

@@ -9,8 +9,10 @@
 #include <vector>
 #include <string>
 
+
 constexpr char context_column = 'C';
 constexpr char context_row = 'R';
+
 
 struct Labels
 {
@@ -27,6 +29,7 @@ private:
     std::vector<std::string> labelList;
 };
 
+
 struct LabelsList
 {
     LabelsList() {};
@@ -36,6 +39,7 @@ struct LabelsList
 private:
     std::vector<Labels> labelsList;
 };
+
 
 class Table : public Fl_Table
 {

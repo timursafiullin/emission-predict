@@ -3,6 +3,7 @@
 
 #include <FL/Fl.H>
 
+
 namespace COLORS
 {
     const auto BLACK = fl_rgb_color(0, 0, 0);
