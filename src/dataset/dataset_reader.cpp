@@ -16,7 +16,7 @@ DatasetCell get_cell()
     std::vector<std::string> line = csv_reader.read_row();
     if (line == std::vector<std::string>{""})
         throw FileIsClosedError();
-    for (size_t i = 0; i < 10; ++i)
+    for (size_t i = 0; i < 18; ++i)
     {
         switch (i)
         {
@@ -107,7 +107,7 @@ DatasetCell get_cell()
         }
         case 17:
         {
-            cell.CO2_emissions = std::stold(line[i]);
+            cell.SO2_emissions = std::stold(line[i]);
             break;
         }
         }
