@@ -69,29 +69,26 @@ namespace NeuralNetwork
         learning_rate = l;
         std::vector<Matrix*> best_weights{weights};
 
-        Scalar best_error{sum(test(input_data, output_data))};
-
         for (Number element{0}; element < input_data.size(); ++element)
         {
             propagate_forward(*input_data[element]);
             propagate_backward(*output_data[element]);
 
-            if ((element + 1) % 8000)
-                continue;
+            // if ((element + 1) % 8000)
+            //     continue;
 
-            Scalar current_error {sum(test(input_data, output_data))};
-            std::cout << current_error / output_data[element]->size() << "\n";
+            // Scalar current_error {sum(test(input_data, output_data))};
+            // std::cout << current_error / output_data[element]->size() << "\n";
 
 
-            //to prevent divergention of gradient decent
-            if (best_error > current_error)
-            {
-                best_error = current_error;
-                for (Number i{0}; i < weights.size(); ++i)
-                    *best_weights[i] = *weights[i];
-            }
+            // //to prevent divergention of gradient decent
+            // if (best_error > current_error)
+            // {
+            //     best_error = current_error;
+            //     for (Number i{0}; i < weights.size(); ++i)
+            //         *best_weights[i] = *weights[i];
+            //}
         }
-        weights = best_weights;
     }
 
     void NeuralNetwork::propagate_forward(
