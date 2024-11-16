@@ -19,19 +19,18 @@ void ProgramWindow::draw()
 }
 
 
-ProgramWindow* run_gui(unsigned int width, unsigned int height, std::string title, Fl_Color background_color = FL_WHITE)
+void run_gui(unsigned int width, unsigned int height, std::string title, Fl_Color background_color = FL_WHITE)
 {
   ProgramWindow* window = new ProgramWindow(width, height, title);
   window->color(background_color);
   window->display();
-  return window;
 }
 
 
 int main()
 try
 {
-    ProgramWindow* window = run_gui
+    run_gui
     (
         window_width, 
         window_height,
