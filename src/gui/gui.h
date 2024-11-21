@@ -36,16 +36,16 @@ LabelsList labels_list
   }
 );
 
-class ProgramWindow : public Fl_Window
-{
-public:
-  ProgramWindow(int w, int h, const std::string& title) : Fl_Window(w, h) { label(title.c_str()); };
-  virtual ~ProgramWindow() {}
+// class ProgramWindow : public Fl_Window
+// {
+// public:
+//   ProgramWindow(int w, int h, const std::string& title) : Fl_Window(w, h) { label(title.c_str()); };
+//   virtual ~ProgramWindow() {}
+// 
+//   void draw() override;
+//   void display() { show(); Fl::run(); };
+// };
 
-  void draw() override;
-  void display() { show(); Fl::run(); };
-};
-
-void run_gui(unsigned int width, unsigned int height, std::string title, Fl_Color background_color);
+// void run_gui(unsigned int width, unsigned int height, std::string title, Fl_Color background_color);
 
 #endif
