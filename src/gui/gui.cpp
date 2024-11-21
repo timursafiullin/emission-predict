@@ -28,8 +28,8 @@
 int main()
 try
 {
-  Graph_lib::Window win{window_width, window_height, main_window_title, COLORS::WHITE};
-  return 0;
+  Graph_lib::Window win{window_width, window_height, main_window_title, COLORS::LIGHT_GRAY};
+  return Fl::run();
 }
 catch (std::exception& e)
 {
