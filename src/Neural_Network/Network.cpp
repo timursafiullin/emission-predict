@@ -245,8 +245,14 @@ namespace NeuralNetwork
         if (w.size() != structure.size() - 1)
             throw NetworkInvalidValue(exception_message_invalid_layers_amount);
         for (Number layer{0}; layer < w.size(); ++layer)
-            if (w[layer]->rows() != structure[layer] || w[layer]->cols() != structure[layer + 1])
+        {
+            std::cout << w[layer]->rows() << " " << w[layer]->cols() << " "
+                      << " " << structure[layer] + 1 << " " << structure[layer + 1] + 1 << std::endl;
+            if (w[layer]->rows() != structure[layer] + 1 || w[layer]->cols() != ((layer + 1 < structure.size() - 1) ? (structure[layer + 1] + 1) : (structure[layer + 1])))
+            {
                 throw NetworkInvalidValue(exception_message_invalid_layer_matrix);
+            }
+        }
     }
 
     void NeuralNetwork::validate_data(
@@ -295,7 +301,7 @@ namespace NeuralNetwork
                         (*current_matrix)(i, j) = w[i][j];
 
                 matrices.push_back(current_matrix);
-                //std::cout << *current_matrix << std::endl;
+                // std::cout << *current_matrix << std::endl;
             }
         }
         return matrices;
@@ -365,8 +371,7 @@ namespace NeuralNetwork
         }
         csv_reader.close_file();
         std::vector<Matrix *> weights_converted = matrix_vector_from_vectors(vector_weights);
-        for (size_t i = 0; i < weights_converted.size(); i++)
-            std::cout << weights_converted[i]->cols() << std::endl;
+        std::cout << weights_converted.size() << std::endl;
         validate_weights(weights_converted);
         weights = weights_converted;
     }
