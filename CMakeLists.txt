@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-#add_compile_options(-Wall -Wextra -pedantic)
-
+# add_compile_options(-Wall -Wextra -pedantic)
 set(TARGET "emission_predict")
 
 add_subdirectory(lib)
@@ -19,6 +18,7 @@ add_executable(
 
 target_link_libraries(${TARGET} PUBLIC
     graph_lib
+    graph_lib_old
 )
 
 target_include_directories(${TARGET} PUBLIC
