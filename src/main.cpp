@@ -148,7 +148,7 @@ int main()
     std::cout << "initializing...\n";
     NeuralNetwork::NeuralNetwork a{structure, 1e-12};
     std::cout << "initialized.\n";
-    /*
+    
     std::cout << "training...\n";
     for (Number i{0}; i < 4; ++i)
     {
@@ -167,11 +167,11 @@ int main()
     }
     
     std::cout << "trained.\n";
-    */
+    /*
     std::cout << "loading weights...\n";
     a.load_weights_from_file("weights.csv");
     std::cout << "loaded.\n";
-
+    */
     std::cout << "testing...\n";
     std::vector<Scalar> error{a.test(test_input, test_output)};
     for (Scalar e : error)
