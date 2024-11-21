@@ -58,7 +58,7 @@ std::vector<long double> normalise_data(DatasetCell cell)
     vec[1] = turn_fuel_type_to_double(cell.fuel_type);
     vec[2] = cell.engine_size;
     vec[3] = cell.age_of_vehicle;
-    vec[4] = cell.mileage;
+    vec[4] = cell.mileage / 10000;
     vec[5] = cell.speed;
     vec[6] = cell.acceleration;
     vec[7] = turn_road_type_to_double(cell.road_type);
@@ -69,9 +69,9 @@ std::vector<long double> normalise_data(DatasetCell cell)
     vec[12] = cell.air_pressure;
     vec[13] = 1e6 * cell.CO2_emissions;
     vec[14] = 1e7 * cell.NOx_emissions;
-    vec[15] = 1e8 * cell.PM_emissions;
-    vec[16] = 1e8 * cell.VOC_emissions;
-    vec[17] = 1e8 * cell.SO2_emissions;
+    vec[15] = 1e10 * cell.PM_emissions;
+    vec[16] = 1e10 * cell.VOC_emissions;
+    vec[17] = 1e7 * cell.SO2_emissions;
 
     return vec;
 }
@@ -164,14 +164,12 @@ int main()
 
     std::cout << "initializing...\n";
 
-    std::vector<Number> structure
-    { 13, 20, 20, 20, 20, 20, 1};
-    Scalar l{1e-17};
+    std::vector<Number> structure{
+        13, 13, 13, 13, 13,
+        13, 13, 13, 13, 13,
+        1
+    };
 
-    NeuralNetwork::NeuralNetwork CO2{structure};
-    NeuralNetwork::NeuralNetwork NOX{structure};
-    NeuralNetwork::NeuralNetwork PM{structure};
-    NeuralNetwork::NeuralNetwork VOC{structure};
     NeuralNetwork::NeuralNetwork SO2{structure};
 
 
@@ -179,87 +177,29 @@ int main()
 
     std::cout << "training...\n";
 
-    for (Number i{0}; i < 1000; ++i)
+    std::cout << "ans SO2: " << SO2.predict(*input[0]) << " " << *output_SO2[0] << "\n";
+
+    for (int i = 0; i < 5; i++)
     {
-        for (Number j{0}; j < 100; ++j)
-        {
-            CO2.train(input, output_CO2, l);
-            NOX.train(input, output_NOX, l);
-            PM.train(input, output_PM, l);
-            VOC.train(input, output_VOC, l);
-            SO2.train(input, output_SO2, l);
-        }
+        long double l{1e-15};
+        SO2.train(input, output_SO2, l);
+        std::cin >> l;
 
-        std::cout << "ans CO2: " << CO2.predict(*input[0]) << " " << *output_CO2[0] << "\n";
-        std::cout << "ans CO2: " << CO2.predict(*input[1]) << " " << *output_CO2[1] << "\n";
-        std::cout << "ans CO2: " << CO2.predict(*input[2]) << " " << *output_CO2[2] << "\n";
-        std::cout << "ans CO2: " << CO2.predict(*input[3]) << " " << *output_CO2[3] << "\n\n";
-        
-        std::cout << "ans NOX: " << NOX.predict(*input[0]) << " " << *output_NOX[0] << "\n";
-        std::cout << "ans NOX: " << NOX.predict(*input[1]) << " " << *output_NOX[1] << "\n";
-        std::cout << "ans NOX: " << NOX.predict(*input[2]) << " " << *output_NOX[2] << "\n";
-        std::cout << "ans NOX: " << NOX.predict(*input[3]) << " " << *output_NOX[3] << "\n\n";
+    }
 
-        std::cout << "ans PM: " << PM.predict(*input[0]) << " " << *output_PM[0] << "\n";
-        std::cout << "ans PM: " << PM.predict(*input[1]) << " " << *output_PM[1] << "\n";
-        std::cout << "ans PM: " << PM.predict(*input[2]) << " " << *output_PM[2] << "\n";
-        std::cout << "ans PM: " << PM.predict(*input[3]) << " " << *output_PM[3] << "\n\n";
+    std::cout << "ans SO2: " << SO2.predict(*input[0]) << " " << *output_SO2[0] << "\n";
+    std::cout << "ans SO2: " << SO2.predict(*input[1]) << " " << *output_SO2[1] << "\n";
+    std::cout << "ans SO2: " << SO2.predict(*input[2]) << " " << *output_SO2[2] << "\n";
+    std::cout << "ans SO2: " << SO2.predict(*input[3]) << " " << *output_SO2[3] << "\n\n\n\n";
+    std::ofstream so2{"weightsSO2.txt"};
 
-        std::cout << "ans VOC: " << VOC.predict(*input[0]) << " " << *output_VOC[0] << "\n";
-        std::cout << "ans VOC: " << VOC.predict(*input[1]) << " " << *output_VOC[1] << "\n";
-        std::cout << "ans VOC: " << VOC.predict(*input[2]) << " " << *output_VOC[2] << "\n";
-        std::cout << "ans VOC: " << VOC.predict(*input[3]) << " " << *output_VOC[3] << "\n\n";
-
-        std::cout << "ans SO2: " << SO2.predict(*input[0]) << " " << *output_SO2[0] << "\n";
-        std::cout << "ans SO2: " << SO2.predict(*input[1]) << " " << *output_SO2[1] << "\n";
-        std::cout << "ans SO2: " << SO2.predict(*input[2]) << " " << *output_SO2[2] << "\n";
-        std::cout << "ans SO2: " << SO2.predict(*input[3]) << " " << *output_SO2[3] << "\n\n\n\n";
-
-        std::ofstream co2{"weightsCO2.txt"};
-
-        std::vector<Matrix*> weights1{CO2.get_weights()};
-        for (Matrix* l : weights1)
-        {
-            co2 << *l << "\n";
-            co2 << "\n\n\n";
-        }
-
-        std::ofstream nox{"weightsNOX.txt"};
-
-        std::vector<Matrix*> weights2{NOX.get_weights()};
-        for (Matrix* l : weights2)
-        {
-            nox << *l << "\n";
-            nox << "\n\n\n";
-        }
-
-        std::ofstream pm{"weightsPM.txt"};
-
-        std::vector<Matrix*> weights3{PM.get_weights()};
-        for (Matrix* l : weights3)
-        {
-            pm << *l << "\n";
-            pm << "\n\n\n";
-        }
-
-        std::ofstream voc{"weightsVOC.txt"};
-
-        std::vector<Matrix*> weights4{VOC.get_weights()};
-        for (Matrix* l : weights4)
-        {
-            voc << *l << "\n";
-            voc << "\n\n\n";
-        }
-
-        std::ofstream so2{"weightsSO2.txt"};
-
-        std::vector<Matrix*> weights5{SO2.get_weights()};
-        for (Matrix* l : weights5)
-        {
+    std::vector<Matrix*> weights5{SO2.get_weights()};
+    for (Matrix* l : weights5)
+    {
             so2 << *l << "\n";
             so2 << "\n\n\n";
-        }
     }
+
     std::cout << "trained.\n";
 
 
