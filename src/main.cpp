@@ -2,8 +2,9 @@
 #include "gui.h"
 #include "graph_lib.h"
 #include "dataset_reader.h"
+#include "csv.h"
 #include "Neural_Network/Network.h"
-#include <fstream>
+#include <sstream>
 
 using namespace NeuralNetwork;
 
@@ -147,29 +148,29 @@ int main()
     std::cout << "initializing...\n";
     NeuralNetwork::NeuralNetwork a{structure, 1e-12};
     std::cout << "initialized.\n";
-
-    std::ofstream f{"weights.txt"};
-
+    /*
     std::cout << "training...\n";
     for (Number i{0}; i < 4; ++i)
     {
         std::cout << i + 1 << "\n";
 
-        for (Number j{0}; j < (i + 1) * (i + 1) * 10; j++)
+        for (Number j{0}; j < 3; j++)
+        //for (Number j{0}; j < (i + 1) * (i + 1) * 10; j++)
             a.train(input, output, l);
 
         l *= 10;
 
         if (i < 3)
             continue;
-        std::vector<Matrix*> weights{a.get_weights()};
-        for (Matrix* l : weights)
-        {
-            f << *l << "\n";
-            f << "\n\n\n";
-        }
+
+        a.save_weights_to_file("weights.csv");
     }
+    
     std::cout << "trained.\n";
+    */
+    std::cout << "loading weights...\n";
+    a.set_weights_from_file("weights.csv");
+    std::cout << "loaded.\n";
 
     std::cout << "testing...\n";
     std::vector<Scalar> error{a.test(test_input, test_output)};
