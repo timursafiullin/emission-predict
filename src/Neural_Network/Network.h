@@ -167,7 +167,7 @@ namespace NeuralNetwork
          *
          * @return std::vector<Matrix*>
          */
-        std::vector<Matrix *> matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> weights);
+        std::vector<Matrix *> matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights);
 
         /**
          * @brief   Convert matrix to vector of vectors of (scalar) strings.
@@ -188,7 +188,7 @@ namespace NeuralNetwork
          *
          * @param filename Path to weights file.
          */
-        void set_weights_from_file(std::string filename);
+        void load_weights_from_file(std::string filename);
 
             NeuralNetwork(
                 const NeuralNetwork &) = delete;

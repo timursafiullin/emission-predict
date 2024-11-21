@@ -169,7 +169,7 @@ int main()
     std::cout << "trained.\n";
     */
     std::cout << "loading weights...\n";
-    a.set_weights_from_file("weights.csv");
+    a.load_weights_from_file("weights.csv");
     std::cout << "loaded.\n";
 
     std::cout << "testing...\n";

@@ -279,20 +279,24 @@ namespace NeuralNetwork
         return summary;
     }
 
-    std::vector<Matrix *> NeuralNetwork::matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> weights)
+    std::vector<Matrix *> NeuralNetwork::matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights)
     {
         std::vector<Matrix *> matrices;
         for (std::vector<std::vector<Scalar>> &w : weights)
         {
-            long long unsigned int rows{w.size()};
-            long long unsigned int cols{w[0].size()};
-            Matrix *current_matrix = new Matrix(rows, cols);
+            if (!w.empty())
+            {
+                long long unsigned int rows{w.size()};
+                long long unsigned int cols{w[0].size()};
+                Matrix *current_matrix = new Matrix(rows, cols);
 
-            for (size_t i = 0; i < rows; i++)
-                for (size_t j = 0; j < cols; j++)
-                    (*current_matrix)(i, j) = w[i][j];
-            std::cout << "Matrix created: " << current_matrix->rows() << "x" << current_matrix->cols() << std::endl;
-            matrices.push_back(current_matrix);
+                for (size_t i = 0; i < rows; i++)
+                    for (size_t j = 0; j < cols; j++)
+                        (*current_matrix)(i, j) = w[i][j];
+
+                matrices.push_back(current_matrix);
+                //std::cout << *current_matrix << std::endl;
+            }
         }
         return matrices;
     }
@@ -312,7 +316,8 @@ namespace NeuralNetwork
         return m;
     }
 
-    void NeuralNetwork::save_weights_to_file(std::string filename) {
+    void NeuralNetwork::save_weights_to_file(std::string filename)
+    {
         CsvWriter csv_weights{filename};
         csv_weights.open_file();
 
@@ -331,7 +336,7 @@ namespace NeuralNetwork
         csv_weights.close_file();
     }
 
-    void NeuralNetwork::set_weights_from_file(std::string filename)
+    void NeuralNetwork::load_weights_from_file(std::string filename)
     {
         CsvReader csv_reader(filename);
         std::vector<std::vector<std::vector<Scalar>>> vector_weights;
@@ -342,14 +347,8 @@ namespace NeuralNetwork
             {
                 std::vector<std::vector<std::string>> layer_weights_string = csv_reader.read_until_blank_line();
                 std::vector<std::vector<Scalar>> matrix_weights;
-                if (layer_weights_string[0] == std::vector<std::string>{""})
-                    break;
                 for (const auto &row : layer_weights_string)
                 {
-                    // for (const auto &element : row)
-                    // {
-                    //     std::cout << element << " ";
-                    // }
                     std::vector<Scalar> row_scalar;
                     for (const auto &element : row)
                     {
@@ -365,9 +364,9 @@ namespace NeuralNetwork
             }
         }
         csv_reader.close_file();
-
         std::vector<Matrix *> weights_converted = matrix_vector_from_vectors(vector_weights);
-        //std::cout << weights_converted[24]->cols() << std::endl;
+        for (size_t i = 0; i < weights_converted.size(); i++)
+            std::cout << weights_converted[i]->cols() << std::endl;
         validate_weights(weights_converted);
         weights = weights_converted;
     }
