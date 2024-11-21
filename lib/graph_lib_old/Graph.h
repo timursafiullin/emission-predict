@@ -342,62 +342,6 @@ private:
   int fnt_sz{(14 < fl_size()) ? fl_size() : 14};  // at least 14 point
 };
 
-struct Labels
-{
-    unsigned int row{};
-    unsigned int col{};
-    const char context{};
-
-    Labels() {};
-    Labels(std::initializer_list<std::string> labels, const char context, unsigned int line);
-
-    std::string operator[](const unsigned int index);
-    std::vector<std::string> get();
-private:
-    std::vector<std::string> labelList;
-};
-
-
-struct LabelsList
-{
-    LabelsList() {};
-    LabelsList(std::initializer_list<Labels> labels);
-
-    std::vector<Labels> get();
-private:
-    std::vector<Labels> labelsList;
-};
-
-
-class Table : public Shape
-{
-public:
-    Table
-    (
-        int x, int y, int w, int h,
-        int table_cols,
-        int table_rows,
-        Fl_Color inner_color = FL_BLACK,
-        Fl_Color outer_color = FL_BLACK,
-        Fl_Color background_color = FL_WHITE
-    );
-
-    void set_label(Labels& labels);
-    void set_label(LabelsList& labels_list);
-
-    void attach (Window&);
-
-private:
-    int x, y, w, h;
-    int rows, cols;
-    int cell_w, cell_h;
-
-    Fl_Color inner_color, outer_color, background_color;
-
-    void draw_borders(Fl_Color color);
-    void draw_borders(Fl_Color inner_color, Fl_Color outer_color);
-};
-
 struct Axis : Shape
 {
   // representation left public

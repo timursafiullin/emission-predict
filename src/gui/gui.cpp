@@ -24,11 +24,18 @@
 // {
 // }
 
-
 int main()
 try
 {
   Graph_lib::Window win{window_width, window_height, main_window_title, COLORS::LIGHT_GRAY};
+  Graph_lib::ValueTable parameters_table
+  {
+    table_x, table_y,
+    table_width, table_height,
+    table_cols, table_rows,
+    COLORS::LIGHT_GRAY, COLORS::LIGHT_GRAY
+  };
+  win.attach(parameters_table);
   return Fl::run();
 }
 catch (std::exception& e)

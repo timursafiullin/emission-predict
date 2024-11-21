@@ -17,24 +17,24 @@ constexpr unsigned int table_cols       {   2 };
 constexpr unsigned int table_rows       {  14 };
 
 
-// LabelsList labels_list
-// (
-//   std::initializer_list<Labels>
-//   {
-//     Labels(std::initializer_list<std::string>
-//     {
-//       "Parameters", "Vehicle Type", "Fuel Type",
-//       "Engine Size", "Age of Vehicle", "Mileage",
-//       "Acceleration", "Road Type",
-//       "Traffic Conditions", "Temperature", "Humidity",
-//       "Wind Speed", "Air Pressure", "Max speed",
-//     }, context_column, 0),
-//     Labels(std::initializer_list<std::string>
-//     {
-//       "Values"
-//     }, context_column, 1)
-//   }
-// );
+LabelsList labels_list
+(
+  std::initializer_list<Labels>
+  {
+    Labels(std::initializer_list<std::string>
+    {
+      "Parameters", "Vehicle Type", "Fuel Type",
+      "Engine Size", "Age of Vehicle", "Mileage",
+      "Acceleration", "Road Type",
+      "Traffic Conditions", "Temperature", "Humidity",
+      "Wind Speed", "Air Pressure", "Max speed",
+    }, context_column, 0),
+    Labels(std::initializer_list<std::string>
+    {
+      "Values"
+    }, context_column, 1)
+  }
+);
 
 // class ProgramWindow : public Fl_Window
 // {

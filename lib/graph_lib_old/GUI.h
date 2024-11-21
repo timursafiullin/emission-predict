@@ -7,6 +7,7 @@
 
 #include "Graph.h"
 #include "Window.h"
+#include "Objects.h"
 
 namespace Graph_lib {
 
@@ -34,6 +35,8 @@ public:
   Widget(Point xy, int w, int h, const std::string& s, Callback cb) : loc{xy}, width{w}, height{h}, label{s}, do_it{cb}
   {
   }
+
+  Widget(Point xy, int w, int h) : loc{xy}, width{w}, height{h} {};
 
   virtual void move (int dx, int dy)
   {
@@ -101,6 +104,38 @@ struct Out_box : Widget
 
 //------------------------------------------------------------------------------
 
+struct ValueTable : Widget
+{
+
+  int cols, rows, cell_h, cell_w;
+
+  Fl_Color in_color, out_color, bg_color;
+
+  ValueTable(
+    int x, int y, int w, int h,
+    int table_cols,
+    int table_rows,
+    Fl_Color inner_color = FL_BLACK,
+    Fl_Color outer_color = FL_BLACK,
+    Fl_Color background_color = FL_WHITE) : Widget{Point{x, y}, w, h}
+    {
+      cols = table_cols;
+      rows = table_rows;
+
+      in_color = inner_color;
+      out_color = outer_color;
+      bg_color = background_color;
+
+      cell_w = w / cols;
+      cell_h = h / rows;
+    };
+
+  void attach(Window& win);
+  void set_label(Labels& labels);
+  void set_label(LabelsList& labels_list);
+};
+
+//------------------------------------------------------------------------------
 struct Menu : Widget
 {
   enum Kind

@@ -5,6 +5,7 @@ add_library(graph_lib_old
     Graph.cpp
     GUI.cpp
     Window.cpp
+    Objects.cpp
 )
 
 target_include_directories(graph_lib_old PUBLIC
