@@ -117,24 +117,14 @@ void Table::draw_borders(Fl_Color inner_color, Fl_Color outer_color) const
 
 void Table::draw_lines() const
 {
-  std::cout << "------------------------------------------------------" << std::endl;
-  std::cout << "Creating table..." << std::endl;
-
   // Draw background
-  std::cout << "Drawing background" << std::endl;
   fl_draw_box(FL_FLAT_BOX, x, y, w, h, background_color);
 
   // Draw borders
-  std::cout << "Drawing borders..." << std::endl;
   draw_borders(inner_color, outer_color);
 
   // Draw labels
-  std::cout << "Drawing labels..." << std::endl;
   draw_labels(lblList);
-
-  std::cout << "Table successfully created." << std::endl;
-  std::cout << "Columns: " << cols << ", Rows: " << rows << std::endl;
-  std::cout << "------------------------------------------------------" << std::endl;
 }
 
 
