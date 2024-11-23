@@ -24,7 +24,7 @@ struct DatasetCell
     long double NOx_emissions;
     long double PM_emissions;
     long double VOC_emissions;
-    long double SO2_Emissions;
+    long double SO2_emissions;
 };
 
 DatasetCell get_cell();

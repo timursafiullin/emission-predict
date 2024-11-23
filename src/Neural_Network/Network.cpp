@@ -64,14 +64,14 @@ namespace NeuralNetwork
         learning_rate = l;
         std::vector<Matrix *> best_weights{weights};
 
-        Scalar best_error{sum(test(input_data, output_data))};
+        Scalar best_error {sum(test(input_data, output_data))};
 
         for (Number element{0}; element < input_data.size(); ++element)
         {
             propagate_forward(*input_data[element]);
             propagate_backward(*output_data[element]);
 
-            if ((element + 1) % 8000)
+            if ((element + 1) % 500)
                 continue;
 
             Scalar current_error{sum(test(input_data, output_data))};
@@ -85,7 +85,6 @@ namespace NeuralNetwork
                     *best_weights[i] = *weights[i];
             }
         }
-        weights = best_weights;
     }
 
     void NeuralNetwork::propagate_forward(
@@ -244,13 +243,11 @@ namespace NeuralNetwork
     {
         if (w.size() != structure.size() - 1)
             throw NetworkInvalidValue(exception_message_invalid_layers_amount);
-        for (Number layer{0}; layer < w.size(); ++layer)
-        {
-            if (w[layer]->rows() != structure[layer] + 1 || w[layer]->cols() != ((layer + 1 < structure.size() - 1) ? (structure[layer + 1] + 1) : (structure[layer + 1])))
-            {
+        for (Number layer{0}; layer < w.size() - 1; ++layer)
+            if (w[layer]->rows() != structure[layer] + 1 || w[layer]->cols() != structure[layer + 1] + 1)
                 throw NetworkInvalidValue(exception_message_invalid_layer_matrix);
-            }
-        }
+        if (w.back()->rows() != structure.back() || w.back()->cols() != structure.back())
+            throw NetworkInvalidValue(exception_message_invalid_layer_matrix);
     }
 
     void NeuralNetwork::validate_data(
