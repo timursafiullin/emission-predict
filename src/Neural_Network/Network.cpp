@@ -258,9 +258,11 @@ namespace NeuralNetwork
     {
         if (w.size() != structure.size() - 1)
             throw NetworkInvalidValue(exception_message_invalid_layers_amount);
-        for (Number layer{0}; layer < w.size(); ++layer)
+        for (Number layer{0}; layer < w.size() - 1; ++layer)
             if (w[layer]->rows() != structure[layer] + 1 || w[layer]->cols() != structure[layer + 1] + 1)
                 throw NetworkInvalidValue(exception_message_invalid_layer_matrix);
+        if (w.back()->rows() != structure.back() || w.back()->cols() != structure.back())
+            throw NetworkInvalidValue(exception_message_invalid_layer_matrix);
     }
 
     void NeuralNetwork::validate_data(
