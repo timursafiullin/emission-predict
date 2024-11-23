@@ -245,6 +245,7 @@ public:
     void set_label(Labels& labels);
     void set_label(LabelsList& labels_list);
 
+//  void attach(Window)
 private:
     int x, y, w, h;
     int rows, cols;

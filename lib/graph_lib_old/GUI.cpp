@@ -8,6 +8,14 @@ using namespace Graph_lib;
 void Button::attach(Window& win)
 {
   pw = new Fl_Button{loc.x, loc.y, width, height, label.c_str()};
+  
+  pw->color(FL_WHITE);
+  pw->color2(COLORS::LIGHT_GRAY);
+  pw->labeltype(FL_NORMAL_LABEL);
+  pw->labelsize(14);
+  pw->box(FL_FLAT_BOX);
+  pw->labelfont(FL_HELVETICA);
+
   pw->callback(reinterpret_cast<Fl_Callback*>(do_it), this);  // pass this widget
   own = &win;
 }
