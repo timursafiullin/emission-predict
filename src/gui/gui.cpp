@@ -1,11 +1,13 @@
 #include "gui.h"
 #include <exception>
 
+#define GLib Graph_lib
+
 int main()
 try
 {
-  Graph_lib::Window win{window_width, window_height, main_window_title, COLORS::LIGHT_GRAY};
-  Graph_lib::Table parameters_table
+  GLib::Window win{window_width, window_height, main_window_title, COLORS::LIGHT_GRAY};
+  GLib::Table parameters_table
   {
     table_x, table_y,
     table_width, table_height,
