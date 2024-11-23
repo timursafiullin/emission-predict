@@ -100,18 +100,22 @@ void Table::draw_borders(Fl_Color inner_color, Fl_Color outer_color) const
 {
     for (int row_border{0}; row_border < rows + 1; ++row_border)
     {
-        fl_color(inner_color);
-        if (row_border == 1 || row_border == rows || row_border == 0)
-        {
-            fl_color(outer_color);
-        }
-        fl_line(x, y + row_border*cell_h, x + w, y + row_border*cell_h);
+      fl_color(inner_color);
+      if (row_border == 1 || row_border == rows || row_border == 0)
+      {
+        fl_line_style(0, 2);
+        fl_color(outer_color);
+      }
+      fl_line(x, y + row_border*cell_h, x + w, y + row_border*cell_h);
+      fl_line_style(0, 1);
     }
 
     fl_color(outer_color);
     for (int col_border{0}; col_border < cols + 1; ++col_border)
     {
-        fl_line(x + col_border*cell_w, y, x + col_border*cell_w, y + h);
+      fl_line_style(0, 2);
+      fl_line(x + col_border*cell_w, y, x + col_border*cell_w, y + h);
+      fl_line_style(0, 1);
     }
 }
 
