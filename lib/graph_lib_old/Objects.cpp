@@ -120,7 +120,7 @@ std::string Labels::operator[](const unsigned int index)
 }
 
 
-std::vector<std::string> Labels::get()
+std::vector<std::string> Labels::get() const
 {
     return labelList;
 }
@@ -136,7 +136,7 @@ LabelsList::LabelsList(std::initializer_list<Labels> labels)
 }
 
 
-std::vector<Labels> LabelsList::get()
+std::vector<Labels> LabelsList::get() const
 {
     return labelsList;
 }

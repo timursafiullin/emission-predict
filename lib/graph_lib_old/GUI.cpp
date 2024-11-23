@@ -5,49 +5,6 @@
 
 using namespace Graph_lib;
 
-// ValueTable::ValueTable(
-//     int x, int y, int w, int h,
-//     int table_cols,
-//     int table_rows,
-//     Fl_Color inner_color,
-//     Fl_Color outer_color,
-//     Fl_Color background_color)
-// {
-//   
-// }
-
-void ValueTable::attach(Window& win)
-{
-  pw = new Table{loc.x, loc.y, width, height, cols, rows, in_color, out_color, bg_color};
-  own = &win;
-}
-
-void ValueTable::set_label(Labels& labels)
-{
-    for (unsigned int i{0}; i < labels.get().size(); ++i)
-    {
-        fl_color(COLORS::BLACK);
-        fl_font(FL_HELVETICA, Fl_Fontsize(cell_h/2.25));
-        fl_draw(labels[i].c_str(), loc.x + cell_w * (labels.col + 0.075), loc.y + cell_h * labels.row, cell_w, cell_h, FL_ALIGN_LEFT);
-        switch (labels.context)
-        {
-            case context_column:
-                ++labels.row;
-                break;
-            case context_row:
-                ++labels.col;
-                break;
-        }
-    }
-}
-
-
-void ValueTable::set_label(LabelsList& labels_list)
-{
-    for (Labels& labels : labels_list.get())
-        set_label(labels);
-}
-
 void Button::attach(Window& win)
 {
   pw = new Fl_Button{loc.x, loc.y, width, height, label.c_str()};

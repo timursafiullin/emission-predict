@@ -17,13 +17,13 @@ struct Labels
 {
     unsigned int row{};
     unsigned int col{};
-    const char context{};
+    char context{};
 
     Labels() {};
     Labels(std::initializer_list<std::string> labels, const char context, unsigned int line);
 
     std::string operator[](const unsigned int index);
-    std::vector<std::string> get();
+    std::vector<std::string> get() const;
 private:
     std::vector<std::string> labelList;
 };
@@ -34,7 +34,7 @@ struct LabelsList
     LabelsList() {};
     LabelsList(std::initializer_list<Labels> labels);
 
-    std::vector<Labels> get();
+    std::vector<Labels> get() const;
 private:
     std::vector<Labels> labelsList;
 };

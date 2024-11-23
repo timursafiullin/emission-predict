@@ -9,6 +9,7 @@
 
 #include "Point.h"
 #include "fltk.h"
+#include "Objects.h"
 
 //constexpr char context_column = 'C';
 //constexpr char context_row = 'R';
@@ -226,6 +227,36 @@ private:
   Color lcolor{static_cast<Color>(fl_color())};
   Line_style ls{0};
   Color fcolor{Color::invisible};
+};
+
+class Table : public Shape
+{
+public:
+    Table
+    (
+        int x, int y, int w, int h,
+        int table_cols,
+        int table_rows,
+        Fl_Color inner_color = FL_BLACK,
+        Fl_Color outer_color = FL_BLACK,
+        Fl_Color background_color = FL_WHITE
+    );
+
+    void set_label(Labels& labels);
+    void set_label(LabelsList& labels_list);
+
+private:
+    int x, y, w, h;
+    int rows, cols;
+    int cell_w, cell_h;
+    LabelsList lblList;
+
+    Fl_Color inner_color, outer_color, background_color;
+
+    void draw_borders(Fl_Color inner_color, Fl_Color outer_color) const;
+    void draw_labels(const LabelsList& labels_list) const;
+
+    void draw_lines() const override;
 };
 
 using Fct = std::function<double(double)>;

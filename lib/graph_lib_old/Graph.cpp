@@ -43,6 +43,95 @@ void Shape::draw() const
   fl_line_style(0);
 }
 
+Table::Table
+(
+    int x, int y, int w, int h,
+    int table_cols,
+    int table_rows,
+    Fl_Color inner_color,
+    Fl_Color outer_color,
+    Fl_Color background_color
+) : x{x}, y{y}, w{w}, h{h},
+    inner_color{inner_color},
+    outer_color{outer_color},
+    background_color{background_color}
+{
+    cols = table_cols;
+    rows = table_rows;
+
+    if ( cols <= 0 || rows <= 0 )
+        throw std::invalid_argument("Table: cols and rows must be more than 0");
+    
+    cell_w = w / cols;
+    cell_h = h / rows;
+}
+
+void Table::set_label(Labels& labels)
+{
+  lblList = LabelsList{labels};
+}
+
+void Table::set_label(LabelsList& labels_list)
+{
+  lblList = labels_list;
+}
+
+void Table::draw_labels(const LabelsList& labels_list) const
+{
+  for (Labels& labels : labels_list.get())
+    for (unsigned int i{0}; i < labels.get().size(); ++i)
+    {
+        fl_color(COLORS::BLACK);
+        fl_font(FL_HELVETICA, Fl_Fontsize(cell_h/2.25));
+        fl_draw(labels[i].c_str(), x + cell_w * (labels.col + 0.075), y + cell_h * labels.row, cell_w, cell_h, FL_ALIGN_LEFT);
+        switch (labels.context)
+        {
+            case context_column:
+                ++labels.row;
+                break;
+            case context_row:
+                ++labels.col;
+                break;
+        }
+    }
+}
+
+void Table::draw_borders(Fl_Color inner_color, Fl_Color outer_color) const
+{
+    for (int row_border{0}; row_border < rows + 1; ++row_border)
+    {
+        fl_color(inner_color);
+        if (row_border == 1 || row_border == rows || row_border == 0)
+        {
+            fl_color(outer_color);
+        }
+        fl_line(x, y + row_border*cell_h, x + w, y + row_border*cell_h);
+    }
+
+    fl_color(outer_color);
+    for (int col_border{0}; col_border < cols + 1; ++col_border)
+    {
+        fl_line(x + col_border*cell_w, y, x + col_border*cell_w, y + h);
+    }
+}
+
+void Table::draw_lines() const
+{
+  // Draw background
+  fl_draw_box(FL_FLAT_BOX, x, y, w, h, background_color);
+
+  // Draw borders
+  draw_borders(inner_color, outer_color);
+
+  // Draw labels
+  draw_labels(lblList);
+
+  std::cout << "Creating table..." << std::endl;
+  std::cout << "Columns: " << cols << ", Rows: " << rows << std::endl;
+  std::cout << "Table created." << std::endl;
+}
+
+
 inline std::pair<double, double> line_intersect (Point p1, Point p2, Point p3, Point p4, bool& parallel)
 // does two lines (p1,p2) and (p3,p4) intersect?
 // if yes return the distance of the intersect point as distances from p1
