@@ -3,6 +3,12 @@
 
 #define GLib Graph_lib
 
+static void cb_empty(GLib::Address, GLib::Address addr)
+{
+  auto* pb = static_cast<GLib::Button*>(addr);
+  static_cast<GLib::Window&>(pb->window()).redraw();
+}
+
 int main()
 try
 {
@@ -16,6 +22,19 @@ try
   };
   parameters_table.set_label(labels_list);
   win.attach(parameters_table);
+
+  GLib::Button predict_button {GLib::Point(predict_button_x, predict_button_y), button_w, button_h, predict_button_label, cb_empty};
+  win.attach(predict_button);
+
+  GLib::Button save_button {GLib::Point(save_button_x, save_button_y), button_w, button_h, save_button_label, cb_empty};
+  win.attach(save_button);
+
+  GLib::Button history_button {GLib::Point(history_button_x, history_button_y), button_w, button_h, history_button_label, cb_empty};
+  win.attach(history_button);
+
+  GLib::Button clear_button {GLib::Point(clear_button_x, clear_button_y), button_w, button_h, clear_button_label, cb_empty};
+  win.attach(clear_button);
+
   return Fl::run();
 }
 catch (std::exception& e)
