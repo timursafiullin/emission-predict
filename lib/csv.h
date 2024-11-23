@@ -50,11 +50,41 @@ public:
     }
 
     std::vector<std::string> read_row();
+    std::vector<std::vector<std::string>> read_until_blank_line();
     std::vector<std::vector<std::string>> read_file();
 
 private:
     std::string delimiter = ",";
     std::ifstream file;
+    std::string filename = "";
+};
+
+class CsvWriter
+{
+public:
+    CsvWriter(std::string filename) : filename(filename) {}
+    CsvWriter(std::string filename, std::string delimiter) : delimiter(delimiter), filename(filename) {}
+
+    void open_file()
+    {
+        file.open(filename);
+    }
+
+    void close_file()
+    {
+        file.close();
+    }
+
+    void write_row(std::vector<std::string> &row);
+    void write_empty_row()
+    {
+        std::vector<std::string> empty_vector;
+        write_row(empty_vector);
+    }
+
+private:
+    std::string delimiter = ",";
+    std::ofstream file;
     std::string filename = "";
 };
 

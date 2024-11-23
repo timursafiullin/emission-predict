@@ -2,8 +2,9 @@
 #include "gui.h"
 #include "graph_lib.h"
 #include "dataset_reader.h"
+#include "csv.h"
 #include "Neural_Network/Network.h"
-#include <fstream>
+#include <sstream>
 
 using namespace NeuralNetwork;
 
@@ -172,7 +173,6 @@ int main()
 
     NeuralNetwork::NeuralNetwork SO2{structure};
 
-
     std::cout << "initialized.\n";
 
     std::cout << "training...\n";
@@ -184,7 +184,6 @@ int main()
         long double l{1e-15};
         SO2.train(input, output_SO2, l);
         std::cin >> l;
-
     }
 
     std::cout << "ans SO2: " << SO2.predict(*input[0]) << " " << *output_SO2[0] << "\n";
@@ -193,15 +192,33 @@ int main()
     std::cout << "ans SO2: " << SO2.predict(*input[3]) << " " << *output_SO2[3] << "\n\n\n\n";
     std::ofstream so2{"weightsSO2.txt"};
 
-    std::vector<Matrix*> weights5{SO2.get_weights()};
-    for (Matrix* l : weights5)
-    {
-            so2 << *l << "\n";
-            so2 << "\n\n\n";
+
+        if (i < 3)
+            continue;
+
+        a.save_weights_to_file("weights.csv");
     }
-
+    
     std::cout << "trained.\n";
-
+    /*
+    std::cout << "loading weights...\n";
+    a.load_weights_from_file("weights.csv");
+    std::cout << "loaded.\n";
+    */
+    std::cout << "testing...\n";
+    std::vector<Scalar> error{a.test(test_input, test_output)};
+    for (Scalar e : error)
+        std::cout << e << " ";
+    std::cout << "\n";
+    RowVector pr = a.predict(*(input[999]));
+    std::vector ans = turn_output_to_standart_view(pr);
+    std::cout << "answer on 1000 elem:\n"
+        << ans[0] << " "
+        << ans[1] << " "
+        << ans[2] << " "
+        << ans[3] << " "
+        << ans[4] << "\n";
+    std::cout << "tested.\n\n\n\n";
 
     return 0;
 }
