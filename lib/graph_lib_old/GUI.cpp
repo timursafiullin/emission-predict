@@ -12,7 +12,7 @@ void Button::attach(Window& win)
   pw->color(FL_WHITE);
   pw->color2(COLORS::LIGHT_GRAY);
   pw->labeltype(FL_NORMAL_LABEL);
-  pw->labelsize(14);
+  pw->labelsize(13);
   pw->box(FL_FLAT_BOX);
   pw->labelfont(FL_HELVETICA);
 
