@@ -12,7 +12,10 @@ static void cb_empty(GLib::Address, GLib::Address addr)
 int main()
 try
 {
+  // CREATING MAIN WINDOW
   GLib::Window win{window_width, window_height, main_window_title, COLORS::LIGHT_GRAY};
+
+  // TABLE OF PARAMETERS AND VALUES
   GLib::Table parameters_table
   {
     table_x, table_y,
@@ -23,16 +26,44 @@ try
   parameters_table.set_label(labels_list);
   win.attach(parameters_table);
 
-  GLib::Button predict_button {GLib::Point(predict_button_x, predict_button_y), button_w, button_h, predict_button_label, cb_empty};
+  // PREDICT BUTTON
+  GLib::Button predict_button
+  {
+    GLib::Point(predict_button_x, predict_button_y),
+    button_w, button_h,
+    predict_button_label,
+    cb_empty
+  };
   win.attach(predict_button);
 
-  GLib::Button save_button {GLib::Point(save_button_x, save_button_y), button_w, button_h, save_button_label, cb_empty};
+  // SAVE BUTTON
+  GLib::Button save_button
+  {
+    GLib::Point(save_button_x, save_button_y),
+    button_w, button_h,
+    save_button_label,
+    cb_empty
+  };
   win.attach(save_button);
 
-  GLib::Button history_button {GLib::Point(history_button_x, history_button_y), button_w, button_h, history_button_label, cb_empty};
+  // HISTORY BUTTON
+  GLib::Button history_button
+  {
+    GLib::Point(history_button_x, history_button_y),
+    button_w, button_h,
+    history_button_label,
+    cb_empty
+  };
   win.attach(history_button);
 
-  GLib::Button clear_button {GLib::Point(clear_button_x, clear_button_y), button_w, button_h, clear_button_label, cb_empty};
+  // CLEAR BUTTON
+  GLib::Button clear_button
+  {
+    GLib::Point(clear_button_x, clear_button_y),
+    button_w, button_h,
+    clear_button_label,
+    cb_empty
+  };
   win.attach(clear_button);
 
   return Fl::run();
