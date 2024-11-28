@@ -1,8 +1,9 @@
 #ifndef NETWORK_DEFENCE
 #define NETWORK_DEFENCE 1
 
-#include "eigen-3.4.0/Eigen/Eigen"
+#include <Eigen\Eigen\Eigen>
 #include <exception>
+#include "csv.h"
 
 /*
     Neural network class v 1.0
@@ -161,9 +162,36 @@ namespace NeuralNetwork
             return weights;
         }
 
+        /**
+         * @brief   Convert vector of vectors of vectors of scalars to vector of matrices.
+         *
+         * @return std::vector<Matrix*>
+         */
+        std::vector<Matrix *> matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights);
+
+        /**
+         * @brief   Convert matrix to vector of vectors of (scalar) strings.
+         *
+         * @return std::vector<std::vector<std::string>>
+         */
+        std::vector<std::vector<std::string>> matrix_to_vector(Matrix &matrix);
+
+        /**
+         * @brief   Save the weights of connections to file.
+         *
+         * @param filename Path to weights file.
+         */
+        void save_weights_to_file(std::string filename);
+
+        /**
+         * @brief   Set the weights of connections. Get them from file.
+         *
+         * @param filename Path to weights file.
+         */
+        void load_weights_from_file(std::string filename);
+
         NeuralNetwork(
-            const NeuralNetwork&
-        ) = delete;
+            const NeuralNetwork &) = delete;
 
         NeuralNetwork& operator= (
             const NeuralNetwork&

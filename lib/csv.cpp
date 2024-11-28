@@ -1,7 +1,7 @@
 #include <vector>
 #include <fstream>
 #include <regex>
-#include "csv_reader.h"
+#include "csv.h"
 
 std::vector<std::string> CsvReader::read_row()
 {
@@ -12,11 +12,13 @@ std::vector<std::string> CsvReader::read_row()
     if (!file.eof())
     {
         std::getline(file, line);
+        /*
         if (line == "")
         {
             close_file();
             return std::vector<std::string>{""};
         }
+        */
     }
     else
     {
@@ -35,6 +37,20 @@ std::vector<std::string> CsvReader::read_row()
     return parsed_line;
 }
 
+std::vector<std::vector<std::string>> CsvReader::read_until_blank_line()
+{
+    std::vector<std::vector<std::string>> lines;
+    std::vector<std::string> line;
+    line = read_row();
+    while (line != std::vector<std::string>{"\n"} && line != std::vector<std::string>{""})
+    {
+        lines.push_back(line);
+        line = read_row();
+    }
+
+    return lines;
+}
+
 std::vector<std::vector<std::string>> CsvReader::read_file()
 {
     std::vector<std::vector<std::string>> lines;
@@ -46,4 +62,15 @@ std::vector<std::vector<std::string>> CsvReader::read_file()
     }
 
     return lines;
+}
+
+void CsvWriter::write_row(std::vector<std::string> &row)
+{
+    if (!file.is_open())
+        open_file();
+    for (size_t i = 0; i < row.size(); ++i)
+    {
+        file << row[i] << ((i != row.size() - 1) ? delimiter : "");
+    }
+    file << "\n";
 }
