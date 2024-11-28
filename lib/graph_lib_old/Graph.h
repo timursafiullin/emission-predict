@@ -7,9 +7,8 @@
 #include <vector>
 #include <initializer_list>
 
-#include "Point.h"
-#include "fltk.h"
 #include "Objects.h"
+#include "Window.h"
 
 //constexpr char context_column = 'C';
 //constexpr char context_row = 'R';
@@ -218,6 +217,8 @@ public:
   int number_of_points () const { return int(points.size()); }
 
   virtual ~Shape() = 0;
+
+  virtual void attach(Window& win) {};
 
   Shape(const Shape&) = delete;  // don't copy Shapes
   Shape& operator= (const Shape&) = delete;
