@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+
 namespace NeuralNetwork
 {
     NeuralNetwork::NeuralNetwork(
@@ -333,7 +334,6 @@ namespace NeuralNetwork
         {
             try
             {
-                std::cout << "+\n";
 
                 std::vector<std::vector<std::string>> layer_weights_string = csv_reader.read_until_blank_line();
 
@@ -357,7 +357,6 @@ namespace NeuralNetwork
             }
         }
         csv_reader.close_file();
-        std::cout << "+\n";
         std::vector<Matrix *> weights_converted = matrix_vector_from_vectors(vector_weights);
         //validate_weights(weights_converted);
         for (Number layer{0}; layer < weights_converted.size(); ++layer)
