@@ -1,7 +1,7 @@
 #ifndef NETWORK_DEFENCE
 #define NETWORK_DEFENCE 1
 
-#include <Eigen/Eigen>
+#include <Eigen\Eigen\Eigen>
 #include <exception>
 #include "csv.h"
 
@@ -190,8 +190,8 @@ namespace NeuralNetwork
          */
         void load_weights_from_file(std::string filename);
 
-            NeuralNetwork(
-                const NeuralNetwork &) = delete;
+        NeuralNetwork(
+            const NeuralNetwork &) = delete;
 
         NeuralNetwork& operator= (
             const NeuralNetwork&

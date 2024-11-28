@@ -10,7 +10,7 @@ using namespace NeuralNetwork;
 
 long double turn_vehicle_type_to_double(std::string vehicle)
 {
-    //Bus,Car,Truck,Motorcycle
+    //Bus, Car, Truck, Motorcycle
     if (vehicle == "Truck")
         return 1000;
     if (vehicle == "Bus")
@@ -122,37 +122,38 @@ RowVector* turn_data_to_output_SO2_ptr(std::vector<long double> vector)
     return output;
 }
 
-std::vector<Scalar> turn_output_to_standart_view(RowVector a)
+std::vector<Scalar> turn_SO2_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0];
+    ans[0] = a[0] * 1e-7;
     return ans;
 }
 
 int main()
 {
-    std::vector<DatasetCell> cells = get_all_cells();
+    // std::vector<DatasetCell> cells = get_all_cells();
 
-    std::vector<RowVector*> input{size_t(cells.size()*0.8)};
+    // std::vector<RowVector*> input{size_t(cells.size()*0.8)};
+    // // std::vector<RowVector*> test_input{size_t(cells.size()*0.1)};
 
-    std::vector<RowVector*> output_CO2{size_t(cells.size()*0.8)};
-    std::vector<RowVector*> output_NOX{size_t(cells.size()*0.8)};
-    std::vector<RowVector*> output_PM{size_t(cells.size()*0.8)};
-    std::vector<RowVector*> output_VOC{size_t(cells.size()*0.8)};
-    std::vector<RowVector*> output_SO2{size_t(cells.size()*0.8)};
+    // std::vector<RowVector*> output_CO2{size_t(cells.size()*0.8)};
+    // std::vector<RowVector*> output_NOX{size_t(cells.size()*0.8)};
+    // std::vector<RowVector*> output_PM{size_t(cells.size()*0.8)};
+    // std::vector<RowVector*> output_VOC{size_t(cells.size()*0.8)};
+    // std::vector<RowVector*> output_SO2{size_t(cells.size()*0.8)};
 
-    std::cout << "reading data...\n";
+    // std::cout << "reading data...\n";
 
-    for (size_t i = 0; i < input.size(); ++i) {
-        input[i] = turn_data_to_input_ptr(normalise_data(cells[i]));
-        output_CO2[i] = turn_data_to_output_CO2_ptr(normalise_data(cells[i]));
-        output_NOX[i] = turn_data_to_output_NOX_ptr(normalise_data(cells[i]));
-        output_PM[i] = turn_data_to_output_PM_ptr(normalise_data(cells[i]));
-        output_VOC[i] = turn_data_to_output_VOC_ptr(normalise_data(cells[i]));
-        output_SO2[i] = turn_data_to_output_SO2_ptr(normalise_data(cells[i]));
-    }
+    // for (size_t i = 0; i < input.size(); ++i) {
+    //     input[i] = turn_data_to_input_ptr(normalise_data(cells[i]));
+    //     output_CO2[i] = turn_data_to_output_CO2_ptr(normalise_data(cells[i]));
+    //     output_NOX[i] = turn_data_to_output_NOX_ptr(normalise_data(cells[i]));
+    //     output_PM[i] = turn_data_to_output_PM_ptr(normalise_data(cells[i]));
+    //     output_VOC[i] = turn_data_to_output_VOC_ptr(normalise_data(cells[i]));
+    //     output_SO2[i] = turn_data_to_output_SO2_ptr(normalise_data(cells[i]));
+    // }
 
-    std::cout << "done.\n";
+    // std::cout << "done.\n";
 
     // std::cout << "reading data...\n";
 
@@ -165,60 +166,67 @@ int main()
 
     std::cout << "initializing...\n";
 
-    std::vector<Number> structure{
+    std::vector<Number> structure_SO2{
         13, 13, 13, 13, 13,
         13, 13, 13, 13, 13,
         1
     };
+    NeuralNetwork::NeuralNetwork SO2{structure_SO2};
 
-    NeuralNetwork::NeuralNetwork SO2{structure};
+    std::cout << "loading weights...\n";
+    SO2.load_weights_from_file("weightsSO2.csv");
+    std::cout << "loaded.\n";
 
     std::cout << "initialized.\n";
 
-    std::cout << "training...\n";
+    DatasetCell cell;
 
-    std::cout << "ans SO2: " << SO2.predict(*input[0]) << " " << *output_SO2[0] << "\n";
+    std::cout << "Give your data\n";
 
-    for (int i = 0; i < 5; i++)
-    {
-        long double l{1e-15};
-        SO2.train(input, output_SO2, l);
-        std::cin >> l;
-    }
+    std::cout << "vehicle type ('Bus', 'Car', 'Truck', 'Motorcycle'): ";
+    std::cin >> cell.vehicle_type;
 
-    std::cout << "ans SO2: " << SO2.predict(*input[0]) << " " << *output_SO2[0] << "\n";
-    std::cout << "ans SO2: " << SO2.predict(*input[1]) << " " << *output_SO2[1] << "\n";
-    std::cout << "ans SO2: " << SO2.predict(*input[2]) << " " << *output_SO2[2] << "\n";
-    std::cout << "ans SO2: " << SO2.predict(*input[3]) << " " << *output_SO2[3] << "\n\n\n\n";
-    std::ofstream so2{"weightsSO2.txt"};
+    std::cout << "fuel type ('Electric', 'Hybrid', 'Diesel', 'Petrol'): ";
+    std::cin >> cell.fuel_type;
 
+    std::cout << "engine size: ";
+    std::cin >> cell.engine_size;
 
-        if (i < 3)
-            continue;
+    std::cout << "age of vehicle: ";
+    std::cin >> cell.age_of_vehicle;
 
-        a.save_weights_to_file("weights.csv");
-    }
-    
-    std::cout << "trained.\n";
-    /*
-    std::cout << "loading weights...\n";
-    a.load_weights_from_file("weights.csv");
-    std::cout << "loaded.\n";
-    */
-    std::cout << "testing...\n";
-    std::vector<Scalar> error{a.test(test_input, test_output)};
-    for (Scalar e : error)
-        std::cout << e << " ";
-    std::cout << "\n";
-    RowVector pr = a.predict(*(input[999]));
-    std::vector ans = turn_output_to_standart_view(pr);
-    std::cout << "answer on 1000 elem:\n"
-        << ans[0] << " "
-        << ans[1] << " "
-        << ans[2] << " "
-        << ans[3] << " "
-        << ans[4] << "\n";
-    std::cout << "tested.\n\n\n\n";
+    std::cout << "mileage: ";
+    std::cin >> cell.mileage;
+
+    std::cout << "speed: ";
+    std::cin >> cell.speed;
+
+    std::cout << "acceleration: ";
+    std::cin >> cell.acceleration;
+
+    std::cout << "road type ('City', 'Highway', 'Rural'): ";
+    std::cin >> cell.road_type;
+
+    std::cout << "traffic conditions ('Moderate', 'Heavy', 'Free'): ";
+    std::cin >> cell.traffic_conditions;
+
+    std::cout << "temperature (celsius): ";
+    std::cin >> cell.temperature;
+
+    std::cout << "humidity: ";
+    std::cin >> cell.humidity;
+
+    std::cout << "Wind speed: ";
+    std::cin >> cell.wind_speed;
+
+    std::cout << "air pressure: ";
+    std::cin >> cell.air_pressure;
+
+    RowVector input{*turn_data_to_input_ptr(normalise_data(cell))};
+
+    RowVector pr = SO2.predict(input);
+    std::vector ans = turn_SO2_output_to_standart_view(pr);
+    std::cout << ans[0] << "\n";
 
     return 0;
 }

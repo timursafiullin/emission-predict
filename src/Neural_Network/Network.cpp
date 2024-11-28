@@ -11,19 +11,7 @@ namespace NeuralNetwork
     {
         validate_structure(s);
         structure = s;
-        validate_learning_rate(l);
-        learning_rate = l;
         initialize_storage_objects();
-    }
-
-    NeuralNetwork::NeuralNetwork(
-        std::vector<Number> s,
-        std::vector<Matrix *> w)
-    {
-        validate_structure(s);
-        validate_weights(w);
-        structure = s;
-        weights = w;
     }
 
     RowVector NeuralNetwork::predict(
@@ -345,7 +333,12 @@ namespace NeuralNetwork
         {
             try
             {
+                std::cout << "+\n";
+
                 std::vector<std::vector<std::string>> layer_weights_string = csv_reader.read_until_blank_line();
+
+                if (layer_weights_string[0][0] == "*")
+                    throw FileIsClosedError();
                 std::vector<std::vector<Scalar>> matrix_weights;
                 for (const auto &row : layer_weights_string)
                 {
@@ -364,8 +357,10 @@ namespace NeuralNetwork
             }
         }
         csv_reader.close_file();
+        std::cout << "+\n";
         std::vector<Matrix *> weights_converted = matrix_vector_from_vectors(vector_weights);
-        validate_weights(weights_converted);
-        weights = weights_converted;
+        //validate_weights(weights_converted);
+        for (Number layer{0}; layer < weights_converted.size(); ++layer)
+            *weights[layer] = *weights_converted[layer];
     }
 };
