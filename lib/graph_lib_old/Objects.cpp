@@ -48,18 +48,16 @@ void Table::draw_borders(Fl_Color inner_color, Fl_Color outer_color)
     for (int row_border{0}; row_border < rows + 1; ++row_border)
     {
         fl_color(inner_color);
+
         if (row_border == 1 || row_border == rows || row_border == 0)
-        {
             fl_color(outer_color);
-        }
+
         fl_line(x, y + row_border*cell_h, x + w, y + row_border*cell_h);
     }
 
     fl_color(outer_color);
     for (int col_border{0}; col_border < cols + 1; ++col_border)
-    {
         fl_line(x + col_border*cell_w, y, x + col_border*cell_w, y + h);
-    }
 }
 
 
@@ -78,6 +76,8 @@ void Table::set_label(Labels& labels)
             case context_row:
                 ++labels.col;
                 break;
+            default:
+                throw std::invalid_argument("Invalid context");
         }
     }
 }
@@ -101,21 +101,20 @@ Labels::Labels(std::initializer_list<std::string> labels, const char context, un
         case context_row:
             row = line;
             break;
+        default:
+            throw std::invalid_argument("Invalid context");
     }
 
     for (const auto& name : labels)
-    {
         labelList.push_back(name);
-    }    
 }
 
 
 std::string Labels::operator[](const unsigned int index)
 {
     if (index > labelList.size() - 1)
-    {
         throw std::runtime_error("Label Names List index out of range");
-    }
+
     return labelList[index];
 }
 
@@ -130,9 +129,7 @@ std::vector<std::string> Labels::get() const
 LabelsList::LabelsList(std::initializer_list<Labels> labels)
 {
     for (const auto& _labels : labels)
-    {
         labelsList.push_back(_labels);
-    } 
 }
 
 
