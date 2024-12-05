@@ -1,7 +1,7 @@
 #ifndef NETWORK_DEFENCE
 #define NETWORK_DEFENCE 1
 
-#include <Eigen\Eigen\Eigen>
+#include <Eigen/Eigen>
 #include <exception>
 #include "csv.h"
 
