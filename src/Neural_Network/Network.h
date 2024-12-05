@@ -84,7 +84,7 @@ namespace NeuralNetwork
 
     /**
      * @brief   Simple implementation of feedforward neural network
-     *          with linear activation function, trained by stohastic gradient decent.
+     *          with activation function, trained by stohastic gradient decent.
      * 
      */
     class NeuralNetwork {
@@ -277,7 +277,7 @@ namespace NeuralNetwork
         );
 
         /**
-         * @brief   Linear activation function f(x) = x.
+         * @brief   Activation function.
          * 
          * @param x some Scalar.
          * @return Scalar
@@ -286,19 +286,19 @@ namespace NeuralNetwork
             Scalar x
         )
         {
-            return x;
+            return tanhf(x);
         }
 
         /**
-         * @brief   Derivative of linear activation function f(x) = x.
+         * @brief   Derivative of activation function.
          * 
          * @return Scalar
          */
         static Scalar activation_function_derivative(
-            Scalar
+            Scalar x
         )
         {
-            return 1;
+            return 1 - tanhf(x) * tanhf(x);
         }
 
         /**

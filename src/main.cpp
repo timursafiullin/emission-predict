@@ -56,35 +56,35 @@ RowVector* get_output_SO2_ptr(std::vector<long double> vector)
 std::vector<Scalar> turn_СO2_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e-1;
+    ans[0] = a[0] * 1e2;
     return ans;
 }
 
 std::vector<Scalar> turn_NOX_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e-2;
+    ans[0] = a[0] * 1e1;
     return ans;
 }
 
 std::vector<Scalar> turn_PM_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e-3;
+    ans[0] = a[0] * 1e0;
     return ans;
 }
 
 std::vector<Scalar> turn_VOC_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e-3;
+    ans[0] = a[0] * 1e0;
     return ans;
 }
 
 std::vector<Scalar> turn_SO2_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e-3;
+    ans[0] = a[0] * 1e0;
     return ans;
 }
 
@@ -119,7 +119,7 @@ int main()
         13, 21, 1
     };
 
-    Scalar l{1e-12};
+    Scalar l{1e-5};
 
     NeuralNetwork::NeuralNetwork CO2{structure, l};
     NeuralNetwork::NeuralNetwork NOX{structure, l};
@@ -127,15 +127,15 @@ int main()
     NeuralNetwork::NeuralNetwork VOC{structure, l};
     NeuralNetwork::NeuralNetwork SO2{structure, l};
 
+    std::cout << "initialized.\n";
+
     CO2.load_weights_from_file("../weights/weights_CO2.csv");
     NOX.load_weights_from_file("../weights/weights_NOX.csv");
     PM.load_weights_from_file("../weights/weights_PM.csv");
     VOC.load_weights_from_file("../weights/weights_VOC.csv");
     SO2.load_weights_from_file("../weights/weights_SO2.csv");
 
-    std::cout << "initialized.\n";
-
-    for (Number i{0}; i < 10; i++)
+    for (Number i{0}; i < 10000; i++)
     {
         CO2.train(input, output_CO2);
         NOX.train(input, output_NOX);
@@ -148,13 +148,13 @@ int main()
         std::cout << PM.test(input, output_PM)[0] << "\n";
         std::cout << VOC.test(input, output_VOC)[0] << "\n";
         std::cout << SO2.test(input, output_SO2)[0] << "\n";
-    }
 
-    CO2.save_weights_to_file("weights_CO2.csv");
-    NOX.save_weights_to_file("weights_NOX.csv");
-    PM.save_weights_to_file("weights_PM.csv");
-    VOC.save_weights_to_file("weights_VOC.csv");
-    SO2.save_weights_to_file("weights_SO2.csv");
+        CO2.save_weights_to_file("weights_CO2.csv");
+        NOX.save_weights_to_file("weights_NOX.csv");
+        PM.save_weights_to_file("weights_PM.csv");
+        VOC.save_weights_to_file("weights_VOC.csv");
+        SO2.save_weights_to_file("weights_SO2.csv");
+    }
 
     return 0;
 }

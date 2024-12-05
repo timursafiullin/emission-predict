@@ -20,11 +20,11 @@ std::vector<long double> DatasetCell::normalise_data()
     vec[10] = humidity;
     vec[11] = wind_speed;
     vec[12] = air_pressure;
-    vec[13] = 1e1 * CO2_emissions;
-    vec[14] = 1e2 * NOx_emissions;
-    vec[15] = 1e3 * PM_emissions;
-    vec[16] = 1e3 * VOC_emissions;
-    vec[17] = 1e3 * SO2_emissions;
+    vec[13] = 1e-3 * CO2_emissions;
+    vec[14] = 1e-1 * NOx_emissions;
+    vec[15] = 1e0 * PM_emissions;
+    vec[16] = 1e0 * VOC_emissions;
+    vec[17] = 1e0 * SO2_emissions;
 
     return vec;
 }
