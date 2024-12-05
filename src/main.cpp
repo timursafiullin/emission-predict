@@ -149,7 +149,7 @@ int main()
     std::cin >> test_cell.humidity;
     std::cin >> test_cell.wind_speed;
     std::cin >> test_cell.air_pressure;
-    RowVector test_input{*turn_data_to_input_ptr(normalise_data(test_cell))};
+    RowVector test_input{*get_input_ptr(test_cell.normalise_data())};
 
     RowVector pr = NOX.predict(test_input);
     std::vector ans = turn_NOX_output_to_standart_view(pr);
