@@ -1,8 +1,6 @@
 #include "Network.h"
 #include <vector>
 
-#include <iostream>
-
 
 namespace NeuralNetwork
 {
@@ -12,7 +10,19 @@ namespace NeuralNetwork
     {
         validate_structure(s);
         structure = s;
+        validate_learning_rate(l);
+        learning_rate = l;
         initialize_storage_objects();
+    }
+
+    NeuralNetwork::~NeuralNetwork()
+    {
+        for (auto layer : neuron_layers)
+            delete layer;
+        for (auto layer : deltas)
+            delete layer;
+        for (auto layer : weights)
+            delete layer;
     }
 
     RowVector NeuralNetwork::predict(
@@ -44,35 +54,14 @@ namespace NeuralNetwork
 
     void NeuralNetwork::train(
         std::vector<RowVector *> input_data,
-        std::vector<RowVector *> output_data,
-        Scalar l)
+        std::vector<RowVector *> output_data)
     {
-        validate_learning_rate(l);
         validate_data(input_data, output_data);
-
-        learning_rate = l;
-        std::vector<Matrix *> best_weights{weights};
-
-        Scalar best_error {sum(test(input_data, output_data))};
 
         for (Number element{0}; element < input_data.size(); ++element)
         {
             propagate_forward(*input_data[element]);
             propagate_backward(*output_data[element]);
-
-            if ((element + 1) % 500)
-                continue;
-
-            Scalar current_error{sum(test(input_data, output_data))};
-            std::cout << current_error / output_data[element]->size() << "\n";
-
-            // to prevent divergention of gradient decent
-            if (best_error > current_error)
-            {
-                best_error = current_error;
-                for (Number i{0}; i < weights.size(); ++i)
-                    *best_weights[i] = *weights[i];
-            }
         }
     }
 
@@ -358,7 +347,6 @@ namespace NeuralNetwork
         }
         csv_reader.close_file();
         std::vector<Matrix *> weights_converted = matrix_vector_from_vectors(vector_weights);
-        //validate_weights(weights_converted);
         for (Number layer{0}; layer < weights_converted.size(); ++layer)
             *weights[layer] = *weights_converted[layer];
     }

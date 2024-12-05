@@ -47,8 +47,7 @@ namespace NeuralNetwork
         "invalid layer matrix given"
     };
 
-    constexpr Scalar default_learning_rate_value                { 0.005 };
-    constexpr Scalar default_critical_difference_between_errors { -0.05 };
+    constexpr Scalar default_learning_rate_value { 1e-10 };
 
 
     /**
@@ -103,16 +102,10 @@ namespace NeuralNetwork
         );
 
         /**
-         * @brief   Construct a new Neural Network object,
-         *          with already given weights.
+         * @brief Destroy the Neural Network object
          * 
-         * @param s structure of network.
-         * @param w already trained weights of model.
          */
-        NeuralNetwork(
-            std::vector<Number> s,
-            std::vector<Matrix*> w
-        );
+        ~NeuralNetwork();
 
         /**
          * @brief   Calculates prediction by input.
@@ -127,17 +120,13 @@ namespace NeuralNetwork
         /**
          * @brief Train model on dataset.
          * 
-         * @param input_data 
-         * @param output_data 
-         * @param critical_difference_between_errors difference between previous
-         *              and current errors when training stops to prevent
-         *              divergence of gradient decent.
+         * @param input_data
+         * @param output_data
          * 
          */
         void train(
-            std::vector<RowVector*> input_data,
-            std::vector<RowVector*> output_data,
-            Scalar critical_difference_between_errors = default_critical_difference_between_errors
+            std::vector<RowVector *> input_data,
+            std::vector<RowVector *> output_data
         );
 
         /**
@@ -148,8 +137,8 @@ namespace NeuralNetwork
          * @return Scalar
          */
         std::vector<Scalar> test(
-            std::vector<RowVector*> input_data,
-            std::vector<RowVector*> output_data
+            std::vector<RowVector *> input_data,
+            std::vector<RowVector *> output_data
         );
 
         /**
@@ -161,20 +150,6 @@ namespace NeuralNetwork
         {
             return weights;
         }
-
-        /**
-         * @brief   Convert vector of vectors of vectors of scalars to vector of matrices.
-         *
-         * @return std::vector<Matrix*>
-         */
-        std::vector<Matrix *> matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights);
-
-        /**
-         * @brief   Convert matrix to vector of vectors of (scalar) strings.
-         *
-         * @return std::vector<std::vector<std::string>>
-         */
-        std::vector<std::vector<std::string>> matrix_to_vector(Matrix &matrix);
 
         /**
          * @brief   Save the weights of connections to file.
@@ -198,6 +173,20 @@ namespace NeuralNetwork
         ) = delete;
 
     private:
+        /**
+         * @brief   Convert vector of vectors of vectors of scalars to vector of matrices.
+         *
+         * @return std::vector<Matrix*>
+         */
+        std::vector<Matrix *> matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights);
+
+        /**
+         * @brief   Convert matrix to vector of vectors of (scalar) strings.
+         *
+         * @return std::vector<std::vector<std::string>>
+         */
+        std::vector<std::vector<std::string>> matrix_to_vector(Matrix &matrix);
+
         /**
          * @brief   Calculates neuron values.
          * 

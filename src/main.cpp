@@ -59,7 +59,7 @@ std::vector<long double> normalise_data(DatasetCell cell)
     vec[1] = turn_fuel_type_to_double(cell.fuel_type);
     vec[2] = cell.engine_size;
     vec[3] = cell.age_of_vehicle;
-    vec[4] = cell.mileage / 10000;
+    vec[4] = cell.mileage;
     vec[5] = cell.speed;
     vec[6] = cell.acceleration;
     vec[7] = turn_road_type_to_double(cell.road_type);
@@ -68,11 +68,11 @@ std::vector<long double> normalise_data(DatasetCell cell)
     vec[10] = cell.humidity;
     vec[11] = cell.wind_speed;
     vec[12] = cell.air_pressure;
-    vec[13] = 1e6 * cell.CO2_emissions;
-    vec[14] = 1e7 * cell.NOx_emissions;
-    vec[15] = 1e10 * cell.PM_emissions;
-    vec[16] = 1e10 * cell.VOC_emissions;
-    vec[17] = 1e7 * cell.SO2_emissions;
+    vec[13] = 1e1 * cell.CO2_emissions;
+    vec[14] = 1e2 * cell.NOx_emissions;
+    vec[15] = 1e3 * cell.PM_emissions;
+    vec[16] = 1e3 * cell.VOC_emissions;
+    vec[17] = 1e3 * cell.SO2_emissions;
 
     return vec;
 }
@@ -122,111 +122,93 @@ RowVector* turn_data_to_output_SO2_ptr(std::vector<long double> vector)
     return output;
 }
 
+std::vector<Scalar> turn_СO2_output_to_standart_view(RowVector a)
+{
+    std::vector<Scalar> ans(1);
+    ans[0] = a[0] * 1e-1;
+    return ans;
+}
+
+std::vector<Scalar> turn_NOX_output_to_standart_view(RowVector a)
+{
+    std::vector<Scalar> ans(1);
+    ans[0] = a[0] * 1e-2;
+    return ans;
+}
+
+std::vector<Scalar> turn_PM_output_to_standart_view(RowVector a)
+{
+    std::vector<Scalar> ans(1);
+    ans[0] = a[0] * 1e-3;
+    return ans;
+}
+
+std::vector<Scalar> turn_VOC_output_to_standart_view(RowVector a)
+{
+    std::vector<Scalar> ans(1);
+    ans[0] = a[0] * 1e-3;
+    return ans;
+}
+
 std::vector<Scalar> turn_SO2_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e-7;
+    ans[0] = a[0] * 1e-3;
     return ans;
 }
 
 int main()
 {
-    // std::vector<DatasetCell> cells = get_all_cells();
+    std::vector<DatasetCell> cells = get_all_cells();
 
-    // std::vector<RowVector*> input{size_t(cells.size()*0.8)};
-    // // std::vector<RowVector*> test_input{size_t(cells.size()*0.1)};
+    std::vector<RowVector*> input{size_t(cells.size()*0.2)};
 
-    // std::vector<RowVector*> output_CO2{size_t(cells.size()*0.8)};
-    // std::vector<RowVector*> output_NOX{size_t(cells.size()*0.8)};
-    // std::vector<RowVector*> output_PM{size_t(cells.size()*0.8)};
-    // std::vector<RowVector*> output_VOC{size_t(cells.size()*0.8)};
-    // std::vector<RowVector*> output_SO2{size_t(cells.size()*0.8)};
+    std::vector<RowVector*> output_CO2{size_t(cells.size()*0.2)};
+    std::vector<RowVector*> output_NOX{size_t(cells.size()*0.2)};
+    std::vector<RowVector*> output_PM{size_t(cells.size()*0.2)};
+    std::vector<RowVector*> output_VOC{size_t(cells.size()*0.2)};
+    std::vector<RowVector*> output_SO2{size_t(cells.size()*0.2)};
 
-    // std::cout << "reading data...\n";
+    std::cout << "reading data...\n";
 
-    // for (size_t i = 0; i < input.size(); ++i) {
-    //     input[i] = turn_data_to_input_ptr(normalise_data(cells[i]));
-    //     output_CO2[i] = turn_data_to_output_CO2_ptr(normalise_data(cells[i]));
-    //     output_NOX[i] = turn_data_to_output_NOX_ptr(normalise_data(cells[i]));
-    //     output_PM[i] = turn_data_to_output_PM_ptr(normalise_data(cells[i]));
-    //     output_VOC[i] = turn_data_to_output_VOC_ptr(normalise_data(cells[i]));
-    //     output_SO2[i] = turn_data_to_output_SO2_ptr(normalise_data(cells[i]));
-    // }
+    for (size_t i = 0; i < input.size(); ++i) {
+        input[i] = turn_data_to_input_ptr(normalise_data(cells[cells.size() * 0.8 + i]));
+        output_CO2[i] = turn_data_to_output_CO2_ptr(normalise_data(cells[cells.size() * 0.8 + i]));
+        output_NOX[i] = turn_data_to_output_NOX_ptr(normalise_data(cells[cells.size() * 0.8 + i]));
+        output_PM[i] = turn_data_to_output_PM_ptr(normalise_data(cells[cells.size() * 0.8 + i]));
+        output_VOC[i] = turn_data_to_output_VOC_ptr(normalise_data(cells[cells.size() * 0.8 + i]));
+        output_SO2[i] = turn_data_to_output_SO2_ptr(normalise_data(cells[cells.size() * 0.8 + i]));
+    }
 
-    // std::cout << "done.\n";
-
-    // std::cout << "reading data...\n";
-
-    // for (size_t i{size_t(cells.size()*0.8)}; i < size_t(cells.size()*0.9); ++i) {
-    //     test_input[i - size_t(cells.size()*0.8)] = turn_data_to_input_ptr(normalise_data(cells[i]));
-    //     test_output[i - size_t(cells.size()*0.8)] = turn_data_to_output_ptr(normalise_data(cells[i]));
-    // }
-
-    // std::cout << "done.\n";
+    std::cout << "done.\n";
 
     std::cout << "initializing...\n";
 
-    std::vector<Number> structure_SO2{
-        13, 13, 13, 13, 13,
-        13, 13, 13, 13, 13,
-        1
+    std::vector<Number> structure{
+        13, 21, 1
     };
-    NeuralNetwork::NeuralNetwork SO2{structure_SO2};
 
-    std::cout << "loading weights...\n";
-    SO2.load_weights_from_file("weightsSO2.csv");
-    std::cout << "loaded.\n";
+    Scalar l{1e-15};
+
+    NeuralNetwork::NeuralNetwork CO2{structure, l};
+    NeuralNetwork::NeuralNetwork NOX{structure, l};
+    NeuralNetwork::NeuralNetwork PM {structure, l};
+    NeuralNetwork::NeuralNetwork VOC{structure, l};
+    NeuralNetwork::NeuralNetwork SO2{structure, l};
+
+    CO2.load_weights_from_file("weights_CO2.csv");
+    NOX.load_weights_from_file("weights_NOX.csv");
+    PM.load_weights_from_file("weights_PM.csv");
+    VOC.load_weights_from_file("weights_VOC.csv");
+    SO2.load_weights_from_file("weights_SO2.csv");
 
     std::cout << "initialized.\n";
 
-    DatasetCell cell;
-
-    std::cout << "Give your data\n";
-
-    std::cout << "vehicle type ('Bus', 'Car', 'Truck', 'Motorcycle'): ";
-    std::cin >> cell.vehicle_type;
-
-    std::cout << "fuel type ('Electric', 'Hybrid', 'Diesel', 'Petrol'): ";
-    std::cin >> cell.fuel_type;
-
-    std::cout << "engine size: ";
-    std::cin >> cell.engine_size;
-
-    std::cout << "age of vehicle: ";
-    std::cin >> cell.age_of_vehicle;
-
-    std::cout << "mileage: ";
-    std::cin >> cell.mileage;
-
-    std::cout << "speed: ";
-    std::cin >> cell.speed;
-
-    std::cout << "acceleration: ";
-    std::cin >> cell.acceleration;
-
-    std::cout << "road type ('City', 'Highway', 'Rural'): ";
-    std::cin >> cell.road_type;
-
-    std::cout << "traffic conditions ('Moderate', 'Heavy', 'Free'): ";
-    std::cin >> cell.traffic_conditions;
-
-    std::cout << "temperature (celsius): ";
-    std::cin >> cell.temperature;
-
-    std::cout << "humidity: ";
-    std::cin >> cell.humidity;
-
-    std::cout << "Wind speed: ";
-    std::cin >> cell.wind_speed;
-
-    std::cout << "air pressure: ";
-    std::cin >> cell.air_pressure;
-
-    RowVector input{*turn_data_to_input_ptr(normalise_data(cell))};
-
-    RowVector pr = SO2.predict(input);
-    std::vector ans = turn_SO2_output_to_standart_view(pr);
-    std::cout << ans[0] << "\n";
+    std::cout << CO2.test(input, output_CO2)[0] << std::endl;
+    std::cout << NOX.test(input, output_NOX)[0] << std::endl;
+    std::cout << PM.test(input, output_PM)[0] << std::endl;
+    std::cout << VOC.test(input, output_VOC)[0] << std::endl;
+    std::cout << SO2.test(input, output_SO2)[0] << std::endl;
 
     return 0;
 }
