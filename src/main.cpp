@@ -196,11 +196,11 @@ int main()
     NeuralNetwork::NeuralNetwork VOC{structure, l};
     NeuralNetwork::NeuralNetwork SO2{structure, l};
 
-    CO2.load_weights_from_file("weights_CO2.csv");
-    NOX.load_weights_from_file("weights_NOX.csv");
-    PM.load_weights_from_file("weights_PM.csv");
-    VOC.load_weights_from_file("weights_VOC.csv");
-    SO2.load_weights_from_file("weights_SO2.csv");
+    CO2.load_weights_from_file("../weights/weights_CO2.csv");
+    NOX.load_weights_from_file("../weights/weights_NOX.csv");
+    PM.load_weights_from_file("../weights/weights_PM.csv");
+    VOC.load_weights_from_file("../weights/weights_VOC.csv");
+    SO2.load_weights_from_file("../weights/weights_SO2.csv");
 
     std::cout << "initialized.\n";
 
