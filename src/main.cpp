@@ -169,7 +169,7 @@ int main()
     std::vector<RowVector*> output_VOC{size_t(cells.size()*0.2)};
     std::vector<RowVector*> output_SO2{size_t(cells.size()*0.2)};
 
-    std::cout << "reading data...\n";
+    // std::cout << "reading data...\n";
 
     for (size_t i = 0; i < input.size(); ++i) {
         input[i] = turn_data_to_input_ptr(normalise_data(cells[cells.size() * 0.8 + i]));
@@ -180,9 +180,9 @@ int main()
         output_SO2[i] = turn_data_to_output_SO2_ptr(normalise_data(cells[cells.size() * 0.8 + i]));
     }
 
-    std::cout << "done.\n";
+    // std::cout << "done.\n";
 
-    std::cout << "initializing...\n";
+    // std::cout << "initializing...\n";
 
     std::vector<Number> structure{
         13, 21, 1
@@ -202,13 +202,27 @@ int main()
     VOC.load_weights_from_file("../weights/weights_VOC.csv");
     SO2.load_weights_from_file("../weights/weights_SO2.csv");
 
-    std::cout << "initialized.\n";
+    // std::cout << "initialized.\n";
 
-    std::cout << CO2.test(input, output_CO2)[0] << std::endl;
-    std::cout << NOX.test(input, output_NOX)[0] << std::endl;
-    std::cout << PM.test(input, output_PM)[0] << std::endl;
-    std::cout << VOC.test(input, output_VOC)[0] << std::endl;
-    std::cout << SO2.test(input, output_SO2)[0] << std::endl;
+    DatasetCell test_cell;
+    std::cin >> test_cell.vehicle_type;
+    std::cin >> test_cell.fuel_type;
+    std::cin >> test_cell.engine_size;
+    std::cin >> test_cell.age_of_vehicle;
+    std::cin >> test_cell.mileage;
+    std::cin >> test_cell.speed;
+    std::cin >> test_cell.acceleration;
+    std::cin >> test_cell.road_type;
+    std::cin >> test_cell.traffic_conditions;
+    std::cin >> test_cell.temperature;
+    std::cin >> test_cell.humidity;
+    std::cin >> test_cell.wind_speed;
+    std::cin >> test_cell.air_pressure;
+    RowVector test_input{*turn_data_to_input_ptr(normalise_data(test_cell))};
+
+    RowVector pr = NOX.predict(test_input);
+    std::vector ans = turn_NOX_output_to_standart_view(pr);
+    std::cout << ans[0] << std::endl;
 
     return 0;
 }
