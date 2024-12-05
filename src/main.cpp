@@ -100,7 +100,7 @@ int main()
     std::vector<RowVector*> output_VOC{size_t(cells.size() * 0.8)};
     std::vector<RowVector*> output_SO2{size_t(cells.size() * 0.8)};
 
-    std::cout << "reading data...\n";
+    // std::cout << "reading data...\n";
 
     for (size_t i = 0; i < input.size(); ++i) {
         input[i] = get_input_ptr(cells[i].normalise_data());
@@ -111,9 +111,9 @@ int main()
         output_SO2[i] = get_output_SO2_ptr(cells[i].normalise_data());
     }
 
-    std::cout << "done.\n";
+    // std::cout << "done.\n";
 
-    std::cout << "initializing...\n";
+    // std::cout << "initializing...\n";
 
     std::vector<Number> structure{
         13, 21, 1

@@ -1,6 +1,6 @@
 #include "Network.h"
 #include <vector>
-
+#include <iostream>
 
 namespace NeuralNetwork
 {
@@ -326,8 +326,8 @@ namespace NeuralNetwork
 
                 std::vector<std::vector<std::string>> layer_weights_string = csv_reader.read_until_blank_line();
 
-                if (layer_weights_string[0][0] == "*")
-                    throw FileIsClosedError();
+                // if (layer_weights_string[0][0] == "")
+                //     throw FileIsClosedError();
                 std::vector<std::vector<Scalar>> matrix_weights;
                 for (const auto &row : layer_weights_string)
                 {

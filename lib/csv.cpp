@@ -2,6 +2,7 @@
 #include <fstream>
 #include <regex>
 #include "csv.h"
+#include <iostream>
 
 std::vector<std::string> CsvReader::read_row()
 {
@@ -42,12 +43,16 @@ std::vector<std::vector<std::string>> CsvReader::read_until_blank_line()
     std::vector<std::vector<std::string>> lines;
     std::vector<std::string> line;
     line = read_row();
+
     while (line != std::vector<std::string>{"\n"} && line != std::vector<std::string>{""})
     {
         lines.push_back(line);
         line = read_row();
     }
 
+    if (lines.size() == 0)
+        throw FileIsClosedError();
+    
     return lines;
 }
 
