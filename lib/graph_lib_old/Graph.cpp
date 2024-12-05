@@ -147,7 +147,17 @@ void GraphCanvas::draw_lines() const
 
   // Draw axises
   fl_color(axis_color);
+  int arrow_x = (h - 2*indent_y) * 0.02;
+  int arrow_y = (h - 2*indent_y) * 0.02;
+
+  // Vertical Axis
+  fl_line(origin_x, y+indent_y, origin_x-arrow_x, y+indent_y+arrow_y);
+  fl_line(origin_x, y+indent_y, origin_x+arrow_x, y+indent_y+arrow_y);
   fl_line(origin_x, y+h-indent_y, origin_x, y+indent_y);
+
+  // Horizontal axis
+  fl_line(x+w-indent_x, origin_y, x+w-indent_x-arrow_x, origin_y+arrow_y);
+  fl_line(x+w-indent_x, origin_y, x+w-indent_x-arrow_x, origin_y-arrow_y);
   fl_line(x+indent_x, origin_y, x+w-indent_x, origin_y);
 }
 

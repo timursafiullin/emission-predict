@@ -66,6 +66,7 @@ try
   };
   win.attach(clear_button);
 
+  // GRAPH AREA (WHITE BOX WITH BLACK AXISES AND LIGHT GRAY GRID)
   GLib::GraphCanvas graph_canvas
   {
     GLib::Point(graph_canvas_x, graph_canvas_y),

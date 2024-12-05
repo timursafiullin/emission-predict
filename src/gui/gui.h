@@ -45,9 +45,9 @@ const unsigned int vehicle_type_y       { table_y + table_height/table_rows };
 const unsigned int graph_canvas_x       { 23  };
 const unsigned int graph_canvas_y       { 21  };
 const unsigned int graph_canvas_w       { 504 };
-const unsigned int graph_canvas_h       { 406 };
+const unsigned int graph_canvas_h       { 505 };
 const unsigned int canvas_origin_x      { 62  };
-const unsigned int canvas_origin_y      { 390 };
+const unsigned int canvas_origin_y      { 489 };
 
 LabelsList labels_list
 (
