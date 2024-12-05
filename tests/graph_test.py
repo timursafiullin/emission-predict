@@ -22,7 +22,7 @@ speed = range(0, 100, 1)
 for speed_value in speed:
     print(speed_value)
     process = subprocess.Popen(
-        ["./build/emission_predict.exe"],
+        ["build/emission_predict.exe"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         shell=True,
@@ -37,8 +37,6 @@ for speed_value in speed:
             str_to_send += input_cell
         str_to_send += " "
     str_to_send = str_to_send[:-1] + "\n"
-
-    #print(str_to_send)
 
     output, stderr = process.communicate(input=str_to_send.encode())
     output = float(output.decode())

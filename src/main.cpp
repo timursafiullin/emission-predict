@@ -116,8 +116,7 @@ int main()
     // std::cout << "initializing...\n";
 
     std::vector<Number> structure{
-        13, 21, 1
-    };
+        13, 21, 21, 21, 21, 21, 21, 21, 1};
 
     Scalar l{1e-5};
 
@@ -127,22 +126,34 @@ int main()
     NeuralNetwork::NeuralNetwork VOC{structure, l};
     NeuralNetwork::NeuralNetwork SO2{structure, l};
 
-    std::cout << "initialized.\n";
+    // std::cout << "initialized.\n";
 
-    CO2.load_weights_from_file("../weights/weights_CO2.csv");
-    NOX.load_weights_from_file("../weights/weights_NOX.csv");
-    PM.load_weights_from_file("../weights/weights_PM.csv");
-    VOC.load_weights_from_file("../weights/weights_VOC.csv");
-    SO2.load_weights_from_file("../weights/weights_SO2.csv");
-
-    for (Number i{0}; i < 10000; i++)
+#if TRAIN == 1
+    for (Number i{0}; i < 100; i++)
     {
-        CO2.train(input, output_CO2);
-        NOX.train(input, output_NOX);
-        PM.train(input, output_PM);
-        VOC.train(input, output_VOC);
-        SO2.train(input, output_SO2);
-
+    #pragma omp parallel sections
+        {
+            {
+                CO2.train(input, output_CO2);
+            }
+        #pragma omp section
+            {
+                NOX.train(input, output_NOX);
+            }
+        #pragma omp section
+            {
+                PM.train(input, output_PM);
+            }
+        #pragma omp section
+            {
+                VOC.train(input, output_VOC);
+            }
+        #pragma omp section
+            {
+                SO2.train(input, output_SO2);
+            }
+        }
+        
         std::cout << CO2.test(input, output_CO2)[0] << "\n";
         std::cout << NOX.test(input, output_NOX)[0] << "\n";
         std::cout << PM.test(input, output_PM)[0] << "\n";
@@ -155,6 +166,35 @@ int main()
         VOC.save_weights_to_file("weights_VOC.csv");
         SO2.save_weights_to_file("weights_SO2.csv");
     }
+
+#else
+    CO2.load_weights_from_file("weights_CO2.csv");
+    NOX.load_weights_from_file("weights_NOX.csv");
+    PM.load_weights_from_file("weights_PM.csv");
+    VOC.load_weights_from_file("weights_VOC.csv");
+    SO2.load_weights_from_file("weights_SO2.csv");
+
+    DatasetCell test_cell;
+    std::cin >> test_cell.vehicle_type;
+    std::cin >> test_cell.fuel_type;
+    std::cin >> test_cell.engine_size;
+    std::cin >> test_cell.age_of_vehicle;
+    std::cin >> test_cell.mileage;
+    std::cin >> test_cell.speed;
+    std::cin >> test_cell.acceleration;
+    std::cin >> test_cell.road_type;
+    std::cin >> test_cell.traffic_conditions;
+    std::cin >> test_cell.temperature;
+    std::cin >> test_cell.humidity;
+    std::cin >> test_cell.wind_speed;
+    std::cin >> test_cell.air_pressure;
+    RowVector test_input{*get_input_ptr(test_cell.normalise_data())};
+
+    RowVector pr = PM.predict(test_input);
+    std::vector ans = turn_PM_output_to_standart_view(pr);
+    std::cout << ans[0] << std::endl;
+
+#endif
 
     return 0;
 }
