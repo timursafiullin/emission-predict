@@ -261,6 +261,34 @@ private:
     void draw_lines() const override;
 };
 
+class GraphCanvas : public Shape
+{
+public:
+  GraphCanvas(Point xy, int w, int h, Point origin = Point{0, 0},
+    Fl_Color background_color = COLORS::WHITE, 
+    Fl_Color axis_color = COLORS::BLACK,
+    Fl_Color grid_color = COLORS::LIGHT_GRAY)
+    : x{xy.x}, y{xy.y}, w{w}, h{h},
+    origin_x{origin.x}, origin_y{origin.y},
+    background_color(background_color),
+    axis_color{axis_color},
+    grid_color{grid_color}
+  {
+    if (w <= 0 || h <= 0)
+      throw std::invalid_argument("Width and height must be positive.");
+
+    indent_y = h*0.025;
+    indent_x = w*0.025;
+  };
+
+  void draw_lines() const override;
+  //void add_point(int x, int y);
+
+private:
+  int x, y, w, h, origin_x, origin_y, indent_y, indent_x;
+  Fl_Color background_color, axis_color, grid_color;
+};
+
 using Fct = std::function<double(double)>;
 
 struct Function : Shape

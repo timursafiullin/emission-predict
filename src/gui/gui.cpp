@@ -66,6 +66,14 @@ try
   };
   win.attach(clear_button);
 
+  GLib::GraphCanvas graph_canvas
+  {
+    GLib::Point(graph_canvas_x, graph_canvas_y),
+    graph_canvas_w, graph_canvas_h,
+    GLib::Point(canvas_origin_x, canvas_origin_y)
+  };
+  win.attach(graph_canvas);
+
   return Fl::run();
 }
 catch (std::exception& e)

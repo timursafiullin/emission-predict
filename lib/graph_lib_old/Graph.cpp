@@ -123,6 +123,33 @@ void Table::draw_lines() const
   draw_labels(lblList);
 }
 
+void GraphCanvas::draw_lines() const
+{
+  // Draw background
+  fl_draw_box(FL_FLAT_BOX, x, y, w, h, background_color);
+
+  // Draw grid
+  fl_color(grid_color);
+
+  int pointer_x = origin_x;
+  while (pointer_x < x + w)
+  {
+    fl_line(pointer_x, y+h, pointer_x, y);
+    pointer_x += origin_x - x;
+  }
+
+  int pointer_y = origin_y;
+  while (pointer_y > y)
+  {
+    fl_line(x, pointer_y, x+w, pointer_y);
+    pointer_y -= y + h - origin_y;
+  }
+
+  // Draw axises
+  fl_color(axis_color);
+  fl_line(origin_x, y+h-indent_y, origin_x, y+indent_y);
+  fl_line(x+indent_x, origin_y, x+w-indent_x, origin_y);
+}
 
 inline std::pair<double, double> line_intersect (Point p1, Point p2, Point p3, Point p4, bool& parallel)
 // does two lines (p1,p2) and (p3,p4) intersect?

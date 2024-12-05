@@ -37,6 +37,17 @@ const std::string save_button_label     { "Save"    };
 constexpr unsigned int save_button_x    { table_x + table_width - button_w };
 constexpr unsigned int save_button_y    { 462       };
 
+// Menu for table
+const unsigned int vehicle_type_x       { table_x + table_width/table_cols };
+const unsigned int vehicle_type_y       { table_y + table_height/table_rows };
+
+// Graph Canvas
+const unsigned int graph_canvas_x       { 23  };
+const unsigned int graph_canvas_y       { 21  };
+const unsigned int graph_canvas_w       { 504 };
+const unsigned int graph_canvas_h       { 406 };
+const unsigned int canvas_origin_x      { 62  };
+const unsigned int canvas_origin_y      { 390 };
 
 LabelsList labels_list
 (

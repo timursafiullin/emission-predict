@@ -149,6 +149,12 @@ struct Menu : Widget
 
 //------------------------------------------------------------------------------
 
+class DropdownList : public Fl_Menu_Button
+{
+public:
+  DropdownList(int x, int y, int w, int h, const char* label = 0, Callback callback = 0, int flags = 0);
+};
+
 }  // namespace Graph_lib
 
 #endif  // GUI_GUARD
