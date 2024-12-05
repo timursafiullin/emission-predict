@@ -7,6 +7,8 @@
 
 struct DatasetCell
 {
+    std::vector<long double> normalise_data();
+
     std::string vehicle_type;
     std::string fuel_type;
     long double engine_size;
@@ -25,6 +27,12 @@ struct DatasetCell
     long double PM_emissions;
     long double VOC_emissions;
     long double SO2_emissions;
+
+private:
+    static long double turn_vehicle_type_to_double(std::string vehicle);
+    static long double turn_fuel_type_to_double(std::string fuel);
+    static long double turn_road_type_to_double(std::string road);
+    static long double turn_traffic_conditions_to_double(std::string traffic);
 };
 
 DatasetCell get_cell();
