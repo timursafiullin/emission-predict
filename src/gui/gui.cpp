@@ -1,12 +1,36 @@
 #include "gui.h"
 #include <exception>
+#include <iostream>
 
 #define GLib Graph_lib
 
-static void cb_empty(GLib::Address, GLib::Address addr)
+// CALLBACKS
+static void callback_predict(GLib::Address, GLib::Address addr)
 {
   auto* pb = static_cast<GLib::Button*>(addr);
   static_cast<GLib::Window&>(pb->window()).redraw();
+  std::cout << "Button 'Predict' pressed!" << std::endl;
+}
+
+static void callback_save(GLib::Address, GLib::Address addr)
+{
+  auto* pb = static_cast<GLib::Button*>(addr);
+  static_cast<GLib::Window&>(pb->window()).redraw();
+  std::cout << "Button 'Save' pressed!" << std::endl;
+}
+
+static void callback_history(GLib::Address, GLib::Address addr)
+{
+  auto* pb = static_cast<GLib::Button*>(addr);
+  static_cast<GLib::Window&>(pb->window()).redraw();
+  std::cout << "Button 'History' pressed!" << std::endl;
+}
+
+static void callback_clear(GLib::Address, GLib::Address addr)
+{
+  auto* pb = static_cast<GLib::Button*>(addr);
+  static_cast<GLib::Window&>(pb->window()).redraw();
+  std::cout << "Button 'Clear' pressed!" << std::endl;
 }
 
 int main()
@@ -32,7 +56,7 @@ try
     GLib::Point(predict_button_x, predict_button_y),
     button_w, button_h,
     predict_button_label,
-    cb_empty
+    callback_predict
   };
   win.attach(predict_button);
 
@@ -42,7 +66,7 @@ try
     GLib::Point(save_button_x, save_button_y),
     button_w, button_h,
     save_button_label,
-    cb_empty
+    callback_save
   };
   win.attach(save_button);
 
@@ -52,7 +76,7 @@ try
     GLib::Point(history_button_x, history_button_y),
     button_w, button_h,
     history_button_label,
-    cb_empty
+    callback_history
   };
   win.attach(history_button);
 
@@ -62,7 +86,7 @@ try
     GLib::Point(clear_button_x, clear_button_y),
     button_w, button_h,
     clear_button_label,
-    cb_empty
+    callback_clear
   };
   win.attach(clear_button);
 
