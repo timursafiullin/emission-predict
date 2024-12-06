@@ -50,6 +50,11 @@ public:
 
   virtual void attach (Window&) = 0;
 
+  virtual void draw()
+  {
+    pw->draw();
+  };  // Add virtual draw method
+
   Window& window () { return *own; }
 
   Point loc;
@@ -145,6 +150,8 @@ struct Menu : Widget
       win.attach(selection[i]);
     own = &win;
   }
+
+  void draw() override;
 };
 
 //------------------------------------------------------------------------------

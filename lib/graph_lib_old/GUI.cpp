@@ -77,6 +77,12 @@ int Menu::attach(Button& b)
   return int(selection.size() - 1);
 }
 
+void Menu::draw()
+{
+  for (int i = 0; i < selection.size(); ++i)
+    selection[i].draw();
+}
+
 int Menu::attach(Button* p)
 {
   //  owned.push_back(p);

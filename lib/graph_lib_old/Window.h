@@ -49,6 +49,7 @@ protected:
 
 private:
   std::vector<Shape*> shapes;  // shapes attached to window
+  std::vector<Widget*> widgets;  // widgets attached to window
   int w, h;                    // window size
 
   void init ();
