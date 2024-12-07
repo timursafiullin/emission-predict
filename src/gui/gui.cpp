@@ -2,6 +2,8 @@
 #include <exception>
 #include <iostream>
 
+#include <cmath>
+
 #define GLib Graph_lib
 
 // CALLBACKS
@@ -10,6 +12,14 @@ static void callback_predict(GLib::Address, GLib::Address addr)
   auto* pb = static_cast<GLib::Button*>(addr);
   static_cast<GLib::Window&>(pb->window()).redraw();
   std::cout << "Button 'Predict' pressed!" << std::endl;
+
+  fl_color(COLORS::BRIGHT_BLUE);
+
+  GLib::Function *funkcia = new GLib::Function {
+    sin, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)
+  };
+
+  static_cast<GLib::Window&>(pb->window()).attach(*funkcia);
 }
 
 static void callback_save(GLib::Address, GLib::Address addr)
@@ -98,6 +108,97 @@ try
     GLib::Point(canvas_origin_x, canvas_origin_y)
   };
   win.attach(graph_canvas);
+
+  GLib::In_box inbox_1
+  {
+    GLib::Point(inbox_x, inbox_y),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_1);
+
+  GLib::In_box inbox_2
+  {
+    GLib::Point(inbox_x, inbox_y + inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_2);
+
+  GLib::In_box inbox_3
+  {
+    GLib::Point(inbox_x, inbox_y + 2*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_3);
+
+  GLib::In_box inbox_4
+  {
+    GLib::Point(inbox_x, inbox_y + 3*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_4);
+
+  GLib::In_box inbox_5
+  {
+    GLib::Point(inbox_x, inbox_y + 4*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_5);
+
+  GLib::In_box inbox_6
+  {
+    GLib::Point(inbox_x, inbox_y + 5*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_6);
+
+  GLib::In_box inbox_7
+  {
+    GLib::Point(inbox_x, inbox_y + 6*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_7);
+
+  GLib::In_box inbox_8
+  {
+    GLib::Point(inbox_x, inbox_y + 7*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_8);
+
+  GLib::In_box inbox_9
+  {
+    GLib::Point(inbox_x, inbox_y + 8*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_9);
+
+  GLib::In_box inbox_10
+  {
+    GLib::Point(inbox_x, inbox_y + 9*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_10);
+
+  GLib::In_box inbox_11
+  {
+    GLib::Point(inbox_x, inbox_y + 10*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_11);
+
+  GLib::In_box inbox_12
+  {
+    GLib::Point(inbox_x, inbox_y + 11*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_12);
+
+  GLib::In_box inbox_13
+  {
+    GLib::Point(inbox_x, inbox_y + 12*inbox_h),
+    inbox_w, inbox_h, ""
+  };
+  win.attach(inbox_13);
 
   return Fl::run();
 }

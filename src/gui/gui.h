@@ -49,6 +49,12 @@ const unsigned int graph_canvas_h       { 505 };
 const unsigned int canvas_origin_x      { 62  };
 const unsigned int canvas_origin_y      { 489 };
 
+// FDFK
+const unsigned int inbox_x              {table_x + table_width/table_cols};
+const unsigned int inbox_y              {table_y + table_height/table_rows};
+const unsigned int inbox_w              {table_width/table_cols};
+const unsigned int inbox_h              {table_height/table_rows};
+
 LabelsList labels_list
 (
   std::initializer_list<Labels>
@@ -59,7 +65,7 @@ LabelsList labels_list
       "Engine Size", "Age of Vehicle", "Mileage",
       "Acceleration", "Road Type",
       "Traffic Conditions", "Temperature", "Humidity",
-      "Wind Speed", "Air Pressure", "Max speed",
+      "Wind Speed", "Air Pressure", "Max speed"
     }, context_column, 0),
     Labels(std::initializer_list<std::string>
     {

@@ -4,8 +4,12 @@
 #include <string>
 #include <vector>
 
+#include <typeinfo>
+#include <type_traits>
+
 #include "Point.h"
 #include "fltk.h"
+#include "Graph.h"
 
 namespace Graph_lib {
 

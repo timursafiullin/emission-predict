@@ -37,7 +37,10 @@ std::string In_box::get_string()
 
 void In_box::attach(Window& win)
 {
-  pw = new Fl_Input{loc.x, loc.y, width, height, label.c_str()};
+  pw = new Fl_Input{loc.x+5, loc.y+2, width-10, height-2, label.c_str()};
+  pw->box(FL_FLAT_BOX);
+  pw->align(FL_ALIGN_LEFT);
+  pw->set_visible();
   own = &win;
 }
 
