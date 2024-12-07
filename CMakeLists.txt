@@ -6,12 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-#add_compile_options(-O3)
+#enable compiler optimizations
+set(ENABLE_OPTIMIZATION 1)
 
 # enable training mode
-#add_compile_definitions(TRAIN=1)
+add_compile_definitions(TRAIN=1)
 
-find_package(OpenMP)
+find_package(OpenMP REQUIRED)
 
 if(OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -42,3 +43,16 @@ target_include_directories(${TARGET} PUBLIC
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/lib
 )
+
+if(ENABLE_OPTIMIZATION EQUAL 1)
+    add_compile_options(-O3)
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT supported OUTPUT error)
+
+    if(supported)
+        message(STATUS "IPO / LTO enabled")
+        set_property(TARGET ${TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(STATUS "IPO / LTO not supported: <${error}>")
+    endif()
+endif()

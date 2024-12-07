@@ -116,7 +116,7 @@ int main()
     // std::cout << "initializing...\n";
 
     std::vector<Number> structure{
-        13, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 1};
+        13, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 1};
 
     Scalar l{1e-10};
 
@@ -129,7 +129,7 @@ int main()
     // std::cout << "initialized.\n";
 
 #if TRAIN == 1
-    for (Number i{0}; i < 5; i++)
+    for (Number i{0}; i < 10; i++)
     {
         std::cout << i << std::endl;
     #pragma omp parallel sections

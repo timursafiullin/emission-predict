@@ -152,9 +152,18 @@ with open(
             for speed in range(0, 100, 10):
                 current_row = list(row)
                 current_row[5] = speed
-                current_row[13] = abs(CO2_regressor.predict(speed) - CO2_delta)
-                current_row[14] = abs(NOX_regressor.predict(speed) - NOX_delta)
-                current_row[15] = abs(PM_regressor.predict(speed) - PM_delta)
-                current_row[16] = abs(VOC_regressor.predict(speed) - VOC_delta)
-                current_row[17] = abs(SO2_regressor.predict(speed) - SO2_delta)
+                current_row[13] = CO2_regressor.predict(speed) - CO2_delta
+                current_row[14] = NOX_regressor.predict(speed) - NOX_delta
+                current_row[15] = PM_regressor.predict(speed) - PM_delta
+                current_row[16] = VOC_regressor.predict(speed) - VOC_delta
+                current_row[17] = SO2_regressor.predict(speed) - SO2_delta
+                if (
+                    current_row[5] < 0
+                    or current_row[13] < 0
+                    or current_row[14] < 0
+                    or current_row[15] < 0
+                    or current_row[16] < 0
+                    or current_row[17] < 0
+                ):
+                    continue
                 writer.writerow(current_row)
