@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #add_compile_options(-O3)
 
 # enable training mode
-add_compile_definitions(TRAIN=1)
+#add_compile_definitions(TRAIN=1)
 
 find_package(OpenMP)
 

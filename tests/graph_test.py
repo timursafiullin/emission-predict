@@ -1,10 +1,10 @@
 import subprocess
 import matplotlib.pyplot as plt
 
-input_data = [  # Truck Petrol 23.765 13 42687 0 1.888 City Moderate 17.45 39.743 1.9347 1001.86831
+input_data = [  # Truck Petrol 4.312 13 42687 0 1.888 City Moderate 17.45 39.743 1.9347 1001.86831
     "Truck",
     "Petrol",
-    "23.765",
+    "4.312",
     "13",
     "42687",
     "speed",
@@ -18,7 +18,7 @@ input_data = [  # Truck Petrol 23.765 13 42687 0 1.888 City Moderate 17.45 39.74
 ]
 output_data = []
 
-speed = range(0, 100, 1)
+speed = range(0, 20, 1)
 for speed_value in speed:
     print(speed_value)
     process = subprocess.Popen(

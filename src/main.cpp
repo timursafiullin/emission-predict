@@ -56,35 +56,35 @@ RowVector* get_output_SO2_ptr(std::vector<long double> vector)
 std::vector<Scalar> turn_СO2_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e2;
+    ans[0] = a[0] / 6 * 500;
     return ans;
 }
 
 std::vector<Scalar> turn_NOX_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e1;
+    ans[0] = a[0] / 6 * 2;
     return ans;
 }
 
 std::vector<Scalar> turn_PM_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e0;
+    ans[0] = a[0] / 6 * 0.2;
     return ans;
 }
 
 std::vector<Scalar> turn_VOC_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e0;
+    ans[0] = a[0] / 6 * 0.1;
     return ans;
 }
 
 std::vector<Scalar> turn_SO2_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
-    ans[0] = a[0] * 1e0;
+    ans[0] = a[0] / 6 * 0.1;
     return ans;
 }
 
@@ -116,9 +116,9 @@ int main()
     // std::cout << "initializing...\n";
 
     std::vector<Number> structure{
-        13, 21, 21, 21, 21, 21, 21, 21, 1};
+        13, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 1};
 
-    Scalar l{1e-5};
+    Scalar l{1e-10};
 
     NeuralNetwork::NeuralNetwork CO2{structure, l};
     NeuralNetwork::NeuralNetwork NOX{structure, l};
@@ -129,8 +129,9 @@ int main()
     // std::cout << "initialized.\n";
 
 #if TRAIN == 1
-    for (Number i{0}; i < 100; i++)
+    for (Number i{0}; i < 5; i++)
     {
+        std::cout << i << std::endl;
     #pragma omp parallel sections
         {
             {
@@ -160,19 +161,19 @@ int main()
         std::cout << VOC.test(input, output_VOC)[0] << "\n";
         std::cout << SO2.test(input, output_SO2)[0] << "\n";
 
-        CO2.save_weights_to_file("weights_CO2.csv");
-        NOX.save_weights_to_file("weights_NOX.csv");
-        PM.save_weights_to_file("weights_PM.csv");
-        VOC.save_weights_to_file("weights_VOC.csv");
-        SO2.save_weights_to_file("weights_SO2.csv");
+        CO2.save_weights_to_file("../weights/weights_CO2.csv");
+        NOX.save_weights_to_file("../weights/weights_NOX.csv");
+        PM.save_weights_to_file("../weights/weights_PM.csv");
+        VOC.save_weights_to_file("../weights/weights_VOC.csv");
+        SO2.save_weights_to_file("../weights/weights_SO2.csv");
     }
 
 #else
-    CO2.load_weights_from_file("weights_CO2.csv");
-    NOX.load_weights_from_file("weights_NOX.csv");
-    PM.load_weights_from_file("weights_PM.csv");
-    VOC.load_weights_from_file("weights_VOC.csv");
-    SO2.load_weights_from_file("weights_SO2.csv");
+    CO2.load_weights_from_file("../weights/weights_CO2.csv");
+    NOX.load_weights_from_file("../weights/weights_NOX.csv");
+    PM.load_weights_from_file("../weights/weights_PM.csv");
+    VOC.load_weights_from_file("../weights/weights_VOC.csv");
+    SO2.load_weights_from_file("../weights/weights_SO2.csv");
 
     DatasetCell test_cell;
     std::cin >> test_cell.vehicle_type;
@@ -188,10 +189,18 @@ int main()
     std::cin >> test_cell.humidity;
     std::cin >> test_cell.wind_speed;
     std::cin >> test_cell.air_pressure;
-    RowVector test_input{*get_input_ptr(test_cell.normalise_data())};
 
-    RowVector pr = PM.predict(test_input);
-    std::vector ans = turn_PM_output_to_standart_view(pr);
+    RowVector test_input{*get_input_ptr(test_cell.normalise_data())};
+    /*
+    std::vector<long double> test_cell_normalized = test_cell.normalise_data();
+
+    for (int i = 0; i < test_cell_normalized.size(); i++) {
+        std::cout << test_cell_normalized[i] << " ";
+    }
+    std::cout << std::endl;
+    */
+    RowVector pr = CO2.predict(test_input);
+    std::vector ans = turn_СO2_output_to_standart_view(pr);
     std::cout << ans[0] << std::endl;
 
 #endif

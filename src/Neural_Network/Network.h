@@ -286,7 +286,7 @@ namespace NeuralNetwork
             Scalar x
         )
         {
-            return tanhf(x);
+            return 1 / (1 + std::pow(std::exp(1.0), -x));
         }
 
         /**
@@ -298,7 +298,7 @@ namespace NeuralNetwork
             Scalar x
         )
         {
-            return 1 / pow(coshf(x), 2);
+            return std::pow(std::exp(1.0), -x) / std::pow(1 + std::pow(std::exp(1.0), -x), 2);
         }
 
         /**
