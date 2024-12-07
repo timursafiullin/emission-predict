@@ -18,11 +18,11 @@ input_data = [  # Truck Petrol 4.312 13 42687 0 1.888 City Moderate 17.45 39.743
 ]
 output_data = []
 
-speed = range(0, 20, 1)
+speed = range(0, 120, 1)
 for speed_value in speed:
     print(speed_value)
     process = subprocess.Popen(
-        ["build/emission_predict.exe"],
+        [".\\emission_predict.exe"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         shell=True,

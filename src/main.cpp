@@ -53,7 +53,7 @@ RowVector* get_output_SO2_ptr(std::vector<long double> vector)
     return output;
 }
 
-std::vector<Scalar> turn_СO2_output_to_standart_view(RowVector a)
+std::vector<Scalar> turn_CO2_output_to_standart_view(RowVector a)
 {
     std::vector<Scalar> ans(1);
     ans[0] = a[0] / 6 * 500;
@@ -90,6 +90,7 @@ std::vector<Scalar> turn_SO2_output_to_standart_view(RowVector a)
 
 int main()
 {
+#if TRAIN == 1
     std::vector<DatasetCell> cells = get_all_cells();
 
     std::vector<RowVector*> input{size_t(cells.size()*0.8)};
@@ -100,7 +101,6 @@ int main()
     std::vector<RowVector*> output_VOC{size_t(cells.size() * 0.8)};
     std::vector<RowVector*> output_SO2{size_t(cells.size() * 0.8)};
 
-    // std::cout << "reading data...\n";
 
     for (size_t i = 0; i < input.size(); ++i) {
         input[i] = get_input_ptr(cells[i].normalise_data());
@@ -110,23 +110,18 @@ int main()
         output_VOC[i] = get_output_VOC_ptr(cells[i].normalise_data());
         output_SO2[i] = get_output_SO2_ptr(cells[i].normalise_data());
     }
-
-    // std::cout << "done.\n";
-
-    // std::cout << "initializing...\n";
+#endif
 
     std::vector<Number> structure{
-        13, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 1};
+        13, 13, 13, 13, 13, 13, 13, 13, 13, 1};
 
-    Scalar l{1e-10};
+    Scalar l{1e-30};
 
     NeuralNetwork::NeuralNetwork CO2{structure, l};
     NeuralNetwork::NeuralNetwork NOX{structure, l};
     NeuralNetwork::NeuralNetwork PM {structure, l};
     NeuralNetwork::NeuralNetwork VOC{structure, l};
     NeuralNetwork::NeuralNetwork SO2{structure, l};
-
-    // std::cout << "initialized.\n";
 
 #if TRAIN == 1
     for (Number i{0}; i < 10; i++)
@@ -200,7 +195,7 @@ int main()
     std::cout << std::endl;
     */
     RowVector pr = CO2.predict(test_input);
-    std::vector ans = turn_СO2_output_to_standart_view(pr);
+    std::vector ans = turn_CO2_output_to_standart_view(pr);
     std::cout << ans[0] << std::endl;
 
 #endif

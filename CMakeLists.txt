@@ -6,11 +6,23 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-#enable compiler optimizations
+# enable training mode
+set(ENABLE_TRAINING_MODE 0)
+
+# enable compiler optimizations
 set(ENABLE_OPTIMIZATION 1)
 
-# enable training mode
-add_compile_definitions(TRAIN=1)
+# mingw gcc generates illegal instruction when compiling evaluation mode with optimization. nobody knows why
+if(ENABLE_TRAINING_MODE EQUAL 0)
+    set(ENABLE_OPTIMIZATION 0)
+else()
+    # enable training mode
+    add_compile_definitions(TRAIN=1)
+endif()
+
+if(ENABLE_OPTIMIZATION EQUAL 1)
+    add_compile_options(-O3)
+endif()
 
 find_package(OpenMP REQUIRED)
 
@@ -45,7 +57,6 @@ target_include_directories(${TARGET} PUBLIC
 )
 
 if(ENABLE_OPTIMIZATION EQUAL 1)
-    add_compile_options(-O3)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT supported OUTPUT error)
 
