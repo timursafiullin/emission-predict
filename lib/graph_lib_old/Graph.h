@@ -233,20 +233,19 @@ private:
 class Table : public Shape
 {
 public:
-    Table
-    (
-        int x, int y, int w, int h,
-        int table_cols,
-        int table_rows,
-        Fl_Color inner_color = FL_BLACK,
-        Fl_Color outer_color = FL_BLACK,
-        Fl_Color background_color = FL_WHITE
-    );
+  Table(
+      int x, int y, int w, int h,
+      int table_cols,
+      int table_rows,
+      Fl_Color inner_color = FL_BLACK,
+      Fl_Color outer_color = FL_BLACK,
+      Fl_Color background_color = FL_WHITE
+      );
 
-    void set_label(Labels& labels);
-    void set_label(LabelsList& labels_list);
+  void set_label(Labels &labels);
+  void set_label(LabelsList &labels_list);
 
-//  void attach(Window)
+  //  void attach(Window)
 private:
     int x, y, w, h;
     int rows, cols;

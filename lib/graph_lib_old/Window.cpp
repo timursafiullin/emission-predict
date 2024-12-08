@@ -27,10 +27,14 @@ void Window::draw()
 {
   Fl_Window::draw();
   for (unsigned int i = 0; i < shapes.size(); ++i)
+  {
     shapes[i]->draw();
+  }
 
   for (unsigned int i = 0; i < widgets.size(); ++i)
+  {
     widgets[i]->draw();
+  }
 }
 
 void Window::attach(Widget& w)

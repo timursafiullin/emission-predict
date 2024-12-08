@@ -83,6 +83,10 @@ void Table::draw_labels(const LabelsList& labels_list) const
     {
         fl_color(COLORS::BLACK);
         fl_font(FL_HELVETICA, Fl_Fontsize(cell_h/2.25));
+
+        // Draw background
+        fl_draw_box(FL_FLAT_BOX, x + labels.col * cell_w, y + labels.row * cell_h, cell_w, cell_h, background_color);
+
         fl_draw(labels[i].c_str(), x + cell_w * (labels.col + 0.075), y + cell_h * labels.row, cell_w, cell_h, FL_ALIGN_LEFT);
         switch (labels.context)
         {
@@ -113,14 +117,11 @@ void Table::draw_borders(Fl_Color inner_color, Fl_Color outer_color) const
 
 void Table::draw_lines() const
 {
-  // Draw background
-  fl_draw_box(FL_FLAT_BOX, x, y, w, h, background_color);
-
-  // Draw borders
-  draw_borders(inner_color, outer_color);
-
   // Draw labels
   draw_labels(lblList);
+  
+  // Draw borders
+  draw_borders(inner_color, outer_color);
 }
 
 void GraphCanvas::draw_lines() const
