@@ -35,7 +35,7 @@ static void callback_predict(GLib::Address, GLib::Address addr)
   fl_color(COLORS::BRIGHT_BLUE);
 
   GLib::Function *funkcia = new GLib::Function{
-      sin, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
+      sqrt, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
 
   window.attach(*funkcia);
 }
@@ -83,7 +83,7 @@ int main_gui()
 try
 {
   // CREATING MAIN WINDOW
-  GLib::Window win{window_width, window_height, main_window_title, COLORS::LIGHT_GRAY};
+  GLib::Window win{window_width, window_height, main_window_title, COLORS::BARBIE_GRAY};
 
   // TABLE OF PARAMETERS AND VALUES
   GLib::Table parameters_table{
@@ -131,7 +131,6 @@ try
       GLib::Point(graph_canvas_x, graph_canvas_y),
       graph_canvas_w, graph_canvas_h,
       GLib::Point(canvas_origin_x, canvas_origin_y)};
-
   win.attach(graph_canvas);
 
   std::vector<GLib::In_box *> inboxes;

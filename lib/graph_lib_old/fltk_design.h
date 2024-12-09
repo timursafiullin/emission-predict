@@ -12,6 +12,7 @@ namespace COLORS
     const auto GRAY = fl_rgb_color(198, 198, 198);
     const auto DARK_GRAY = fl_rgb_color(88, 88, 88);
     const auto BRIGHT_BLUE = fl_rgb_color(7, 118, 245);
+    const auto BARBIE_GRAY = fl_rgb_color(209, 144, 205);
 };
 
 #endif // FL_DESIGN
