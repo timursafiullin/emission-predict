@@ -81,12 +81,9 @@ void Table::draw_labels(const LabelsList& labels_list) const
   for (Labels& labels : labels_list.get())
     for (unsigned int i{0}; i < labels.get().size(); ++i)
     {
+        fl_draw_box(FL_FLAT_BOX, x + labels.col * cell_w, y + labels.row * cell_h, cell_w, cell_h, background_color);
         fl_color(COLORS::BLACK);
         fl_font(FL_HELVETICA, Fl_Fontsize(cell_h/2.25));
-
-        // Draw background
-        fl_draw_box(FL_FLAT_BOX, x + labels.col * cell_w, y + labels.row * cell_h, cell_w, cell_h, background_color);
-
         fl_draw(labels[i].c_str(), x + cell_w * (labels.col + 0.075), y + cell_h * labels.row, cell_w, cell_h, FL_ALIGN_LEFT);
         switch (labels.context)
         {
