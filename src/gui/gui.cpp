@@ -134,10 +134,10 @@ try
   win.attach(graph_canvas);
 
   std::vector<GLib::In_box *> inboxes;
-  for (size_t i = 0; i < 13; ++i)
+  for (size_t i = 0; i < table_rows - 1; ++i)
   {
     inboxes.push_back(new GLib::In_box{
-        GLib::Point(inbox_x, inbox_y + inbox_h * i),
+        GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
         inbox_w, inbox_h, ""});
     win.attach(*inboxes[i]);
   }

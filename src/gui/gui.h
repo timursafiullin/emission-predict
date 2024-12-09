@@ -50,10 +50,10 @@ const unsigned int canvas_origin_x{62};
 const unsigned int canvas_origin_y{489};
 
 // FDFK
-const unsigned int inbox_x{table_x + table_width / table_cols};
-const unsigned int inbox_y{table_y + table_height / table_rows};
-const unsigned int inbox_w{table_width / table_cols};
-const unsigned int inbox_h{table_height / table_rows};
+const unsigned int inbox_x{1 + table_x + table_width / table_cols};
+const unsigned int inbox_y{1 + table_y + table_height / table_rows};
+const unsigned int inbox_w{-1 + table_width / table_cols};
+const unsigned int inbox_h{-1 + table_height / table_rows};
 
 extern LabelsList labels_list;
 
