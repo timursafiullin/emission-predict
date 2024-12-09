@@ -45,7 +45,7 @@ add_executable(
 )
 
 target_link_libraries(${TARGET} PUBLIC
-    graph_lib
+    graph_lib_old
     csv
 )
 

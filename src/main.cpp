@@ -1,6 +1,4 @@
 #include <iostream>
-#include "gui.h"
-#include "graph_lib.h"
 #include "dataset_reader.h"
 #include "csv.h"
 #include "Neural_Network/Network.h"
@@ -8,9 +6,9 @@
 
 using namespace NeuralNetwork;
 
-RowVector* get_input_ptr(std::vector<long double> vector)
+RowVector *get_input_ptr(std::vector<long double> vector)
 {
-    RowVector* input = new RowVector(13);
+    RowVector *input = new RowVector(13);
     for (Number i{0}; i < 13; ++i)
     {
         (*input)[i] = vector[i];
@@ -18,37 +16,37 @@ RowVector* get_input_ptr(std::vector<long double> vector)
     return input;
 }
 
-RowVector* get_output_CO2_ptr(std::vector<long double> vector)
+RowVector *get_output_CO2_ptr(std::vector<long double> vector)
 {
-    RowVector* output = new RowVector(1);
+    RowVector *output = new RowVector(1);
     (*output)[0] = vector[13];
     return output;
 }
 
-RowVector* get_output_NOX_ptr(std::vector<long double> vector)
+RowVector *get_output_NOX_ptr(std::vector<long double> vector)
 {
-    RowVector* output = new RowVector(1);
+    RowVector *output = new RowVector(1);
     (*output)[0] = vector[14];
     return output;
 }
 
-RowVector* get_output_PM_ptr(std::vector<long double> vector)
+RowVector *get_output_PM_ptr(std::vector<long double> vector)
 {
-    RowVector* output = new RowVector(1);
+    RowVector *output = new RowVector(1);
     (*output)[0] = vector[15];
     return output;
 }
 
-RowVector* get_output_VOC_ptr(std::vector<long double> vector)
+RowVector *get_output_VOC_ptr(std::vector<long double> vector)
 {
-    RowVector* output = new RowVector(1);
+    RowVector *output = new RowVector(1);
     (*output)[0] = vector[16];
     return output;
 }
 
-RowVector* get_output_SO2_ptr(std::vector<long double> vector)
+RowVector *get_output_SO2_ptr(std::vector<long double> vector)
 {
-    RowVector* output = new RowVector(1);
+    RowVector *output = new RowVector(1);
     (*output)[0] = vector[17];
     return output;
 }
@@ -88,21 +86,21 @@ std::vector<Scalar> turn_SO2_output_to_standart_view(RowVector a)
     return ans;
 }
 
-int main()
+int main_neuro()
 {
 #if TRAIN == 1
     std::vector<DatasetCell> cells = get_all_cells();
 
-    std::vector<RowVector*> input{size_t(cells.size()*0.8)};
+    std::vector<RowVector *> input{size_t(cells.size() * 0.8)};
 
-    std::vector<RowVector*> output_CO2{size_t(cells.size() * 0.8)};
-    std::vector<RowVector*> output_NOX{size_t(cells.size() * 0.8)};
-    std::vector<RowVector*> output_PM{size_t(cells.size() * 0.8)};
-    std::vector<RowVector*> output_VOC{size_t(cells.size() * 0.8)};
-    std::vector<RowVector*> output_SO2{size_t(cells.size() * 0.8)};
+    std::vector<RowVector *> output_CO2{size_t(cells.size() * 0.8)};
+    std::vector<RowVector *> output_NOX{size_t(cells.size() * 0.8)};
+    std::vector<RowVector *> output_PM{size_t(cells.size() * 0.8)};
+    std::vector<RowVector *> output_VOC{size_t(cells.size() * 0.8)};
+    std::vector<RowVector *> output_SO2{size_t(cells.size() * 0.8)};
 
-
-    for (size_t i = 0; i < input.size(); ++i) {
+    for (size_t i = 0; i < input.size(); ++i)
+    {
         input[i] = get_input_ptr(cells[i].normalise_data());
         output_CO2[i] = get_output_CO2_ptr(cells[i].normalise_data());
         output_NOX[i] = get_output_NOX_ptr(cells[i].normalise_data());
@@ -119,7 +117,7 @@ int main()
 
     NeuralNetwork::NeuralNetwork CO2{structure, l};
     NeuralNetwork::NeuralNetwork NOX{structure, l};
-    NeuralNetwork::NeuralNetwork PM {structure, l};
+    NeuralNetwork::NeuralNetwork PM{structure, l};
     NeuralNetwork::NeuralNetwork VOC{structure, l};
     NeuralNetwork::NeuralNetwork SO2{structure, l};
 
@@ -127,29 +125,29 @@ int main()
     for (Number i{0}; i < 10; i++)
     {
         std::cout << i << std::endl;
-    #pragma omp parallel sections
+#pragma omp parallel sections
         {
             {
                 CO2.train(input, output_CO2);
             }
-        #pragma omp section
+#pragma omp section
             {
                 NOX.train(input, output_NOX);
             }
-        #pragma omp section
+#pragma omp section
             {
                 PM.train(input, output_PM);
             }
-        #pragma omp section
+#pragma omp section
             {
                 VOC.train(input, output_VOC);
             }
-        #pragma omp section
+#pragma omp section
             {
                 SO2.train(input, output_SO2);
             }
         }
-        
+
         std::cout << CO2.test(input, output_CO2)[0] << "\n";
         std::cout << NOX.test(input, output_NOX)[0] << "\n";
         std::cout << PM.test(input, output_PM)[0] << "\n";
