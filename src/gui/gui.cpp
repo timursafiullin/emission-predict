@@ -8,6 +8,17 @@
 
 #define GLib Graph_lib
 
+LabelsList labels_list(
+    std::initializer_list<Labels>{
+        Labels(std::initializer_list<std::string>{
+                   "Parameters", "Vehicle Type", "Fuel Type",
+                   "Engine Size", "Age of Vehicle", "Mileage",
+                   "Acceleration", "Road Type",
+                   "Traffic Conditions", "Temperature", "Humidity",
+                   "Wind Speed", "Air Pressure", "Max speed"},
+               context_column, 0),
+        Labels(std::initializer_list<std::string>{"Values"}, context_column, 1)});
+
 // CALLBACKS
 static void callback_predict(GLib::Address, GLib::Address addr)
 {
@@ -68,7 +79,7 @@ static void callback_clear(GLib::Address, GLib::Address addr)
   std::cout << "Button 'Clear' pressed!" << std::endl;
 }
 
-int main()
+int main_gui()
 try
 {
   // CREATING MAIN WINDOW
@@ -137,8 +148,10 @@ try
 catch (std::exception &e)
 {
   std::cerr << e.what() << std::endl;
+  return 1;
 }
 catch (...)
 {
   std::cerr << "Unknown exception." << std::endl;
+  return 1;
 }

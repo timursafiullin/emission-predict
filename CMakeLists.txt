@@ -52,6 +52,7 @@ target_link_libraries(${TARGET} PUBLIC
 target_include_directories(${TARGET} PUBLIC
     ${CMAKE_SOURCE_DIR}/src/dataset
     ${CMAKE_SOURCE_DIR}/src/gui
+    ${CMAKE_SOURCE_DIR}/src/Neural_Network
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/lib
 )

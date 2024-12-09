@@ -55,15 +55,8 @@ const unsigned int inbox_y{table_y + table_height / table_rows};
 const unsigned int inbox_w{table_width / table_cols};
 const unsigned int inbox_h{table_height / table_rows};
 
-LabelsList labels_list(
-    std::initializer_list<Labels>{
-        Labels(std::initializer_list<std::string>{
-                   "Parameters", "Vehicle Type", "Fuel Type",
-                   "Engine Size", "Age of Vehicle", "Mileage",
-                   "Acceleration", "Road Type",
-                   "Traffic Conditions", "Temperature", "Humidity",
-                   "Wind Speed", "Air Pressure", "Max speed"},
-               context_column, 0),
-        Labels(std::initializer_list<std::string>{"Values"}, context_column, 1)});
+extern LabelsList labels_list;
+
+int main_gui();
 
 #endif
