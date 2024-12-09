@@ -139,7 +139,7 @@ void GraphCanvas::draw_lines() const
   int pointer_y = origin_y;
   while (pointer_y > y)
   {
-    fl_line(x, pointer_y, x+w, pointer_y);
+    fl_line(x, pointer_y, x+w-1, pointer_y);
     pointer_y -= y + h - origin_y;
   }
 
