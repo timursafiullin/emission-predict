@@ -88,4 +88,6 @@ extern void callback_save(GLib::Address, GLib::Address addr);
 extern void callback_history(GLib::Address, GLib::Address addr);
 extern void callback_clear(GLib::Address, GLib::Address addr);
 
+extern int main_gui();
+
 #endif

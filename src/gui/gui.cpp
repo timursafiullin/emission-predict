@@ -254,10 +254,9 @@ try
   emissions.insert(EmissionState("SO2 Emissions", SO2));
 
   // CREATING MAIN WINDOW
-  GLib::Window win{
-    window_width, window_height,
-    main_window_title, COLORS::LIGHT_GRAY
-  };
+  GLib::WindowWithNeuro win{
+      window_width, window_height,
+      main_window_title, COLORS::LIGHT_GRAY};
 
   // TABLE OF PARAMETERS AND VALUES
   GLib::Table parameters_table{

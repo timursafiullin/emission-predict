@@ -116,7 +116,7 @@ int main_neuro()
 
     return 0;
 }
-
+/*
 int main_gui()
 try
 {
@@ -195,7 +195,7 @@ catch (...)
     std::cerr << "Unknown exception." << std::endl;
     return 1;
 }
-
+*/
 int main()
 {
     main_gui();
