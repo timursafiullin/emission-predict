@@ -10,10 +10,9 @@ void Button::attach(Window& win)
   pw = new Fl_Button{loc.x, loc.y, width, height, label.c_str()};
   
   pw->color(box_color);
-  pw->color2(box_color2);
+  pw->box(boxtype);
   pw->labeltype(labeltype);
   pw->labelsize(labelsize);
-  pw->box(boxtype);
   pw->labelfont(labelfont);
 
   pw->callback(reinterpret_cast<Fl_Callback*>(do_it), this);  // pass this widget

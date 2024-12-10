@@ -206,8 +206,7 @@ try
     next_gas_label,
     callback_next
   };
-  next_button.set_box_type(FL_BORDER_BOX);
-  next_button.set_box_color2(COLORS::LIGHT_GRAY);
+  next_button.set_box_type(FL_OVAL_BOX);
   win.attach(next_button);
 
   // PREV GAS BUTTON
@@ -217,8 +216,7 @@ try
     prev_gas_label,
     callback_prev
   };
-  prev_button.set_box_type(FL_BORDER_BOX);
-  prev_button.set_box_color2(COLORS::LIGHT_GRAY);
+  prev_button.set_box_type(FL_OVAL_BOX);
   win.attach(prev_button);
 
   return Fl::run();
