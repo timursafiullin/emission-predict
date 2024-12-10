@@ -22,55 +22,35 @@ LabelsList labels_list(
 dlcList<Fl_Color> graph_colors{};
 dlcList<EmissionState> emissions{};
 
+static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label);
+void show_graph(GLib::WindowWithNeuro &window, EmissionState &state);
+
 // CALLBACKS
 void callback_predict(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
-  window.redraw();
   std::cout << "Button 'Predict' pressed!" << std::endl;
 
-  std::vector<std::string> inbox_values = window.get_values_from_inboxes();
-  bool validated = window.validate_inboxes();
+  std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
-  if (validated)
+  for (size_t i = 0; i < functions.size(); i++)
   {
-    window.current_cell.vehicle_type = inbox_values[0];
-    window.current_cell.fuel_type = inbox_values[1];
-    window.current_cell.engine_size = std::stold(inbox_values[2]);
-    window.current_cell.age_of_vehicle = std::stoul(inbox_values[3]);
-    window.current_cell.mileage = std::stoull(inbox_values[4]);
-    window.current_cell.speed = std::stold(inbox_values[5]);
-    window.current_cell.acceleration = std::stold(inbox_values[6]);
-    window.current_cell.road_type = inbox_values[7];
-    window.current_cell.traffic_conditions = inbox_values[8];
-    window.current_cell.temperature = std::stold(inbox_values[9]);
-    window.current_cell.humidity = std::stold(inbox_values[10]);
-    window.current_cell.wind_speed = std::stold(inbox_values[11]);
-    window.current_cell.air_pressure = std::stold(inbox_values[12]);
-
-    std::vector<double> evaluations = window.evaluate_network_CO2();
-
-    if (window.graph_is_shown)
-      window.detach(*window.shapes.back()); // delete function shape. In fact always the last one in vector
-    else
-      window.graph_is_shown = true;
-
-  fl_color(graph_colors.get_current());
-
-  GLib::Function *funkcia = new GLib::Function{
-      sqrt, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
-
-    window.attach(*funkcia);
-
-    
+    window.detach(*functions[i]); // delete all functions
   }
+
+  EmissionState state = emissions.get_current();
+  fl_color(graph_colors.get_current());
+  show_graph(window, state);
+
+  window.redraw();
 }
 
 void callback_save(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
+  std::cout << "Button 'History' pressed!" << std::endl;
 
   bool validated = window.validate_inboxes();
   if (validated)
@@ -120,20 +100,28 @@ void callback_history(GLib::Address, GLib::Address addr)
   {
     inboxes[i]->set_string(inbox_values[i]);
   }
-
-  std::cout << "Button 'History' pressed!" << std::endl;
 }
 
 void callback_clear(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
+  std::cout << "Button 'Clear' pressed!" << std::endl;
 
-  if (window.graph_is_shown)
+  std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
+
+  for (size_t i = 0; i < functions.size(); i++)
   {
-    window.detach(*window.shapes.back()); // delete function shape. In fact always the last one in vector
-    window.graph_is_shown = false;
+    window.detach(*functions[i]); // delete all functions
   }
+
+  std::vector<GLib::GasText *> gas_texts = window.gas_texts; // copy gas_texts
+
+  for (size_t i = 0; i < gas_texts.size(); i++)
+  {
+    window.detach(*gas_texts[i]); // delete all gas_texts
+  }
+
   std::vector<GLib::Widget *> widgets = window.widgets; // copy widgets
 
   for (size_t i = 0; i < widgets.size(); i++)
@@ -146,64 +134,60 @@ void callback_clear(GLib::Address, GLib::Address addr)
   }
 
   window.redraw();
-  std::cout << "Button 'Clear' pressed!" << std::endl;
 }
-
-static void show_gas_label(GLib::Window& window, std::string gas_label);
-void show_graph(EmissionState& state);
 
 static void callback_next(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
-  auto &window = static_cast<GLib::Window &>(pb->window());
-  window.redraw();
+  auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
   std::cout << "Button 'Next' pressed!" << std::endl;
 
-  if (window.graph_is_shown)
-    window.detach(*window.shapes.back()); // delete function shape. In fact always the last one in vector
-  else
-    window.graph_is_shown = true;
+  std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
+
+  for (size_t i = 0; i < functions.size(); i++)
+  {
+    window.detach(*functions[i]); // delete all functions
+  }
 
   EmissionState state = emissions.get_next();
-  show_gas_label(window, state.gas_label);
-  show_graph(state);
-
-  // для наглядности и теста
   fl_color(graph_colors.get_next());
-  GLib::Function *funkcia = new GLib::Function{
-      sqrt, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
-  window.attach(*funkcia);
+  show_graph(window, state);
+
+  window.redraw();
 }
 
 static void callback_prev(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
-  auto &window = static_cast<GLib::Window &>(pb->window());
-  window.redraw();
+  auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
   std::cout << "Button 'Prev' pressed!" << std::endl;
 
-  if (window.graph_is_shown)
-    window.detach(*window.shapes.back()); // delete function shape. In fact always the last one in vector
-  else
-    window.graph_is_shown = true;
+  std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
+
+  for (size_t i = 0; i < functions.size(); i++)
+  {
+    window.detach(*functions[i]); // delete all functions
+  }
 
   EmissionState state = emissions.get_previous();
-  show_gas_label(window, state.gas_label);
-  show_graph(state);
-
-  // для наглядности и теста
   fl_color(graph_colors.get_previous());
-  GLib::Function *funkcia = new GLib::Function{
-      sqrt, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
+  show_graph(window, state);
 
-  window.attach(*funkcia);
+  window.redraw();
 }
 
-static void show_gas_label(GLib::Window& window, std::string gas_label)
+static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label)
 {
   unsigned int gas_label_x{graph_canvas_x + graph_canvas_w / 2 - (gas_label.size() / 2) * 8}, gas_label_y{next_gas_y + 17};
 
-  GLib::Text *gas = new GLib::Text{GLib::Point(gas_label_x, gas_label_y), gas_label};
+  std::vector<GLib::GasText *> gas_texts = window.gas_texts; // copy gas_texts
+
+  for (size_t i = 0; i < gas_texts.size(); i++)
+  {
+    window.detach(*gas_texts[i]); // delete all gas_texts
+  }
+
+  GLib::GasText *gas = new GLib::GasText{GLib::Point(gas_label_x, gas_label_y), gas_label};
   gas->set_color(COLORS::BLACK);
   gas->set_font(FL_HELVETICA);
   gas->set_font_size(16);
@@ -211,29 +195,48 @@ static void show_gas_label(GLib::Window& window, std::string gas_label)
   window.attach(*gas);
 }
 
-void show_graph(EmissionState& state)
+void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
 {
-  // ... (rest of the code)
-  switch(state.gas_tag)
+  bool validated = window.validate_inboxes();
+  if (validated)
   {
+    show_gas_label(window, state.gas_label);
+    window.update_current_cell();
+    std::vector<double> evaluations;
+
+    switch (state.gas_tag)
+    {
     case CO2:
-      // co2 graph
-      break;
+    {
+      evaluations = window.evaluate_network(CO2);
+    }
+    break;
     case NOX:
-      // nox graph
-      break;
+    {
+      evaluations = window.evaluate_network(NOX);
+    }
+    break;
     case SO2:
-      // so2 graph
-      break;
+    {
+      evaluations = window.evaluate_network(SO2);
+    }
+    break;
     case VOC:
-      // voc graph
-      break;
+    {
+      evaluations = window.evaluate_network(VOC);
+    }
+    break;
     case PM25:
-      // pm2.5 graph
-      break;
-    default:
-      // something
-      break;
+    {
+      evaluations = window.evaluate_network(PM25);
+    }
+    break;
+    }
+
+    GLib::FunctionStepping *func = new GLib::FunctionStepping{
+        evaluations, 0, window.current_cell.speed, GLib::Point(canvas_origin_x, canvas_origin_y)};
+
+    window.attach(*func);
   }
 }
 
@@ -260,48 +263,43 @@ try
 
   // TABLE OF PARAMETERS AND VALUES
   GLib::Table parameters_table{
-    table_x, table_y,
-    table_width, table_height,
-    table_cols, table_rows,
-    COLORS::LIGHT_GRAY, COLORS::LIGHT_GRAY
-  };
+      table_x, table_y,
+      table_width, table_height,
+      table_cols, table_rows,
+      COLORS::LIGHT_GRAY, COLORS::LIGHT_GRAY};
   parameters_table.set_label(labels_list);
   win.attach(parameters_table);
 
   // PREDICT BUTTON
   GLib::Button predict_button{
-    GLib::Point(predict_button_x, predict_button_y),
-    button_w, button_h,
-    predict_button_label,
-    callback_predict
-  };
+      GLib::Point(predict_button_x, predict_button_y),
+      button_w, button_h,
+      predict_button_label,
+      callback_predict};
   win.attach(predict_button);
 
   // SAVE BUTTON
   GLib::Button save_button{
-    GLib::Point(save_button_x, save_button_y),
-    button_w, button_h,
-    save_button_label,
-    callback_save
-  };
+      GLib::Point(save_button_x, save_button_y),
+      button_w, button_h,
+      save_button_label,
+      callback_save};
   win.attach(save_button);
 
   // HISTORY BUTTON
   GLib::Button history_button{
-    GLib::Point(history_button_x, history_button_y),
-    button_w, button_h,
-    history_button_label,
-    callback_history
-  };
+      GLib::Point(history_button_x, history_button_y),
+      button_w, button_h,
+      history_button_label,
+      callback_history};
   win.attach(history_button);
 
   // CLEAR BUTTON
   GLib::Button clear_button{
-    GLib::Point(clear_button_x, clear_button_y),
-    button_w, button_h,
-    clear_button_label,
-    callback_clear
-  };
+      GLib::Point(clear_button_x, clear_button_y),
+      button_w, button_h,
+      clear_button_label,
+      callback_clear};
   win.attach(clear_button);
 
   // GRAPH AREA (WHITE BOX WITH BLACK AXISES AND LIGHT GRAY GRID)
@@ -322,21 +320,19 @@ try
 
   // NEXT GAS BUTTON
   GLib::Button next_button{
-    GLib::Point(next_gas_x, next_gas_y),
-    gas_button_w, gas_button_w,
-    next_gas_label,
-    callback_next
-  };
+      GLib::Point(next_gas_x, next_gas_y),
+      gas_button_w, gas_button_w,
+      next_gas_label,
+      callback_next};
   next_button.set_box_type(FL_OVAL_BOX);
   win.attach(next_button);
 
   // PREV GAS BUTTON
   GLib::Button prev_button{
-    GLib::Point(prev_gas_x, prev_gas_y),
-    gas_button_w, gas_button_w,
-    prev_gas_label,
-    callback_prev
-  };
+      GLib::Point(prev_gas_x, prev_gas_y),
+      gas_button_w, gas_button_w,
+      prev_gas_label,
+      callback_prev};
   prev_button.set_box_type(FL_OVAL_BOX);
   win.attach(prev_button);
 

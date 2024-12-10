@@ -51,8 +51,6 @@ public:
   std::vector<Widget*> widgets;  // widgets attached to window
   std::vector<Shape*> shapes;  // shapes attached to window
 
-  bool graph_is_shown = false;
-
 protected:
   void draw ();
 

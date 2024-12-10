@@ -10,6 +10,38 @@
 
 namespace Graph_lib
 {
+    class FunctionStepping : public GLib::Shape
+    {
+    public:
+        FunctionStepping(std::vector<double> points, double r1, double r2, Point xy, double xscale = 25, double yscale = 25)
+        {
+            int count = points.size();
+
+            double max_graph = *std::max_element(points.begin(), points.end());
+            double min_graph = *std::min_element(points.begin(), points.end());
+
+            yscale = (double)(505 - 50) / (double)(max_graph - min_graph); // graph_canvas_h
+            xscale = (double)(504 - 50) / (double)count;                   // graph_canvas_w
+
+            if (r2 - r1 <= 0)
+                error("bad graphing range");
+            if (count <= 0)
+                error("non-positive graphing count");
+            double dist = (r2 - r1) / count;
+            double r = r1;
+            for (int i = 0; i < count; ++i)
+            {
+                add(Point{xy.x + int(r * xscale), xy.y - int((points[i] - min_graph) * yscale)});
+                r += dist;
+            }
+        };
+    };
+
+    class GasText : public GLib::Text
+    {
+    public:
+        GasText(Point x, const std::string &s) : GLib::Text{x, s} {};
+    };
 
     class WindowWithNeuro : public GLib::Window
     {
@@ -18,15 +50,6 @@ namespace Graph_lib
                                                                                                                        hh,
                                                                                                                        title,
                                                                                                                        background_color} {};
-        /*
-        WindowWithNeuro(int w, int h, const std::string &title) : GLib::Window{w,
-                                                                               h,
-                                                                               title} {};
-        WindowWithNeuro(Point xy, int w, int h, const std::string &title) : GLib::Window{xy,
-                                                                                         w,
-                                                                                         h,
-                                                                                         title} {};
-        */
         std::vector<NeuralNetwork::Number> neuro_structure{
             13,
             13,
@@ -60,6 +83,8 @@ namespace Graph_lib
         using Window::detach;
 
         std::vector<GLib::In_box *> inboxes;
+        std::vector<GLib::GasText *> gas_texts;
+        std::vector<GLib::FunctionStepping *> functions;
 
         void attach(GLib::In_box &w)
         {
@@ -68,6 +93,18 @@ namespace Graph_lib
             w.attach(*this);
             end();
             widgets.push_back(&w);
+        }
+
+        void attach(GLib::GasText &s)
+        {
+            gas_texts.push_back(&s);
+            shapes.push_back(&s);
+        }
+
+        void attach(GLib::FunctionStepping &s)
+        {
+            functions.push_back(&s);
+            shapes.push_back(&s);
         }
 
         void detach(GLib::In_box &w)
@@ -80,6 +117,28 @@ namespace Graph_lib
             for (unsigned int i = widgets.size(); 0 < i; --i)
                 if (widgets[i - 1] == &w)
                     widgets.erase(widgets.begin() + (i - 1));
+        }
+
+        void detach(GLib::GasText &s)
+        {
+            for (unsigned int i = gas_texts.size(); 0 < i; --i)
+                if (gas_texts[i - 1] == &s)
+                    gas_texts.erase(gas_texts.begin() + (i - 1));
+
+            for (unsigned int i = shapes.size(); 0 < i; --i)
+                if (shapes[i - 1] == &s)
+                    shapes.erase(shapes.begin() + (i - 1));
+        }
+
+        void detach(GLib::FunctionStepping &s)
+        {
+            for (unsigned int i = functions.size(); 0 < i; --i)
+                if (functions[i - 1] == &s)
+                    functions.erase(functions.begin() + (i - 1));
+
+            for (unsigned int i = shapes.size(); 0 < i; --i)
+                if (shapes[i - 1] == &s)
+                    shapes.erase(shapes.begin() + (i - 1));
         }
 
         std::vector<std::string> get_values_from_inboxes()
@@ -174,7 +233,7 @@ namespace Graph_lib
             return ans;
         }
 
-        std::vector<double> evaluate_network_CO2()
+        std::vector<double> evaluate_network(char network)
         {
             int max_speed = current_cell.speed;
             std::vector<double> evaluations;
@@ -182,10 +241,43 @@ namespace Graph_lib
             for (size_t current_speed = 0; current_speed < max_speed; ++current_speed)
             {
                 current_cell.speed = current_speed;
+                std::vector<NeuralNetwork::Scalar> ans;
+                ans.push_back(0);
 
                 NeuralNetwork::RowVector network_input{*get_input_ptr(current_cell.normalise_data())};
-                NeuralNetwork::RowVector pr = CO2.predict(network_input);
-                std::vector<NeuralNetwork::Scalar> ans = turn_CO2_output_to_standart_view(pr);
+                switch (network)
+                {
+                case 'C':
+                {
+                    NeuralNetwork::RowVector pr = CO2.predict(network_input);
+                    ans = turn_CO2_output_to_standart_view(pr);
+                    break;
+                }
+                case 'N':
+                {
+                    NeuralNetwork::RowVector pr = NOX.predict(network_input);
+                    ans = turn_NOX_output_to_standart_view(pr);
+                    break;
+                }
+                case 'P':
+                {
+                    NeuralNetwork::RowVector pr = PM.predict(network_input);
+                    ans = turn_PM_output_to_standart_view(pr);
+                    break;
+                }
+                case 'V':
+                {
+                    NeuralNetwork::RowVector pr = VOC.predict(network_input);
+                    ans = turn_VOC_output_to_standart_view(pr);
+                    break;
+                }
+                case 'S':
+                {
+                    NeuralNetwork::RowVector pr = SO2.predict(network_input);
+                    ans = turn_SO2_output_to_standart_view(pr);
+                    break;
+                }
+                }
                 evaluations.push_back(ans[0]);
             }
             return evaluations;
@@ -206,35 +298,25 @@ namespace Graph_lib
             }
             return validated;
         }
-    };
 
-    class FunctionStepping : public GLib::Shape
-    {
-    public:
-        FunctionStepping(std::vector<double> points, double r1, double r2, Point xy, double xscale = 25, double yscale = 25)
+        void update_current_cell()
         {
-            int count = points.size();
+            std::vector<std::string> inbox_values = get_values_from_inboxes();
 
-            double max_graph = *std::max_element(points.begin(), points.end());
-            double min_graph = *std::min_element(points.begin(), points.end());
-
-            yscale = (double)(505 - 50) / (double)(max_graph - min_graph); // graph_canvas_h
-            xscale = (double)(504 - 50) / (double)count;           // graph_canvas_w
-
-            if (r2 - r1 <= 0)
-                error("bad graphing range");
-            if (count <= 0)
-                error("non-positive graphing count");
-            double dist = (r2 - r1) / count;
-            double r = r1;
-            for (int i = 0; i < count; ++i)
-            {
-                add(Point{xy.x + int(r * xscale), xy.y - int((points[i] - min_graph) * yscale)});
-                std::cout << xy.x + int(r * xscale) << " " << xy.y - int((points[i] - min_graph) * yscale) << std::endl;
-                r += dist;
-            }
-        };
+            current_cell.vehicle_type = inbox_values[0];
+            current_cell.fuel_type = inbox_values[1];
+            current_cell.engine_size = std::stold(inbox_values[2]);
+            current_cell.age_of_vehicle = std::stoul(inbox_values[3]);
+            current_cell.mileage = std::stoull(inbox_values[4]);
+            current_cell.speed = std::stold(inbox_values[5]);
+            current_cell.acceleration = std::stold(inbox_values[6]);
+            current_cell.road_type = inbox_values[7];
+            current_cell.traffic_conditions = inbox_values[8];
+            current_cell.temperature = std::stold(inbox_values[9]);
+            current_cell.humidity = std::stold(inbox_values[10]);
+            current_cell.wind_speed = std::stold(inbox_values[11]);
+            current_cell.air_pressure = std::stold(inbox_values[12]);
+        }
     };
-
 }
 #endif
