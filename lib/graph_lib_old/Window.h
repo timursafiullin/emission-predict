@@ -41,7 +41,7 @@ public:
   void set_label (const std::string& s) { label(s.c_str()); }
 
   void attach (Shape& s);
-  void attach(Widget &w);
+  void attach (Widget &w);
 
   void detach (Shape& s);   // remove s from shapes
   void detach (Widget& w);  // remove w from window (deactivate callbacks)

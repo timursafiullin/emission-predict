@@ -3,7 +3,9 @@
 
 #include <string>
 #include "graph_lib.h"
+#include "../window_with_neuro.h"
 
+#define GLib Graph_lib
 
 // Window
 const std::string main_window_title{"Emission predict"};
@@ -81,7 +83,9 @@ constexpr char NOX {'N'};
 constexpr char PM25 {'P'};
 constexpr char VOC {'V'};
 constexpr char SO2 {'S'};
-
-int main_gui();
+extern void callback_predict(GLib::Address, GLib::Address addr);
+extern void callback_save(GLib::Address, GLib::Address addr);
+extern void callback_history(GLib::Address, GLib::Address addr);
+extern void callback_clear(GLib::Address, GLib::Address addr);
 
 #endif

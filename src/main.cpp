@@ -6,6 +6,8 @@
 #include "normalization_funcs.h"
 #include <sstream>
 
+#define GLib Graph_lib
+
 using namespace NeuralNetwork;
 
 int main_neuro()
@@ -106,14 +108,6 @@ int main_neuro()
     std::cin >> test_cell.air_pressure;
 
     RowVector test_input{*get_input_ptr(test_cell.normalise_data())};
-    /*
-    std::vector<long double> test_cell_normalized = test_cell.normalise_data();
-
-    for (int i = 0; i < test_cell_normalized.size(); i++) {
-        std::cout << test_cell_normalized[i] << " ";
-    }
-    std::cout << std::endl;
-    */
     RowVector pr = CO2.predict(test_input);
     std::vector ans = turn_CO2_output_to_standart_view(pr);
     std::cout << ans[0] << std::endl;
@@ -121,6 +115,85 @@ int main_neuro()
 #endif
 
     return 0;
+}
+
+int main_gui()
+try
+{
+    // CREATING MAIN WINDOW
+    GLib::WindowWithNeuro win{window_width, window_height, main_window_title, COLORS::LIGHT_GRAY};
+
+    // TABLE OF PARAMETERS AND VALUES
+    GLib::Table parameters_table{
+        table_x, table_y,
+        table_width, table_height,
+        table_cols, table_rows,
+        COLORS::LIGHT_GRAY, COLORS::LIGHT_GRAY};
+    parameters_table.set_label(labels_list);
+    win.attach(parameters_table);
+
+    // PREDICT BUTTON
+    GLib::Button predict_button{
+        GLib::Point(predict_button_x, predict_button_y),
+        button_w, button_h,
+        predict_button_label,
+        callback_predict};
+    win.attach(predict_button);
+
+    // SAVE BUTTON
+    GLib::Button save_button{
+        GLib::Point(save_button_x, save_button_y),
+        button_w, button_h,
+        save_button_label,
+        callback_save};
+    win.attach(save_button);
+
+    // HISTORY BUTTON
+    GLib::Button history_button{
+        GLib::Point(history_button_x, history_button_y),
+        button_w, button_h,
+        history_button_label,
+        callback_history};
+    win.attach(history_button);
+
+    // CLEAR BUTTON
+    GLib::Button clear_button{
+        GLib::Point(clear_button_x, clear_button_y),
+        button_w, button_h,
+        clear_button_label,
+        callback_clear};
+    win.attach(clear_button);
+
+    // GRAPH AREA (WHITE BOX WITH BLACK AXISES AND LIGHT GRAY GRID)
+    GLib::GraphCanvas graph_canvas{
+        GLib::Point(graph_canvas_x, graph_canvas_y),
+        graph_canvas_w, graph_canvas_h,
+        GLib::Point(canvas_origin_x, canvas_origin_y)};
+
+    win.attach(graph_canvas);
+
+    std::vector<GLib::In_box *> inboxes;
+    for (size_t i = 0; i < 13; ++i)
+    {
+        inboxes.push_back(new GLib::In_box{
+            GLib::Point(inbox_x, inbox_y + inbox_h * i),
+            inbox_w, inbox_h, ""});
+        win.attach(*inboxes[i]);
+    }
+
+    win.load_networks();
+
+    return Fl::run();
+}
+catch (std::exception &e)
+{
+    std::cerr << e.what() << std::endl;
+    return 1;
+}
+catch (...)
+{
+    std::cerr << "Unknown exception." << std::endl;
+    return 1;
 }
 
 int main()
