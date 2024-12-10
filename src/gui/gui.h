@@ -3,6 +3,9 @@
 
 #include <string>
 #include "graph_lib.h"
+#include "../window_with_neuro.h"
+
+#define GLib Graph_lib
 
 // Window
 const std::string main_window_title{"Emission predict"};
@@ -56,7 +59,9 @@ const unsigned int inbox_w{table_width / table_cols};
 const unsigned int inbox_h{table_height / table_rows};
 
 extern LabelsList labels_list;
-
-int main_gui();
+extern void callback_predict(GLib::Address, GLib::Address addr);
+extern void callback_save(GLib::Address, GLib::Address addr);
+extern void callback_history(GLib::Address, GLib::Address addr);
+extern void callback_clear(GLib::Address, GLib::Address addr);
 
 #endif

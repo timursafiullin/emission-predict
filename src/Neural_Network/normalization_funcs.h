@@ -1,3 +1,6 @@
+#ifndef NORMALIZATION_FUNCS_H
+#define NORMALIZATION_FUNCS_H 1
+
 #include "Network.h"
 
 using namespace NeuralNetwork;
@@ -81,3 +84,5 @@ std::vector<Scalar> turn_SO2_output_to_standart_view(RowVector a)
     ans[0] = a[0] / 6 * 0.1;
     return ans;
 }
+
+#endif

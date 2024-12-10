@@ -90,6 +90,10 @@ struct In_box : Widget
 
   int get_int ();
   std::string get_string ();
+  void set_string (std::string s)
+  {
+    reinterpret_cast<Fl_Input *>(pw)->value(s.c_str());
+  }
 
   void attach (Window& win);
 };
