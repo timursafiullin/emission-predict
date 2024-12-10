@@ -80,6 +80,21 @@ struct Button : Widget
   Button(Point xy, int w, int h, const std::string& label, Callback cb) : Widget{xy, w, h, label, cb} {}
 
   void attach (Window&);
+
+  void set_box_color(Fl_Color color) { box_color = color; };
+  void set_box_color2(Fl_Color color) { box_color2 = color; };
+  void set_labeltype(Fl_Labeltype label_type) { labeltype = label_type; };
+  void set_labelsize(unsigned int size) { labelsize = size; };
+  void set_box_type(Fl_Boxtype type) { boxtype = type; };
+  void set_font(Fl_Font font) { labelfont = font; };
+
+private:
+  Fl_Color box_color = FL_WHITE;
+  Fl_Color box_color2 = COLORS::LIGHT_GRAY;
+  Fl_Labeltype labeltype = FL_NORMAL_LABEL;
+  unsigned int labelsize = 13;
+  Fl_Boxtype boxtype = FL_FLAT_BOX;
+  Fl_Font labelfont = FL_HELVETICA;
 };
 
 //------------------------------------------------------------------------------
