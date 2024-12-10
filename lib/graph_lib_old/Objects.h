@@ -67,4 +67,67 @@ private:
     void draw_borders(Fl_Color inner_color, Fl_Color outer_color);
 };
 
+template <typename T>
+struct Node {
+    T data;
+    Node* next;
+    Node* prev;
+};
+
+template <typename T>
+class dlcList {
+public:
+    Node<T>* head;
+    Node<T>* current;
+
+    dlcList() : head(nullptr), current(nullptr) {}
+
+    void insert(const T& data) 
+    {
+        Node<T>* newNode = new Node<T>();
+        newNode->data = data;
+        newNode->next = newNode;
+        newNode->prev = newNode;
+
+        if (head == nullptr) {
+            head = newNode;
+            current = head;
+        } else {
+            newNode->next = head;
+            newNode->prev = head->prev;
+            head->prev->next = newNode;
+            head = newNode;
+        }
+    }   
+
+    T get_next() 
+    {
+        if (current == nullptr) {
+            throw std::runtime_error("List is empty");
+        }
+        T data = current->data;
+        current = current->next;
+        return data;
+    }
+
+    T get_previous()
+    {
+        if (current == nullptr) {
+            throw std::runtime_error("List is empty");
+        }
+        Node<T>* prev_node = current->prev;
+        current = prev_node;
+        T data = current->data;
+        return data;
+    }   
+
+    T get_current()
+    {
+        if (current == nullptr) {
+            throw std::runtime_error("List is empty");
+        }
+        return current->data;
+    }
+};
+
 #endif // OBJECTS_H

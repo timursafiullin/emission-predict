@@ -19,6 +19,8 @@ LabelsList labels_list(
                context_column, 0),
         Labels(std::initializer_list<std::string>{"Values"}, context_column, 1)});
 
+dlcList<Fl_Color> graph_colors{};
+
 // CALLBACKS
 static void callback_predict(GLib::Address, GLib::Address addr)
 {
@@ -32,7 +34,7 @@ static void callback_predict(GLib::Address, GLib::Address addr)
   else
     window.graph_is_shown = true;
 
-  fl_color(COLORS::BRIGHT_BLUE);
+  fl_color(graph_colors.get_current());
 
   GLib::Function *funkcia = new GLib::Function{
       sqrt, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
@@ -79,11 +81,57 @@ static void callback_clear(GLib::Address, GLib::Address addr)
   std::cout << "Button 'Clear' pressed!" << std::endl;
 }
 
+static void callback_next(GLib::Address, GLib::Address addr)
+{
+  auto *pb = static_cast<GLib::Button *>(addr);
+  auto &window = static_cast<GLib::Window &>(pb->window());
+  window.redraw();
+  std::cout << "Button 'Next' pressed!" << std::endl;
+
+  if (window.graph_is_shown)
+    window.detach(*window.shapes.back()); // delete function shape. In fact always the last one in vector
+  else
+    window.graph_is_shown = true;
+
+  fl_color(graph_colors.get_next());
+
+  GLib::Function *funkcia = new GLib::Function{
+      sqrt, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
+
+  window.attach(*funkcia);
+}
+
+static void callback_prev(GLib::Address, GLib::Address addr)
+{
+  auto *pb = static_cast<GLib::Button *>(addr);
+  auto &window = static_cast<GLib::Window &>(pb->window());
+  window.redraw();
+  std::cout << "Button 'Prev' pressed!" << std::endl;
+
+  if (window.graph_is_shown)
+    window.detach(*window.shapes.back()); // delete function shape. In fact always the last one in vector
+  else
+    window.graph_is_shown = true;
+
+  fl_color(graph_colors.get_previous());
+
+  GLib::Function *funkcia = new GLib::Function{
+      sqrt, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
+
+  window.attach(*funkcia);
+}
+
 int main_gui()
 try
 {
+  graph_colors.insert(COLORS::BARBIE_GRAY);
+  graph_colors.insert(COLORS::BRIGHT_BLUE);
+  graph_colors.insert(COLORS::BLACK);
+  graph_colors.insert(FL_GREEN);
+  graph_colors.insert(FL_YELLOW);
+
   // CREATING MAIN WINDOW
-  GLib::Window win{window_width, window_height, main_window_title, COLORS::BARBIE_GRAY};
+  GLib::Window win{window_width, window_height, main_window_title, COLORS::LIGHT_GRAY};
 
   // TABLE OF PARAMETERS AND VALUES
   GLib::Table parameters_table{
@@ -141,6 +189,22 @@ try
         inbox_w, inbox_h, ""});
     win.attach(*inboxes[i]);
   }
+
+  // NEXT GAS BUTTON
+  GLib::Button next_button{
+      GLib::Point(next_gas_x, next_gas_y),
+      gas_button_w, gas_button_w,
+      next_gas_label,
+      callback_next};
+  win.attach(next_button);
+
+  // PREV GAS BUTTON
+  GLib::Button prev_button{
+      GLib::Point(prev_gas_x, prev_gas_y),
+      gas_button_w, gas_button_w,
+      prev_gas_label,
+      callback_prev};
+  win.attach(prev_button);
 
   return Fl::run();
 }

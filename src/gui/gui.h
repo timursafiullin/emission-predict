@@ -4,6 +4,7 @@
 #include <string>
 #include "graph_lib.h"
 
+
 // Window
 const std::string main_window_title{"Emission predict"};
 constexpr unsigned int window_width{852};
@@ -36,6 +37,16 @@ constexpr unsigned int clear_button_y{501};
 const std::string save_button_label{"Save"};
 constexpr unsigned int save_button_x{table_x + table_width - button_w};
 constexpr unsigned int save_button_y{462};
+
+const std::string prev_gas_label{"<"};
+constexpr unsigned int prev_gas_x{441};
+constexpr unsigned int prev_gas_y{32};
+
+const std::string next_gas_label{">"};
+constexpr unsigned int next_gas_x{485};
+constexpr unsigned int next_gas_y{32};
+
+constexpr unsigned int gas_button_w{30}, gas_button_h{30};
 
 // Menu for table
 const unsigned int vehicle_type_x{table_x + table_width / table_cols};
