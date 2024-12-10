@@ -68,6 +68,20 @@ const unsigned int inbox_h{-1 + table_height / table_rows};
 
 extern LabelsList labels_list;
 
+struct EmissionState
+{
+    std::string gas_label;
+    char gas_tag; // Unique identifier for emission
+
+    EmissionState(std::string gas_label, char gas_tag) : gas_label(gas_label), gas_tag(gas_tag) {}
+};
+
+constexpr char CO2 {'C'};
+constexpr char NOX {'N'};
+constexpr char PM25 {'P'};
+constexpr char VOC {'V'};
+constexpr char SO2 {'S'};
+
 int main_gui();
 
 #endif

@@ -20,6 +20,7 @@ LabelsList labels_list(
         Labels(std::initializer_list<std::string>{"Values"}, context_column, 1)});
 
 dlcList<Fl_Color> graph_colors{};
+dlcList<EmissionState> emissions{};
 
 // CALLBACKS
 static void callback_predict(GLib::Address, GLib::Address addr)
@@ -81,6 +82,9 @@ static void callback_clear(GLib::Address, GLib::Address addr)
   std::cout << "Button 'Clear' pressed!" << std::endl;
 }
 
+static void show_gas_label(GLib::Window& window, std::string gas_label);
+void show_graph(EmissionState& state);
+
 static void callback_next(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
@@ -93,11 +97,14 @@ static void callback_next(GLib::Address, GLib::Address addr)
   else
     window.graph_is_shown = true;
 
-  fl_color(graph_colors.get_next());
+  EmissionState state = emissions.get_next();
+  show_gas_label(window, state.gas_label);
+  show_graph(state);
 
+  // для наглядности и теста
+  fl_color(graph_colors.get_next());
   GLib::Function *funkcia = new GLib::Function{
       sqrt, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
-
   window.attach(*funkcia);
 }
 
@@ -113,12 +120,54 @@ static void callback_prev(GLib::Address, GLib::Address addr)
   else
     window.graph_is_shown = true;
 
-  fl_color(graph_colors.get_previous());
+  EmissionState state = emissions.get_previous();
+  show_gas_label(window, state.gas_label);
+  show_graph(state);
 
+  // для наглядности и теста
+  fl_color(graph_colors.get_previous());
   GLib::Function *funkcia = new GLib::Function{
       sqrt, 0, 15, GLib::Point(canvas_origin_x, canvas_origin_y - 50)};
 
   window.attach(*funkcia);
+}
+
+static void show_gas_label(GLib::Window& window, std::string gas_label)
+{
+  unsigned int gas_label_x{graph_canvas_x + graph_canvas_w / 2 - (gas_label.size() / 2) * 8}, gas_label_y{next_gas_y + 17};
+
+  GLib::Text *gas = new GLib::Text{GLib::Point(gas_label_x, gas_label_y), gas_label};
+  gas->set_color(COLORS::BLACK);
+  gas->set_font(FL_HELVETICA);
+  gas->set_font_size(16);
+
+  window.attach(*gas);
+}
+
+void show_graph(EmissionState& state)
+{
+  // ... (rest of the code)
+  switch(state.gas_tag)
+  {
+    case CO2:
+      // co2 graph
+      break;
+    case NOX:
+      // nox graph
+      break;
+    case SO2:
+      // so2 graph
+      break;
+    case VOC:
+      // voc graph
+      break;
+    case PM25:
+      // pm2.5 graph
+      break;
+    default:
+      // something
+      break;
+  }
 }
 
 int main_gui()
@@ -130,6 +179,12 @@ try
   graph_colors.insert(FL_GREEN);
   graph_colors.insert(FL_YELLOW);
   graph_colors.insert(FL_RED);
+
+  emissions.insert(EmissionState("CO2 Emissions", CO2));
+  emissions.insert(EmissionState("NOx Emissions", NOX));
+  emissions.insert(EmissionState("PM2.5 Emissions", PM25));
+  emissions.insert(EmissionState("VOC Emissions", VOC));
+  emissions.insert(EmissionState("SO2 Emissions", SO2));
 
   // CREATING MAIN WINDOW
   GLib::Window win{
