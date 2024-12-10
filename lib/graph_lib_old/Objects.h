@@ -72,6 +72,8 @@ struct Node {
     T data;
     Node* next;
     Node* prev;
+
+    Node(const T& data) : data(data), next(nullptr), prev(nullptr) {}
 };
 
 template <typename T>
@@ -79,50 +81,53 @@ class dlcList {
 public:
     Node<T>* head;
     Node<T>* current;
+    Node<T>* tail;
 
-    dlcList() : head(nullptr), current(nullptr) {}
+    dlcList() : head(nullptr), current(nullptr), tail(nullptr) {}
 
-    void insert(const T& data) 
-    {
-        Node<T>* newNode = new Node<T>();
-        newNode->data = data;
-        newNode->next = newNode;
-        newNode->prev = newNode;
+    ~dlcList() {
+        while (head) {
+            Node<T>* temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+
+    void insert(const T& data) {
+        Node<T>* newNode = new Node<T>(data);
 
         if (head == nullptr) {
             head = newNode;
+            newNode->next = newNode;
+            newNode->prev = newNode;
             current = head;
+            tail = head;
         } else {
             newNode->next = head;
-            newNode->prev = head->prev;
-            head->prev->next = newNode;
-            head = newNode;
+            newNode->prev = tail;
+            tail->next = newNode;
+            head->prev = newNode;
+            tail = newNode;
         }
-    }   
-
-    T get_next() 
-    {
-        if (current == nullptr) {
-            throw std::runtime_error("List is empty");
-        }
-        T data = current->data;
-        current = current->next;
-        return data;
     }
 
-    T get_previous()
-    {
+    T get_next() {
         if (current == nullptr) {
             throw std::runtime_error("List is empty");
         }
-        Node<T>* prev_node = current->prev;
-        current = prev_node;
-        T data = current->data;
-        return data;
-    }   
+        current = current->next;
+        return current->data;
+    }
 
-    T get_current()
-    {
+    T get_previous() {
+        if (current == nullptr) {
+            throw std::runtime_error("List is empty");
+        }
+        current = current->prev;
+        return current->data;
+    }
+
+    T get_current() {
         if (current == nullptr) {
             throw std::runtime_error("List is empty");
         }

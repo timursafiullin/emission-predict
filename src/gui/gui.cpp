@@ -129,6 +129,7 @@ try
   graph_colors.insert(COLORS::BLACK);
   graph_colors.insert(FL_GREEN);
   graph_colors.insert(FL_YELLOW);
+  graph_colors.insert(FL_RED);
 
   // CREATING MAIN WINDOW
   GLib::Window win{window_width, window_height, main_window_title, COLORS::LIGHT_GRAY};
