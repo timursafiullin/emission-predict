@@ -3,7 +3,6 @@
 
 #include <string>
 #include "graph_lib.h"
-#include "../window_with_neuro.h"
 
 #define GLib Graph_lib
 

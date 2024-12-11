@@ -1,4 +1,5 @@
 #include <iostream>
+#include "../window_with_neuro.h"
 #include "gui.h"
 #include <exception>
 #include <iostream>
@@ -83,7 +84,7 @@ void callback_history(GLib::Address, GLib::Address addr)
   if (save_file.is_open())
   {
     std::string value;
-    while (save_file >> value)
+    while (std::getline(save_file, value))
     {
       inbox_values.push_back(value);
     }

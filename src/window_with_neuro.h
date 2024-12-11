@@ -4,6 +4,7 @@
 #include "Network.h"
 #include "graph_lib.h"
 #include "dataset_reader.h"
+#include "gui.h"
 #include <vector>
 
 #define GLib Graph_lib
@@ -20,8 +21,8 @@ namespace Graph_lib
             double max_graph = *std::max_element(points.begin(), points.end());
             double min_graph = *std::min_element(points.begin(), points.end());
 
-            yscale = (double)(505 - 50) / (double)(max_graph - min_graph); // graph_canvas_h
-            xscale = (double)(504 - 50) / (double)count;                   // graph_canvas_w
+            yscale = (double)(graph_canvas_h - 50) / (double)(max_graph - min_graph);
+            xscale = (double)(graph_canvas_w - 50) / (double)count;
 
             if (r2 - r1 <= 0)
                 error("bad graphing range");
