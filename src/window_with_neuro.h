@@ -287,15 +287,26 @@ namespace Graph_lib
         {
             std::vector<std::string> inbox_values = get_values_from_inboxes();
             bool validated = true;
+
             Labels inbox_names = Labels{std::initializer_list<std::string>
 {
                    "Vehicle Type", "Fuel Type",
                    "Engine Size", "Age of Vehicle", "Mileage",
                    "Acceleration", "Road Type",
                    "Traffic Conditions", "Temperature", "Humidity",
-                   "Wind Speed", "Air Pressure", "Max speed"
-            }, context_column, 1
+                   "Wind Speed", "Air Pressure", "Max speed"}, context_column, 1
             };
+
+            bool is_all_empty = true;
+            for (std::string &name : inbox_values)
+            {
+                if (name != "") {
+                    is_all_empty = false;
+                    break;
+                }
+            }
+
+            if (!is_all_empty) {
             for (size_t i{}; i < inbox_values.size(); ++i)
             {
                 if (inbox_values[i] == "")
@@ -323,6 +334,11 @@ namespace Graph_lib
             {
                 validated = false;
                 std::cerr << "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow." << std::endl;
+            }
+            } else 
+            {
+                validated = false;
+                std::cerr << "[ERROR] All inboxes are empty." << std::endl;
             }
             return validated;
         }
