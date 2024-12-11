@@ -131,18 +131,51 @@ void callback_clear(GLib::Address, GLib::Address addr)
   std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
 }
 
+const char * help_message 
+{
+    "The Emission Prediction Program is designed to predict vehicle " \
+    "emissions (CO2, NOX, PM, VOC, SO2)\nbased on various input parameters " \
+    "using a neural network. The program features a graphical user\ninterface (GUI) " \
+    "that allows users to input vehicle data, visualize predictions, and manage historical data.\n\n" \
+    "Input parameters: vehicle type (Car, Truck, Motorcycle), fuel type (Petrol, Diesel, Electric),\n" \
+    "engine size (in liters), age of vehicle (in years), mileage (in kilometers),\n" \
+    "acceleration (m/s²), road type (City, Rural, Highway), traffic conditions " \
+    "(Heavy, Moderate, Free flow),\ntemperature (in °C), humidity (relative in %), " \
+    "wind speed (m/s) and air pressure (in hPa).\n\nThen you need to input the max speed value. " \
+    "It is the limit up to which the graph will be drawn.\n\n" \
+    "There is few buttons: under parameters table there are buttons to predict, save, load and clear.\n" \
+    " - There is also a help button to show this message.\n" \
+    " - Button 'predict' will show the prediction graph.\n" \
+    " - Button 'save' will save the current parameters and the prediction in a file.\n" \
+    " - Button 'load' will load the parameters and the prediction from a file.\n" \
+    " - Button 'clear' will clear the parameters and the prediction.\n\n" \
+    "There is also two buttons to navigate through the historical data: " \
+    "'<' and '>'.\nThey are located at the right top of the graph canvas.\n\n" \
+    "This program provides a user-friendly interface for predicting vehicle " \
+    "emissions using neural\nnetwork techniques. By following the " \
+    "instructions above, users can effectively use the program to\n" \
+    "analyze and visualize emissions data."
+};
+
 void show_help_message()
 {
     GLib::Window *win = new GLib::Window
     {
-      GLib::Point((GLib::x_max() - help_window_width) / 2, (GLib::y_max() - help_window_height) / 2),
-      help_window_width, help_window_height, "Instruction"
+      GLib::Point(
+        (GLib::x_max() - help_window_width) / 2,
+        (GLib::y_max() - help_window_height) / 2
+      ),
+      help_window_width, help_window_height,
+      "Instruction"
     };
     win->begin();
+
     win->color(FL_WHITE);
+
     Fl_Box *box = new Fl_Box(10, 10, help_window_width-20, help_window_height-20, help_message);
-    box->labelsize(10);  // Увеличим размер шрифта
-    box->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);  // Выравнивание по центру и внутри бокса
+    box->labelsize(13);
+    box->align(FL_ALIGN_TOP_LEFT | FL_ALIGN_INSIDE);
+  
     win->end();
     win->show();
 }
