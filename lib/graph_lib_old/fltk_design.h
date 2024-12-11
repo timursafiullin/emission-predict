@@ -14,6 +14,7 @@ namespace COLORS
     const auto BRIGHT_BLUE = fl_rgb_color(7, 118, 245);
     const auto BARBIE_DARK = fl_rgb_color(255, 0, 247);
     const auto GOLDEN_YELLOW = fl_rgb_color(252, 186, 3);
+    const auto ROYAL_GOLD = fl_rgb_color(230, 161, 2);
     const auto BLOODY_RED = fl_rgb_color(82, 0, 0);
     const auto GREEN_DARK_LEMON = fl_rgb_color(5, 110, 0);
     const auto RED_DARK_BERRY = fl_rgb_color(128, 0, 0);

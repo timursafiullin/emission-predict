@@ -272,7 +272,7 @@ try
   emissions.insert(EmissionState("NOx Emissions", NOX, COLORS::BRIGHT_BLUE));
   emissions.insert(EmissionState("PM2.5 Emissions", PM25, COLORS::RED_DARK_BERRY));
   emissions.insert(EmissionState("VOC Emissions", VOC, COLORS::GREEN_DARK_LEMON));
-  emissions.insert(EmissionState("SO2 Emissions", SO2, COLORS::GOLDEN_YELLOW));
+  emissions.insert(EmissionState("SO2 Emissions", SO2, COLORS::ROYAL_GOLD));
 
   // CREATING MAIN WINDOW
   GLib::WindowWithNeuro win{

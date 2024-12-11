@@ -59,7 +59,7 @@ const unsigned int graph_canvas_x{23};
 const unsigned int graph_canvas_y{21};
 const unsigned int graph_canvas_w{504};
 const unsigned int graph_canvas_h{505};
-const unsigned int canvas_origin_x{62};
+const unsigned int canvas_origin_x{62}; // was 62
 const unsigned int canvas_origin_y{489};
 const unsigned int num_of_graph_labels_x{4};
 const unsigned int num_of_graph_labels_y{4};
