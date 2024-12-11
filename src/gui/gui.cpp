@@ -221,7 +221,7 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     for (size_t i = 0; i <= num_of_graph_labels_y; ++i)
     {
       GLib::Point origin_point{canvas_origin_x - 20, canvas_origin_y - 5 - int((double)graph_canvas_h / (double)num_of_graph_labels_y * (double)i)};
-      std::string value = to_string_exp(evaluations[int((double)max_speed / (double)num_of_graph_labels_x * (double)i)]);
+      std::string value = to_string_exp((double)min_graph + (double)(max_graph - min_graph) / (double)num_of_graph_labels_y * (double)i);
       graph_labels.push_back(new GLib::GasText{origin_point, value});
     }
 
