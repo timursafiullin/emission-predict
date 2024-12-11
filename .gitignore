@@ -1,5 +1,2 @@
 .vscode
 build
-*.jpg
-*.png
-main.cpp
