@@ -8,6 +8,13 @@
 
 #define GLib Graph_lib
 
+std::string to_string_exp(double d)
+{
+  std::ostringstream os;
+  os << std::scientific << d;
+  return os.str();
+}
+
 LabelsList labels_list(
     std::initializer_list<Labels>{
         Labels(std::initializer_list<std::string>{
@@ -194,6 +201,7 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
   {
     show_gas_label(window, state.gas_label);
     window.update_current_cell();
+    int max_speed = window.current_cell.speed;
     std::vector<double> evaluations;
 
     switch (state.gas_tag)
@@ -224,12 +232,36 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     }
     break;
     }
-    
+
     fl_color(state.graph_color);
     GLib::FunctionStepping *func = new GLib::FunctionStepping{
         evaluations, 0, window.current_cell.speed, GLib::Point(canvas_origin_x, canvas_origin_y)};
 
     window.attach(*func);
+
+    fl_color(COLORS::BLACK);
+    std::vector<GLib::GasText *> graph_labels;
+
+    double max_graph = *std::max_element(evaluations.begin(), evaluations.end());
+    double min_graph = *std::min_element(evaluations.begin(), evaluations.end());
+
+    for (size_t i = 0; i < num_of_graph_labels_x; ++i)
+    {
+      GLib::Point origin_point{canvas_origin_x + 5 + int((double)graph_canvas_w / (double)num_of_graph_labels_x * (double)i), canvas_origin_y + 17};
+      std::string value = std::to_string(int((double)(max_speed - 0) / (double)num_of_graph_labels_x * (double)i));
+      graph_labels.push_back(new GLib::GasText{origin_point, value});
+    }
+    for (size_t i = 0; i < num_of_graph_labels_y; ++i)
+    {
+      GLib::Point origin_point{canvas_origin_x - 20, canvas_origin_y - 5 - int((double)graph_canvas_h / (double)num_of_graph_labels_y * (double)i)};
+      std::string value = to_string_exp(evaluations[int((double)max_speed / (double)num_of_graph_labels_x * (double)i)]);
+      graph_labels.push_back(new GLib::GasText{origin_point, value});
+    }
+
+    for (size_t i = 0; i < graph_labels.size(); ++i)
+    {
+      window.attach(*graph_labels[i]);
+    }
   }
 }
 
@@ -295,15 +327,6 @@ try
       GLib::Point(canvas_origin_x, canvas_origin_y)};
   win.attach(graph_canvas);
 
-  std::vector<GLib::In_box *> inboxes;
-  for (size_t i = 0; i < table_rows - 1; ++i)
-  {
-    inboxes.push_back(new GLib::In_box{
-        GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
-        inbox_w, inbox_h, ""});
-    win.attach(*inboxes[i]);
-  }
-
   // NEXT GAS BUTTON
   GLib::Button next_button{
       GLib::Point(next_gas_x, next_gas_y),
@@ -321,6 +344,26 @@ try
       callback_prev};
   prev_button.set_box_type(FL_OVAL_BOX);
   win.attach(prev_button);
+
+  for (size_t i = 0; i < table_rows - 1; ++i)
+  {
+    win.attach(*(new GLib::In_box{
+        GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+        inbox_w, inbox_h, ""}));
+  }
+
+  for (size_t i = 1; i < num_of_graph_labels_x; ++i)
+  {
+    GLib::Point origin_point_low{canvas_origin_x + int((double)graph_canvas_w / (double)num_of_graph_labels_x * (double)i), canvas_origin_y + 5};
+    GLib::Point origin_point_high{canvas_origin_x + int((double)graph_canvas_w / (double)num_of_graph_labels_x * (double)i), canvas_origin_y - 5};
+    win.attach(*(new GLib::Line(origin_point_low, origin_point_high)));
+  }
+  for (size_t i = 1; i < num_of_graph_labels_y; ++i)
+  {
+    GLib::Point origin_point_left{canvas_origin_x - 5, canvas_origin_y - int((double)graph_canvas_h / (double)num_of_graph_labels_y * (double)i)};
+    GLib::Point origin_point_right{canvas_origin_x + 5, canvas_origin_y - int((double)graph_canvas_h / (double)num_of_graph_labels_y * (double)i)};
+    win.attach(*(new GLib::Line(origin_point_left, origin_point_right)));
+  }
 
   return Fl::run();
 }

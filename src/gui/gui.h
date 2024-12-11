@@ -61,6 +61,8 @@ const unsigned int graph_canvas_w{504};
 const unsigned int graph_canvas_h{505};
 const unsigned int canvas_origin_x{62};
 const unsigned int canvas_origin_y{489};
+const unsigned int num_of_graph_labels_x{4};
+const unsigned int num_of_graph_labels_y{4};
 
 // FDFK
 const unsigned int inbox_x{1 + table_x + table_width / table_cols};
@@ -90,5 +92,6 @@ extern void callback_history(GLib::Address, GLib::Address addr);
 extern void callback_clear(GLib::Address, GLib::Address addr);
 
 extern int main_gui();
+extern std::string to_string_exp(double d);
 
 #endif
