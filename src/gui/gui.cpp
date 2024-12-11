@@ -365,6 +365,8 @@ try
     win.attach(*(new GLib::Line(origin_point_left, origin_point_right)));
   }
 
+  win.load_networks();
+
   return Fl::run();
 }
 catch (std::exception &e)
