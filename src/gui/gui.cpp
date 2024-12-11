@@ -94,6 +94,8 @@ void callback_history(GLib::Address, GLib::Address addr)
   {
     inboxes[i]->set_string(inbox_values[i]);
   }
+
+  std::cout << "[ACTION] Data pasted successfully." << std::endl;
 }
 
 void callback_clear(GLib::Address, GLib::Address addr)
