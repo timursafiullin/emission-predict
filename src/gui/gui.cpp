@@ -41,9 +41,7 @@ void callback_predict(GLib::Address, GLib::Address addr)
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
   for (size_t i = 0; i < functions.size(); i++)
-  {
     window.detach(*functions[i]); // delete all functions
-  }
 
   EmissionState state = emissions.get_current();
   show_graph(window, state);
@@ -65,9 +63,7 @@ void callback_save(GLib::Address, GLib::Address addr)
     {
       std::vector<std::string> inbox_values = window.get_values_from_inboxes();
       for (std::string &value : inbox_values)
-      {
         save_file << value << std::endl;
-      }
     }
     save_file.close();
     std::cout << "[ACTION] File has been written." << std::endl;
@@ -85,9 +81,7 @@ void callback_history(GLib::Address, GLib::Address addr)
   {
     std::string value;
     while (std::getline(save_file, value))
-    {
       inbox_values.push_back(value);
-    }
   }
   else
   {
@@ -99,9 +93,7 @@ void callback_history(GLib::Address, GLib::Address addr)
   std::vector<GLib::In_box *> inboxes = window.inboxes; // copy inboxes
 
   for (size_t i = 0; i < inboxes.size(); i++)
-  {
     inboxes[i]->set_string(inbox_values[i]);
-  }
 
   std::cout << "[ACTION] Data pasted successfully." << std::endl;
 }
@@ -114,27 +106,20 @@ void callback_clear(GLib::Address, GLib::Address addr)
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
   for (size_t i = 0; i < functions.size(); i++)
-  {
     window.detach(*functions[i]); // delete all functions
-  }
 
   std::vector<GLib::GasText *> gas_texts = window.gas_texts; // copy gas_texts
 
   for (size_t i = 0; i < gas_texts.size(); i++)
-  {
     window.detach(*gas_texts[i]); // delete all gas_texts
-  }
 
   std::vector<GLib::Widget *> widgets = window.widgets; // copy widgets
 
   for (size_t i = 0; i < widgets.size(); i++)
-  {
     window.detach(*widgets[i]); // delete all widgets
-  }
+
   for (size_t i = 0; i < widgets.size(); i++)
-  {
     window.attach(*widgets[i]); // restore all widgets
-  }
 
   window.redraw();
   std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
@@ -183,9 +168,7 @@ static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label)
   std::vector<GLib::GasText *> gas_texts = window.gas_texts; // copy gas_texts
 
   for (size_t i = 0; i < gas_texts.size(); i++)
-  {
     window.detach(*gas_texts[i]); // delete all gas_texts
-  }
 
   GLib::GasText *gas = new GLib::GasText{GLib::Point(gas_label_x, gas_label_y), gas_label};
   gas->set_color(COLORS::BLACK);
@@ -205,34 +188,7 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     int max_speed = window.current_cell.speed;
     std::vector<double> evaluations;
 
-    switch (state.gas_tag)
-    {
-    case CO2:
-    {
-      evaluations = window.evaluate_network(CO2);
-    }
-    break;
-    case NOX:
-    {
-      evaluations = window.evaluate_network(NOX);
-    }
-    break;
-    case SO2:
-    {
-      evaluations = window.evaluate_network(SO2);
-    }
-    break;
-    case VOC:
-    {
-      evaluations = window.evaluate_network(VOC);
-    }
-    break;
-    case PM25:
-    {
-      evaluations = window.evaluate_network(PM25);
-    }
-    break;
-    }
+    evaluations = window.evaluate_network(state.gas_tag);
 
     fl_color(state.graph_color);
     GLib::FunctionStepping *func = new GLib::FunctionStepping{
@@ -260,20 +216,18 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     }
 
     for (size_t i = 0; i < graph_labels.size(); ++i)
-    {
       window.attach(*graph_labels[i]);
-    }
   }
 }
 
 int main_gui()
 try
 {
-  emissions.insert(EmissionState("CO2 Emissions", CO2, COLORS::BLACK));
-  emissions.insert(EmissionState("NOx Emissions", NOX, COLORS::BRIGHT_BLUE));
+  emissions.insert(EmissionState("CO2 Emissions",   CO2,  COLORS::BLACK));
+  emissions.insert(EmissionState("NOx Emissions",   NOX,  COLORS::BRIGHT_BLUE));
   emissions.insert(EmissionState("PM2.5 Emissions", PM25, COLORS::RED_DARK_BERRY));
-  emissions.insert(EmissionState("VOC Emissions", VOC, COLORS::GREEN_DARK_LEMON));
-  emissions.insert(EmissionState("SO2 Emissions", SO2, COLORS::ROYAL_GOLD));
+  emissions.insert(EmissionState("VOC Emissions",   VOC,  COLORS::GREEN_DARK_LEMON));
+  emissions.insert(EmissionState("SO2 Emissions",   SO2,  COLORS::ROYAL_GOLD));
 
   // CREATING MAIN WINDOW
   GLib::WindowWithNeuro win{
