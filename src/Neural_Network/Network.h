@@ -24,7 +24,7 @@ namespace NeuralNetwork
     const std::string exception_message_invalid_data_sizes{
         "amount of input elements must be "
         "equal to amount of output elements"
-    };
+   };
     const std::string exception_message_invalid_learning_rate{
         "learning rate mustn't be less than zero"
     };

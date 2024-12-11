@@ -202,7 +202,7 @@ namespace Graph_lib
         std::vector<NeuralNetwork::Scalar> turn_CO2_output_to_standart_view(NeuralNetwork::RowVector a)
         {
             std::vector<NeuralNetwork::Scalar> ans(1);
-            ans[0] = a[0] / 6 * 500;
+            ans[0] = a[0] / 6 * 500 * 14;
             return ans;
         }
 
@@ -284,13 +284,15 @@ namespace Graph_lib
             return evaluations;
         }
 
-        bool validate_inboxes()
+        std::string validate_inboxes()
         {
             std::vector<std::string> inbox_values = get_values_from_inboxes();
-            bool validated = true;
+            std::string validated = "";
+            std::string message = "";
+            message += "–––––––––––––––––––––––––––––––––––––––––––––––––––––\n";
 
             Labels inbox_names = Labels{std::initializer_list<std::string>
-{
+            {
                    "Vehicle Type", "Fuel Type",
                    "Engine Size", "Age of Vehicle", "Mileage",
                    "Acceleration", "Road Type",
@@ -301,46 +303,34 @@ namespace Graph_lib
             bool is_all_empty = true;
             for (std::string &name : inbox_values)
             {
-                if (name != "") {
+                if (name != "") 
+                {
                     is_all_empty = false;
                     break;
                 }
             }
 
-            if (!is_all_empty) {
-            for (size_t i{}; i < inbox_values.size(); ++i)
+            if (!is_all_empty)
             {
-                if (inbox_values[i] == "")
-                {
-                    validated = false;
-                    std::cerr << "[ERROR] Input box '" << inbox_names[i] << "' is empty." << std::endl;
-                }
+                for (size_t i{}; i < inbox_values.size(); ++i)
+                    if (inbox_values[i] == "")
+                        validated += "[ERROR] Input box '" + inbox_names[i] + "' is empty.\n";
+                if (inbox_values[0] != "Truck" && inbox_values[0] != "Car" && inbox_values[0] != "Motorcycle")
+                    validated += "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck or Motorcycle.\n";
+                if (inbox_values[1] != "Petrol" && inbox_values[1] != "Electric" && inbox_values[1] != "Diesel")
+                    validated += "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel or Electric.\n";
+                if (inbox_values[6] != "City" && inbox_values[6] != "Highway" && inbox_values[6] != "Rural")
+                    validated += "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n";
+                if (inbox_values[7] != "Free flow" && inbox_values[7] != "Heavy" && inbox_values[7] != "Moderate")
+                    validated += "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n";
+                if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
+                    validated += "[ERROR] Invalid value of 'Max speed': must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
             }
-            if (inbox_values[0] != "Truck" && inbox_values[0] != "Car" && inbox_values[0] != "Motorcycle")
-            {
-                validated = false;
-                std::cerr << "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck or Motorcycle." << std::endl;
-            }
-            if (inbox_values[1] != "Petrol" && inbox_values[1] != "Electric" && inbox_values[1] != "Diesel")
-            {
-                validated = false;
-                std::cerr << "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel or Electric." << std::endl;
-            }
-            if (inbox_values[6] != "City" && inbox_values[6] != "Highway" && inbox_values[6] != "Rural")
-            {
-                validated = false;
-                std::cerr << "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural." << std::endl;
-            }
-            if (inbox_values[7] != "Free flow" && inbox_values[7] != "Heavy" && inbox_values[7] != "Moderate")
-            {
-                validated = false;
-                std::cerr << "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow." << std::endl;
-            }
-            } else 
-            {
-                validated = false;
-                std::cerr << "[ERROR] All inboxes are empty." << std::endl;
-            }
+            else
+                validated += "[ERROR] All inboxes are empty.\n";
+            message += validated;
+            message += "–––––––––––––––––––––––––––––––––––––––––––––––––––––\n";
+            std::cout << message;
             return validated;
         }
 

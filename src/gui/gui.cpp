@@ -4,6 +4,7 @@
 #include <exception>
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
 #include <cmath>
 
@@ -12,7 +13,7 @@
 std::string to_string_exp(double d)
 {
   std::ostringstream os;
-  os << std::scientific << d;
+  os << std::scientific << std::setprecision(5) << d;
   return os.str();
 }
 
@@ -31,6 +32,7 @@ dlcList<EmissionState> emissions{};
 
 static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label);
 void show_graph(GLib::WindowWithNeuro &window, EmissionState &state);
+void show_error_message(std::string message);
 
 // CALLBACKS
 void callback_predict(GLib::Address, GLib::Address addr)
@@ -54,7 +56,7 @@ void callback_save(GLib::Address, GLib::Address addr)
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
 
-  bool validated = window.validate_inboxes();
+  bool validated = window.validate_inboxes() == "";
   if (validated)
   {
     std::ofstream save_file;
@@ -67,6 +69,10 @@ void callback_save(GLib::Address, GLib::Address addr)
     }
     save_file.close();
     std::cout << "[ACTION] File has been written." << std::endl;
+  }
+  else
+  {
+    std::cout << "[ERROR] Bad data given to save. Try again." << std::endl;
   }
 }
 
@@ -133,9 +139,7 @@ static void callback_next(GLib::Address, GLib::Address addr)
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
   for (size_t i = 0; i < functions.size(); i++)
-  {
     window.detach(*functions[i]); // delete all functions
-  }
 
   EmissionState state = emissions.get_next();
   show_graph(window, state);
@@ -151,9 +155,7 @@ static void callback_prev(GLib::Address, GLib::Address addr)
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
   for (size_t i = 0; i < functions.size(); i++)
-  {
     window.detach(*functions[i]); // delete all functions
-  }
 
   EmissionState state = emissions.get_previous();
   show_graph(window, state);
@@ -180,7 +182,7 @@ static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label)
 
 void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
 {
-  bool validated = window.validate_inboxes();
+  bool validated = window.validate_inboxes() == "";
   if (validated)
   {
     show_gas_label(window, state.gas_label);
@@ -202,13 +204,13 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     double max_graph = *std::max_element(evaluations.begin(), evaluations.end());
     double min_graph = *std::min_element(evaluations.begin(), evaluations.end());
 
-    for (size_t i = 0; i < num_of_graph_labels_x; ++i)
+    for (size_t i = 0; i <= num_of_graph_labels_x; ++i)
     {
       GLib::Point origin_point{canvas_origin_x + 5 + int((double)graph_canvas_w / (double)num_of_graph_labels_x * (double)i), canvas_origin_y + 17};
       std::string value = std::to_string(int((double)(max_speed - 0) / (double)num_of_graph_labels_x * (double)i));
       graph_labels.push_back(new GLib::GasText{origin_point, value});
     }
-    for (size_t i = 0; i < num_of_graph_labels_y; ++i)
+    for (size_t i = 0; i <= num_of_graph_labels_y; ++i)
     {
       GLib::Point origin_point{canvas_origin_x - 20, canvas_origin_y - 5 - int((double)graph_canvas_h / (double)num_of_graph_labels_y * (double)i)};
       std::string value = to_string_exp(evaluations[int((double)max_speed / (double)num_of_graph_labels_x * (double)i)]);
@@ -218,6 +220,23 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     for (size_t i = 0; i < graph_labels.size(); ++i)
       window.attach(*graph_labels[i]);
   }
+}
+
+void show_error_message(std::string message)
+{
+    unsigned int win_width{300}, win_height{250};
+    GLib::Window *win = new GLib::Window
+    {
+      GLib::Point((GLib::x_max() - win_width) / 2, (GLib::y_max() - win_height) / 2),
+      win_width, win_height, "Error message"
+    };
+    win->begin();
+    win->color(FL_WHITE);
+    Fl_Box *box = new Fl_Box(10, 10, 280, 130, message.c_str());
+    box->labelsize(14);  // Увеличим размер шрифта
+    box->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);  // Выравнивание по центру и внутри бокса
+    win->end();
+    win->show();
 }
 
 int main_gui()

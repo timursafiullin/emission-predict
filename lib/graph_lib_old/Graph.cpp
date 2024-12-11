@@ -129,11 +129,11 @@ void GraphCanvas::draw_lines() const
   // Draw grid
   fl_color(grid_color);
 
-  int pointer_x = origin_x;
+  int pointer_x = (origin_x + x) / 2 + 1;
   while (pointer_x < x + w)
   {
     fl_line(pointer_x, y+h, pointer_x, y);
-    pointer_x += origin_x - x;
+    pointer_x += (origin_x - x) / 2;
   }
 
   int pointer_y = origin_y;

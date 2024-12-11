@@ -27,17 +27,18 @@ const std::string predict_button_label{"Predict"};
 constexpr unsigned int predict_button_x{table_x};
 constexpr unsigned int predict_button_y{462};
 
-const std::string history_button_label{"History"};
-constexpr unsigned int history_button_x{table_x};
+const std::string history_button_label{"Load"};
+constexpr unsigned int history_button_x{table_x + table_width - button_w};
 constexpr unsigned int history_button_y{501};
 
 const std::string clear_button_label{"Clear"};
 constexpr unsigned int clear_button_x{table_x + table_width - button_w};
-constexpr unsigned int clear_button_y{501};
+constexpr unsigned int clear_button_y{462};
 
 const std::string save_button_label{"Save"};
-constexpr unsigned int save_button_x{table_x + table_width - button_w};
-constexpr unsigned int save_button_y{462};
+constexpr unsigned int save_button_x{table_x};
+constexpr unsigned int save_button_y{501};
+
 
 const std::string prev_gas_label{"<"};
 constexpr unsigned int prev_gas_x{441};
@@ -58,7 +59,7 @@ const unsigned int graph_canvas_x{23};
 const unsigned int graph_canvas_y{21};
 const unsigned int graph_canvas_w{504};
 const unsigned int graph_canvas_h{505};
-const unsigned int canvas_origin_x{62}; // was 62
+const unsigned int canvas_origin_x{96}; // was 62
 const unsigned int canvas_origin_y{489};
 const unsigned int num_of_graph_labels_x{4};
 const unsigned int num_of_graph_labels_y{4};
