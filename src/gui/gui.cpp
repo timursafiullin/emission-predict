@@ -131,12 +131,29 @@ void callback_clear(GLib::Address, GLib::Address addr)
   std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
 }
 
+void show_help_message()
+{
+    GLib::Window *win = new GLib::Window
+    {
+      GLib::Point((GLib::x_max() - help_window_width) / 2, (GLib::y_max() - help_window_height) / 2),
+      help_window_width, help_window_height, "Instruction"
+    };
+    win->begin();
+    win->color(FL_WHITE);
+    Fl_Box *box = new Fl_Box(10, 10, help_window_width-20, help_window_height-20, help_message);
+    box->labelsize(10);  // Увеличим размер шрифта
+    box->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);  // Выравнивание по центру и внутри бокса
+    win->end();
+    win->show();
+}
+
 void callback_help(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
 
   std::cout << "[ACTION] Help window has been called." << std::endl;
+  show_help_message();
 }
 
 static void callback_next(GLib::Address, GLib::Address addr)
