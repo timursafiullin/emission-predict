@@ -15,7 +15,7 @@ constexpr unsigned int window_height{550};
 constexpr unsigned int table_x{561};
 constexpr unsigned int table_y{21};
 constexpr unsigned int table_width{260};
-constexpr unsigned int table_height{406};
+constexpr unsigned int table_height{416};
 constexpr unsigned int table_cols{2};
 constexpr unsigned int table_rows{14};
 
