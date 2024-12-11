@@ -308,14 +308,14 @@ namespace Graph_lib
             current_cell.engine_size = std::stold(inbox_values[2]);
             current_cell.age_of_vehicle = std::stoul(inbox_values[3]);
             current_cell.mileage = std::stoull(inbox_values[4]);
-            current_cell.speed = std::stold(inbox_values[5]);
-            current_cell.acceleration = std::stold(inbox_values[6]);
-            current_cell.road_type = inbox_values[7];
-            current_cell.traffic_conditions = inbox_values[8];
-            current_cell.temperature = std::stold(inbox_values[9]);
-            current_cell.humidity = std::stold(inbox_values[10]);
-            current_cell.wind_speed = std::stold(inbox_values[11]);
-            current_cell.air_pressure = std::stold(inbox_values[12]);
+            current_cell.acceleration = std::stold(inbox_values[5]);
+            current_cell.road_type = inbox_values[6];
+            current_cell.traffic_conditions = inbox_values[7];
+            current_cell.temperature = std::stold(inbox_values[8]);
+            current_cell.humidity = std::stold(inbox_values[9]);
+            current_cell.wind_speed = std::stold(inbox_values[10]);
+            current_cell.air_pressure = std::stold(inbox_values[11]);
+            current_cell.speed = std::stold(inbox_values[12]);
         }
     };
 }

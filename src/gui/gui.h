@@ -74,8 +74,9 @@ struct EmissionState
 {
     std::string gas_label;
     char gas_tag; // Unique identifier for emission
+    Fl_Color graph_color;
 
-    EmissionState(std::string gas_label, char gas_tag) : gas_label(gas_label), gas_tag(gas_tag) {}
+    EmissionState(std::string gas_label, char gas_tag, Fl_Color graph_color = COLORS::BRIGHT_BLUE) : gas_label(gas_label), gas_tag(gas_tag), graph_color(graph_color) {}
 };
 
 constexpr char CO2 {'C'};

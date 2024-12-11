@@ -19,7 +19,6 @@ LabelsList labels_list(
                context_column, 0),
         Labels(std::initializer_list<std::string>{"Values"}, context_column, 1)});
 
-dlcList<Fl_Color> graph_colors{};
 dlcList<EmissionState> emissions{};
 
 static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label);
@@ -40,7 +39,6 @@ void callback_predict(GLib::Address, GLib::Address addr)
   }
 
   EmissionState state = emissions.get_current();
-  fl_color(graph_colors.get_current());
   show_graph(window, state);
 
   window.redraw();
@@ -150,7 +148,6 @@ static void callback_next(GLib::Address, GLib::Address addr)
   }
 
   EmissionState state = emissions.get_next();
-  fl_color(graph_colors.get_next());
   show_graph(window, state);
 
   window.redraw();
@@ -170,7 +167,6 @@ static void callback_prev(GLib::Address, GLib::Address addr)
   }
 
   EmissionState state = emissions.get_previous();
-  fl_color(graph_colors.get_previous());
   show_graph(window, state);
 
   window.redraw();
@@ -203,7 +199,7 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     show_gas_label(window, state.gas_label);
     window.update_current_cell();
     std::vector<double> evaluations;
-
+    
     switch (state.gas_tag)
     {
     case CO2:
@@ -232,7 +228,8 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     }
     break;
     }
-
+    
+    fl_color(state.graph_color);
     GLib::FunctionStepping *func = new GLib::FunctionStepping{
         evaluations, 0, window.current_cell.speed, GLib::Point(canvas_origin_x, canvas_origin_y)};
 
@@ -243,18 +240,11 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
 int main_gui()
 try
 {
-  graph_colors.insert(COLORS::BARBIE_GRAY);
-  graph_colors.insert(COLORS::BRIGHT_BLUE);
-  graph_colors.insert(COLORS::BLACK);
-  graph_colors.insert(FL_GREEN);
-  graph_colors.insert(FL_YELLOW);
-  graph_colors.insert(FL_RED);
-
-  emissions.insert(EmissionState("CO2 Emissions", CO2));
-  emissions.insert(EmissionState("NOx Emissions", NOX));
-  emissions.insert(EmissionState("PM2.5 Emissions", PM25));
-  emissions.insert(EmissionState("VOC Emissions", VOC));
-  emissions.insert(EmissionState("SO2 Emissions", SO2));
+  emissions.insert(EmissionState("CO2 Emissions", CO2, COLORS::BLACK));
+  emissions.insert(EmissionState("NOx Emissions", NOX, COLORS::BRIGHT_BLUE));
+  emissions.insert(EmissionState("PM2.5 Emissions", PM25, COLORS::RED_DARK_BERRY));
+  emissions.insert(EmissionState("VOC Emissions", VOC, COLORS::GREEN_DARK_LEMON));
+  emissions.insert(EmissionState("SO2 Emissions", SO2, COLORS::GOLDEN_YELLOW));
 
   // CREATING MAIN WINDOW
   GLib::WindowWithNeuro win{
