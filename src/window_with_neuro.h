@@ -287,14 +287,42 @@ namespace Graph_lib
         {
             std::vector<std::string> inbox_values = get_values_from_inboxes();
             bool validated = true;
-            for (std::string &value : inbox_values)
+            Labels inbox_names = Labels{std::initializer_list<std::string>
+{
+                   "Vehicle Type", "Fuel Type",
+                   "Engine Size", "Age of Vehicle", "Mileage",
+                   "Acceleration", "Road Type",
+                   "Traffic Conditions", "Temperature", "Humidity",
+                   "Wind Speed", "Air Pressure", "Max speed"
+            }, context_column, 1
+            };
+            for (size_t i{}; i < inbox_values.size(); ++i)
             {
-                if (value == "")
+                if (inbox_values[i] == "")
                 {
                     validated = false;
-                    std::cout << "one or more values are empty" << std::endl;
-                    break;
+                    std::cerr << "[ERROR] Input box '" << inbox_names[i] << "' is empty." << std::endl;
                 }
+            }
+            if (inbox_values[0] != "Truck" && inbox_values[0] != "Car" && inbox_values[0] != "Motorcycle")
+            {
+                validated = false;
+                std::cerr << "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck or Motorcycle." << std::endl;
+            }
+            if (inbox_values[1] != "Petrol" && inbox_values[1] != "Electric" && inbox_values[1] != "Diesel")
+            {
+                validated = false;
+                std::cerr << "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel or Electric." << std::endl;
+            }
+            if (inbox_values[6] != "City" && inbox_values[6] != "Highway" && inbox_values[6] != "Rural")
+            {
+                validated = false;
+                std::cerr << "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural." << std::endl;
+            }
+            if (inbox_values[7] != "Free flow" && inbox_values[7] != "Heavy" && inbox_values[7] != "Moderate")
+            {
+                validated = false;
+                std::cerr << "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow." << std::endl;
             }
             return validated;
         }

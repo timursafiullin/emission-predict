@@ -29,7 +29,6 @@ void callback_predict(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
-  std::cout << "Button 'Predict' pressed!" << std::endl;
 
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
@@ -48,7 +47,6 @@ void callback_save(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
-  std::cout << "Button 'History' pressed!" << std::endl;
 
   bool validated = window.validate_inboxes();
   if (validated)
@@ -64,10 +62,8 @@ void callback_save(GLib::Address, GLib::Address addr)
       }
     }
     save_file.close();
-    std::cout << "File has been written" << std::endl;
+    std::cout << "[ACTION] File has been written." << std::endl;
   }
-
-  std::cout << "Button 'Save' pressed!" << std::endl;
 }
 
 void callback_history(GLib::Address, GLib::Address addr)
@@ -87,7 +83,7 @@ void callback_history(GLib::Address, GLib::Address addr)
   }
   else
   {
-    std::cout << "History file not found" << std::endl;
+    std::cerr << "[ERROR] History file not found" << std::endl;
     return;
   }
   save_file.close();
@@ -104,7 +100,6 @@ void callback_clear(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
-  std::cout << "Button 'Clear' pressed!" << std::endl;
 
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
@@ -132,13 +127,13 @@ void callback_clear(GLib::Address, GLib::Address addr)
   }
 
   window.redraw();
+  std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
 }
 
 static void callback_next(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
-  std::cout << "Button 'Next' pressed!" << std::endl;
 
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
@@ -157,7 +152,6 @@ static void callback_prev(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
-  std::cout << "Button 'Prev' pressed!" << std::endl;
 
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
@@ -199,7 +193,7 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     show_gas_label(window, state.gas_label);
     window.update_current_cell();
     std::vector<double> evaluations;
-    
+
     switch (state.gas_tag)
     {
     case CO2:
