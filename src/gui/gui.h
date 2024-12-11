@@ -20,24 +20,29 @@ constexpr unsigned int table_cols{2};
 constexpr unsigned int table_rows{14};
 
 // Buttons
-constexpr unsigned int button_w{121};
+constexpr unsigned int button_w{125};
 constexpr unsigned int button_h{25};
+constexpr unsigned int button_w_div_2{60};
 
 const std::string predict_button_label{"Predict"};
 constexpr unsigned int predict_button_x{table_x};
 constexpr unsigned int predict_button_y{462};
 
-const std::string history_button_label{"Load"};
-constexpr unsigned int history_button_x{table_x + table_width - button_w};
-constexpr unsigned int history_button_y{501};
+const std::string save_button_label{"Save"};
+constexpr unsigned int save_button_x{table_x};
+constexpr unsigned int save_button_y{501};
+
+const std::string load_button_label{"Load"};
+constexpr unsigned int load_button_x{table_x + button_w - button_w_div_2};
+constexpr unsigned int load_button_y{501};
 
 const std::string clear_button_label{"Clear"};
 constexpr unsigned int clear_button_x{table_x + table_width - button_w};
 constexpr unsigned int clear_button_y{462};
 
-const std::string save_button_label{"Save"};
-constexpr unsigned int save_button_x{table_x};
-constexpr unsigned int save_button_y{501};
+const std::string help_button_label{"Help"};
+constexpr unsigned int help_button_x{table_x + table_width - button_w};
+constexpr unsigned int help_button_y{501};
 
 
 const std::string prev_gas_label{"<"};
@@ -88,7 +93,7 @@ constexpr char VOC {'V'};
 constexpr char SO2 {'S'};
 extern void callback_predict(GLib::Address, GLib::Address addr);
 extern void callback_save(GLib::Address, GLib::Address addr);
-extern void callback_history(GLib::Address, GLib::Address addr);
+extern void callback_load(GLib::Address, GLib::Address addr);
 extern void callback_clear(GLib::Address, GLib::Address addr);
 
 extern int main_gui();

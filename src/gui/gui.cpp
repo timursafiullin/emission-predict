@@ -131,6 +131,14 @@ void callback_clear(GLib::Address, GLib::Address addr)
   std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
 }
 
+void callback_help(GLib::Address, GLib::Address addr)
+{
+  auto *pb = static_cast<GLib::Button *>(addr);
+  auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
+
+  std::cout << "[ACTION] Help window has been called." << std::endl;
+}
+
 static void callback_next(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
@@ -273,18 +281,18 @@ try
   // SAVE BUTTON
   GLib::Button save_button{
       GLib::Point(save_button_x, save_button_y),
-      button_w, button_h,
+      button_w_div_2, button_h,
       save_button_label,
       callback_save};
   win.attach(save_button);
 
   // HISTORY BUTTON
-  GLib::Button history_button{
-      GLib::Point(history_button_x, history_button_y),
-      button_w, button_h,
-      history_button_label,
+  GLib::Button load_button{
+      GLib::Point(load_button_x, load_button_y),
+      button_w_div_2, button_h,
+      load_button_label,
       callback_history};
-  win.attach(history_button);
+  win.attach(load_button);
 
   // CLEAR BUTTON
   GLib::Button clear_button{
@@ -293,6 +301,13 @@ try
       clear_button_label,
       callback_clear};
   win.attach(clear_button);
+
+  GLib::Button help_button{
+      GLib::Point(help_button_x, help_button_y),
+      button_w, button_h,
+      help_button_label,
+      callback_help};
+  win.attach(help_button);
 
   // GRAPH AREA (WHITE BOX WITH BLACK AXISES AND LIGHT GRAY GRID)
   GLib::GraphCanvas graph_canvas{

@@ -289,7 +289,7 @@ namespace Graph_lib
             std::vector<std::string> inbox_values = get_values_from_inboxes();
             std::string validated = "";
             std::string message = "";
-            message += "–––––––––––––––––––––––––––––––––––––––––––––––––––––\n";
+            message += "----------------------------------------------\n";
 
             Labels inbox_names = Labels{std::initializer_list<std::string>
             {
@@ -329,8 +329,9 @@ namespace Graph_lib
             else
                 validated += "[ERROR] All inboxes are empty.\n";
             message += validated;
-            message += "–––––––––––––––––––––––––––––––––––––––––––––––––––––\n";
-            std::cout << message;
+            message += "----------------------------------------------\n";
+            if (validated != "")
+                std::cout << message;
             return validated;
         }
 
