@@ -21,8 +21,8 @@ namespace Graph_lib
             double max_graph = *std::max_element(points.begin(), points.end());
             double min_graph = *std::min_element(points.begin(), points.end());
 
-            yscale = (double)(graph_canvas_h - 50) / (double)(max_graph - min_graph);
-            xscale = (double)(graph_canvas_w - 50) / (double)count;
+            xscale = (double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)count;
+            yscale = (double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)(max_graph - min_graph);
 
             if (r2 - r1 <= 0)
                 error("bad graphing range");
@@ -86,6 +86,7 @@ namespace Graph_lib
         std::vector<GLib::In_box *> inboxes;
         std::vector<GLib::GasText *> gas_texts;
         std::vector<GLib::FunctionStepping *> functions;
+        GLib::Text *end_label_y;
 
         void attach(GLib::In_box &w)
         {
