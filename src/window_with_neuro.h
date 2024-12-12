@@ -282,7 +282,7 @@ namespace Graph_lib
         {
             for (char const &c : str)
             {
-                if (std::isdigit(c) == 0 && c != '.')
+                if (std::isdigit(c) == 0 && c != '.' && c != '-')
                     return false;
             }
             return true;
