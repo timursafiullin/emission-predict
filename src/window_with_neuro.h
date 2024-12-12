@@ -7,6 +7,7 @@
 #include "gui.h"
 #include <vector>
 #include <regex>
+#include <math.h>
 
 #define GLib Graph_lib
 
@@ -409,17 +410,17 @@ namespace Graph_lib
 
             current_cell.vehicle_type = inbox_values[0];
             current_cell.fuel_type = inbox_values[1];
-            current_cell.engine_size = std::stold(inbox_values[2]);
-            current_cell.age_of_vehicle = std::stoul(inbox_values[3]);
-            current_cell.mileage = std::stoull(inbox_values[4]);
-            current_cell.acceleration = std::stold(inbox_values[5]);
+            current_cell.engine_size = (is_string_double(inbox_values[2])) ? (std::stold(inbox_values[2])) : (NAN);
+            current_cell.age_of_vehicle = (is_string_int(inbox_values[3])) ? (std::stoul(inbox_values[3])) : (NAN);
+            current_cell.mileage = (is_string_int(inbox_values[4])) ? (std::stoull(inbox_values[4])) : (NAN);
+            current_cell.acceleration = (is_string_double(inbox_values[5])) ? (std::stold(inbox_values[5])) : (NAN);
             current_cell.road_type = inbox_values[6];
             current_cell.traffic_conditions = inbox_values[7];
-            current_cell.temperature = std::stold(inbox_values[8]);
-            current_cell.humidity = std::stold(inbox_values[9]);
-            current_cell.wind_speed = std::stold(inbox_values[10]);
-            current_cell.air_pressure = std::stold(inbox_values[11]);
-            current_cell.speed = std::stold(inbox_values[12]);
+            current_cell.temperature = (is_string_double(inbox_values[8])) ? (std::stold(inbox_values[8])) : (NAN);
+            current_cell.humidity = (is_string_double(inbox_values[9])) ? (std::stold(inbox_values[9])) : (NAN);
+            current_cell.wind_speed = (is_string_double(inbox_values[10])) ? (std::stold(inbox_values[10])) : (NAN);
+            current_cell.air_pressure = (is_string_double(inbox_values[11])) ? (std::stold(inbox_values[11])) : (NAN);
+            current_cell.speed = (is_string_double(inbox_values[12])) ? (std::stold(inbox_values[12])) : (NAN);
         }
     };
 }
