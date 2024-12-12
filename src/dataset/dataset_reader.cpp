@@ -32,11 +32,11 @@ std::vector<long double> DatasetCell::normalise_data()
 long double DatasetCell::turn_vehicle_type_to_double(std::string vehicle)
 {
     //Bus, Car, Truck, Motorcycle
-    if (vehicle == "Truck")
+    if (vehicle == "truck")
         return 1000;
-    if (vehicle == "Bus")
+    if (vehicle == "bus")
         return 666;
-    if (vehicle == "Car")
+    if (vehicle == "car")
         return 333;
     return 0;
 }
@@ -44,11 +44,11 @@ long double DatasetCell::turn_vehicle_type_to_double(std::string vehicle)
 long double DatasetCell::turn_fuel_type_to_double(std::string fuel)
 {
     //Electric, Hybrid, Diesel, Petrol
-    if (fuel == "Petrol")
+    if (fuel == "petrol")
         return 1000;
-    if (fuel == "Diesel")
+    if (fuel == "diesel")
         return 666;
-    if (fuel == "Hybrid")
+    if (fuel == "hybrid")
         return 333;
     return 0;
 }
@@ -56,9 +56,9 @@ long double DatasetCell::turn_fuel_type_to_double(std::string fuel)
 long double DatasetCell::turn_road_type_to_double(std::string road)
 {
     //City, Highway, Rural
-    if (road == "City")
+    if (road == "city")
         return 1000;
-    if (road == "Highway")
+    if (road == "highway")
         return 500;
     return 0;
 }
@@ -66,9 +66,9 @@ long double DatasetCell::turn_road_type_to_double(std::string road)
 long double DatasetCell::turn_traffic_conditions_to_double(std::string traffic)
 {
     //Moderate Heavy Free flow
-    if (traffic == "Heavy")
+    if (traffic == "heavy")
         return 1000;
-    if (traffic == "Moderate")
+    if (traffic == "moderate")
         return 500;
     return 0;
 }
