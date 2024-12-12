@@ -64,3 +64,6 @@ The Emission Prediction Program is designed to predict vehicle emissions (CO2, N
 #### Conclusion
 
 This program provides a user-friendly interface for predicting vehicle emissions using advanced neural network techniques. By following the instructions above, users can effectively utilize the program to analyze and visualize emissions data.
+
+Developers – Timur Safiullin, Ruslan Sharafutdinov, Alexander Semichastnov. \
+Link to [Dataset](https://www.kaggle.com/datasets/s3programmer/vehcle-emission-dataset)
