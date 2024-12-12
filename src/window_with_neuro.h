@@ -46,45 +46,6 @@ namespace Graph_lib
         GasText(Point x, const std::string &s) : GLib::Text{x, s} {};
     };
 
-    class ErrorWindow : public GLib::Window
-    {
-    public:
-        ErrorWindow(std::string error_message) : GLib::Window{GLib::Point((GLib::x_max() - 1) / 2, (GLib::y_max() - 1) / 2), 1, 1, "Error message"},
-                                                 error_message{error_message}
-        {
-            std::vector<std::string> parsed_error_message;
-            std::regex del("\n");
-            std::sregex_token_iterator token_iterator(error_message.begin(), error_message.end(), del, -1);
-            std::sregex_token_iterator i_end;
-
-            for (; token_iterator != i_end; ++token_iterator)
-                parsed_error_message.push_back(*token_iterator);
-
-            hh = parsed_error_message.size() * 40; // each line is 40 pixels in height
-            ww = (*std::max_element(parsed_error_message.begin(), parsed_error_message.end(),
-                                        [](const auto &a, const auto &b)
-                                        {
-                                            return a.size() < b.size();
-                                        })).size() * 7; // each symbol is 7 pixels wide
-
-            resize(ww, hh);
-
-            begin();
-            color(FL_WHITE);
-            Fl_Box *box = new Fl_Box(0, 0, ww, hh, error_message.c_str());
-            box->labelsize(14);                            // Увеличим размер шрифта
-            box->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE); // Выравнивание по центру и внутри бокса
-            end();
-            show();
-            Fl::run();
-        }
-
-    private:
-        std::string error_message;
-        int hh;
-        int ww;
-    };
-
     class WindowWithNeuro : public GLib::Window
     {
     public:
@@ -182,6 +143,16 @@ namespace Graph_lib
             for (unsigned int i = shapes.size(); 0 < i; --i)
                 if (shapes[i - 1] == &s)
                     shapes.erase(shapes.begin() + (i - 1));
+        }
+
+        void reset_inboxes_colors()
+        {
+            for (size_t i = 0; i < inboxes.size(); ++i)
+            {
+                inboxes[i]->set_color(COLORS::WHITE);
+            }
+            std::cout << "a" << std::endl;
+            redraw();
         }
 
         std::vector<std::string> get_values_from_inboxes()
@@ -379,33 +350,65 @@ namespace Graph_lib
                 for (size_t i{}; i < inbox_values.size()-1; ++i)
                 {
                     if (inbox_values[i] == "")
+                    {
+                        inboxes[i]->set_color(COLORS::RED_DARK_BERRY);
                         validated += "[ERROR] Input box '" + inbox_names[i] + "' is empty.\n";
+                    }
                     if (i != 0 && i != 1 && i != 6 && i != 7)
                         if (!is_string_double(inbox_values[i]))
-                            validated += "[ERROR] Input box '" + inbox_names[i] + "' has invalid value.\n";
+                            {
+                                inboxes[i]->set_color(COLORS::RED_DARK_BERRY);
+                                validated += "[ERROR] Input box '" + inbox_names[i] + "' has invalid value.\n";
+                            }
                 }
                 if (inbox_values[0] != "truck" && inbox_values[0] != "car" && inbox_values[0] != "motorcycle" && inbox_values[0] != "bus")
+                {
+                    inboxes[0]->set_color(COLORS::RED_DARK_BERRY);
                     validated += "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck, Motorcycle or Bus.\n";
+                }
                 if (inbox_values[1] != "petrol" && inbox_values[1] != "electric" && inbox_values[1] != "diesel" && inbox_values[1] != "hybrid")
+                {
+                    inboxes[1]->set_color(COLORS::RED_DARK_BERRY);
                     validated += "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel, Electric or Hybrid.\n";
+                }
                 if (inbox_values[6] != "city" && inbox_values[6] != "highway" && inbox_values[6] != "rural")
+                {
+                    inboxes[6]->set_color(COLORS::RED_DARK_BERRY);
                     validated += "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n";
+                }
                 if (inbox_values[7] != "free flow" && inbox_values[7] != "heavy" && inbox_values[7] != "moderate")
+                {
+                    inboxes[7]->set_color(COLORS::RED_DARK_BERRY);
                     validated += "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n";
+                }
                 if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
                 {
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
+                    {
+                        inboxes[12]->set_color(COLORS::RED_DARK_BERRY);
                         validated += "[ERROR] Invalid value of 'Max speed': must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
+                    }
                 }
                 else
+                {
+                    inboxes[12]->set_color(COLORS::RED_DARK_BERRY);
                     validated += "[ERROR] Max speed is invalid: must be number greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
+                }
             }
             else
+            {
+                for (size_t i = 0; i < inboxes.size(); ++i)
+                {
+                    inboxes[i]->set_color(COLORS::RED_DARK_BERRY);
+                }
                 validated += "[ERROR] All inboxes are empty.\n";
+            }
             message += validated;
             message += "----------------------------------------------\n";
             if (validated != "")
                 std::cout << message << std::endl;
+            
+            redraw();
             return validated;
         }
 

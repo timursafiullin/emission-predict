@@ -32,7 +32,7 @@ dlcList<EmissionState> emissions{};
 
 static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label);
 void show_graph(GLib::WindowWithNeuro &window, EmissionState &state);
-void show_error_message(std::string message);
+void show_error_message(GLib::WindowWithNeuro &window, std::string message);
 
 // CALLBACKS
 void callback_predict(GLib::Address, GLib::Address addr)
@@ -69,12 +69,12 @@ void callback_save(GLib::Address, GLib::Address addr)
     }
     save_file.close();
     std::cout << "[ACTION] File has been written." << std::endl;
-    show_error_message("[ACTION] File has been written.");
+    show_error_message(window, "[ACTION] File has been written.");
   }
   else
   {
     std::cout << "[ERROR] Bad data given to save. Try again." << std::endl;
-    show_error_message("[ERROR] Bad data given to save. Try again.");
+    show_error_message(window, "[ERROR] Bad data given to save. Try again.");
   }
 }
 
@@ -289,13 +289,14 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
   }
   else
   {
-    show_error_message(error_message);
+    show_error_message(window, error_message);
   }
 }
 
-void show_error_message(std::string message)
+void show_error_message(GLib::WindowWithNeuro &window, std::string message)
 {
- GLib::ErrorWindow win{message};
+  fl_alert(message.c_str());
+  window.reset_inboxes_colors();
 }
 
 int main_gui()

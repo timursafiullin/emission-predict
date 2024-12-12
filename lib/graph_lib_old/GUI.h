@@ -110,6 +110,8 @@ struct In_box : Widget
     reinterpret_cast<Fl_Input *>(pw)->value(s.c_str());
   }
 
+  void set_color (Fl_Color c) { pw->color(c); }
+
   void attach (Window& win);
 };
 
