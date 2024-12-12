@@ -58,6 +58,7 @@ static const std::string       free_flow_type                       { "free flow
 // amount of features in dataset
 
 static constexpr unsigned int  amount_of_features                   { 18          };
+static constexpr unsigned int  amount_of_input_features              { 13          };
 
 /**
  * @brief Indexes of features
