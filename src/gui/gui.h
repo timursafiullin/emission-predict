@@ -29,11 +29,11 @@ constexpr unsigned int predict_button_x{table_x};
 constexpr unsigned int predict_button_y{462};
 
 const std::string save_button_label{"Save"};
-constexpr unsigned int save_button_x{table_x};
+constexpr unsigned int save_button_x{table_x + button_w - button_w_div_2};
 constexpr unsigned int save_button_y{501};
 
 const std::string load_button_label{"Load"};
-constexpr unsigned int load_button_x{table_x + button_w - button_w_div_2};
+constexpr unsigned int load_button_x{table_x};
 constexpr unsigned int load_button_y{501};
 
 const std::string clear_button_label{"Clear"};
