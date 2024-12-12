@@ -32,7 +32,7 @@ dlcList<EmissionState> emissions{};
 
 static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label);
 void show_graph(GLib::WindowWithNeuro &window, EmissionState &state);
-void show_error_message(std::string message);
+void show_error_message(const char* message);
 
 // CALLBACKS
 void callback_predict(GLib::Address, GLib::Address addr)
@@ -240,7 +240,8 @@ static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label)
 
 void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
 {
-  bool validated = window.validate_inboxes() == "";
+  const char *error_message = window.validate_inboxes();
+  bool validated = error_message == "";
   if (validated)
   {
     show_gas_label(window, state.gas_label);
@@ -278,9 +279,13 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     for (size_t i = 0; i < graph_labels.size(); ++i)
       window.attach(*graph_labels[i]);
   }
+  else
+  {
+    show_error_message(error_message);
+  }
 }
 
-void show_error_message(std::string message)
+void show_error_message(const char* message)
 {
     unsigned int win_width{300}, win_height{250};
     GLib::Window *win = new GLib::Window
@@ -290,9 +295,9 @@ void show_error_message(std::string message)
     };
     win->begin();
     win->color(FL_WHITE);
-    Fl_Box *box = new Fl_Box(10, 10, 280, 130, message.c_str());
-    box->labelsize(14);  // Увеличим размер шрифта
-    box->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE);  // Выравнивание по центру и внутри бокса
+    Fl_Box *box = new Fl_Box(10, 10, 280, 130, message);
+    box->labelsize(14);
+    box->align(FL_ALIGN_TOP_LEFT | FL_ALIGN_INSIDE);
     win->end();
     win->show();
 }

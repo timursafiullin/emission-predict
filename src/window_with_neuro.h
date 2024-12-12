@@ -284,7 +284,7 @@ namespace Graph_lib
             return evaluations;
         }
 
-        std::string validate_inboxes()
+        const char* validate_inboxes()
         {
             std::vector<std::string> inbox_values = get_values_from_inboxes();
             std::string validated = "";
@@ -332,7 +332,7 @@ namespace Graph_lib
             message += "----------------------------------------------\n";
             if (validated != "")
                 std::cout << message;
-            return validated;
+            return validated.c_str();
         }
 
         void update_current_cell()
