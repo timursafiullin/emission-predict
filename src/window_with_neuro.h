@@ -59,12 +59,12 @@ namespace Graph_lib
             for (; token_iterator != i_end; ++token_iterator)
                 parsed_error_message.push_back(*token_iterator);
 
-            hh = parsed_error_message.size() * 40; // each line is 50 pixels in height
+            hh = parsed_error_message.size() * 40; // each line is 40 pixels in height
             ww = (*std::max_element(parsed_error_message.begin(), parsed_error_message.end(),
                                         [](const auto &a, const auto &b)
                                         {
                                             return a.size() < b.size();
-                                        })).size() * 7; // each symbol is 50 pixels wide
+                                        })).size() * 7; // each symbol is 7 pixels wide
 
             resize(ww, hh);
 
