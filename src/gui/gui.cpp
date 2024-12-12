@@ -396,12 +396,28 @@ try
   //AXIS LABELS
   for (size_t i = 1; i <= num_of_graph_labels_x; ++i)
   {
+    fl_color(COLORS::LIGHT_GRAY);
+    GLib::Point origin_point_low_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y};
+    GLib::Point origin_point_high_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y - int(canvas_origin_y - graph_canvas_y)};
+    GLib::Line *axis_line = new GLib::Line{origin_point_low_graph, origin_point_high_graph};
+    axis_line->set_style(1);
+    win.attach(*axis_line);
+    fl_color(COLORS::BLACK);
+
     GLib::Point origin_point_low{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y + 5};
     GLib::Point origin_point_high{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y - 5};
     win.attach(*(new GLib::Line(origin_point_low, origin_point_high)));
   }
   for (size_t i = 1; i <= num_of_graph_labels_y; ++i)
   {
+    fl_color(COLORS::LIGHT_GRAY);
+    GLib::Point origin_point_left_graph{canvas_origin_x, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
+    GLib::Point origin_point_right_graph{canvas_origin_x + int(graph_canvas_x + graph_canvas_w - canvas_origin_x), canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
+    GLib::Line *axis_line = new GLib::Line{origin_point_left_graph, origin_point_right_graph};
+    axis_line->set_style(1);
+    win.attach(*axis_line);
+    fl_color(COLORS::BLACK);
+
     GLib::Point origin_point_left{canvas_origin_x - 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
     GLib::Point origin_point_right{canvas_origin_x + 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
     win.attach(*(new GLib::Line(origin_point_left, origin_point_right)));

@@ -125,7 +125,7 @@ void GraphCanvas::draw_lines() const
 {
   // Draw background
   fl_draw_box(FL_FLAT_BOX, x, y, w, h, background_color);
-
+  /*
   // Draw grid
   fl_color(grid_color);
 
@@ -142,7 +142,7 @@ void GraphCanvas::draw_lines() const
     fl_line(x, pointer_y, x+w-1, pointer_y);
     pointer_y -= y + h - origin_y;
   }
-
+  */
   // Draw axises
   fl_color(axis_color);
   int arrow_x = (h - 2*indent_y) * 0.02;
