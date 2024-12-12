@@ -200,8 +200,8 @@ namespace Graph_lib
 
         NeuralNetwork::RowVector *get_input_ptr(std::vector<long double> vector)
         {
-            NeuralNetwork::RowVector *input = new NeuralNetwork::RowVector(13);
-            for (NeuralNetwork::Number i{0}; i < 13; ++i)
+            NeuralNetwork::RowVector *input = new NeuralNetwork::RowVector(amount_of_input_features);
+            for (NeuralNetwork::Number i{0}; i < amount_of_input_features; ++i)
             {
                 (*input)[i] = vector[i];
             }
