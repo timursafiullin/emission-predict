@@ -59,8 +59,10 @@ void callback_save(GLib::Address, GLib::Address addr)
   bool validated = window.validate_inboxes() == "";
   if (validated)
   {
+    std::string path = fl_file_chooser("Save a file", "*.txt", NULL, 0);
+
     std::ofstream save_file;
-    save_file.open("saved_inputs.txt");
+    save_file.open(path);
     if (save_file.is_open())
     {
       std::vector<std::string> inbox_values = window.get_values_from_inboxes();
@@ -83,7 +85,9 @@ void callback_history(GLib::Address, GLib::Address addr)
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
 
-  std::ifstream save_file("saved_inputs.txt");
+  std::string path = fl_file_chooser("Choose a file", "*.txt", NULL, 0);
+
+  std::ifstream save_file(path);
   std::vector<std::string> inbox_values;
   if (save_file.is_open())
   {
