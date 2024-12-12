@@ -51,6 +51,8 @@ public:
   std::vector<Widget*> widgets;  // widgets attached to window
   std::vector<Shape*> shapes;  // shapes attached to window
 
+  int get_w() { return w; };
+
 protected:
   void draw ();
 

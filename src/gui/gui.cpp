@@ -235,6 +235,21 @@ static void callback_prev(GLib::Address, GLib::Address addr)
   window.redraw();
 }
 
+static void callback_journal(GLib::Address, GLib::Address addr)
+{
+  auto *pb = static_cast<GLib::Button *>(addr);
+  auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
+
+  if (window.get_w() == window_width)
+  {
+    window.resize(window_width_journal, window_height);
+  }
+  else
+    window.resize(window_width, window_height);
+
+  window.redraw();
+}
+
 static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label)
 {
   unsigned int gas_label_x{graph_canvas_x + graph_canvas_w / 2 - gas_label.size() * 4 + 20}, gas_label_y{next_gas_y + 20};
@@ -343,7 +358,7 @@ try
   // SAVE BUTTON
   GLib::Button save_button{
       GLib::Point(save_button_x, save_button_y),
-      button_w_div_2, button_h,
+      button_w, button_h,
       save_button_label,
       callback_save};
   win.attach(save_button);
@@ -351,7 +366,7 @@ try
   // HISTORY BUTTON
   GLib::Button load_button{
       GLib::Point(load_button_x, load_button_y),
-      button_w_div_2, button_h,
+      button_w, button_h,
       load_button_label,
       callback_history};
   win.attach(load_button);
@@ -395,6 +410,13 @@ try
       callback_prev};
   prev_button.set_box_type(FL_OVAL_BOX);
   win.attach(prev_button);
+
+  GLib::Button journal_button{
+      GLib::Point(journal_button_x, journal_button_y),
+      button_w, button_h,
+      journal_button_label,
+      callback_journal};
+  win.attach(journal_button);
 
   //INBOXES
   for (size_t i = 0; i < table_rows - 1; ++i)
