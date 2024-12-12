@@ -21,9 +21,9 @@ LabelsList labels_list(
     std::initializer_list<Labels>{
         Labels(std::initializer_list<std::string>{
                    "Parameters", "Vehicle Type", "Fuel Type",
-                   "Engine Size (l)", "Age of Vehicle (y.)", "Mileage (km)",
+                   "Engine Size (liters)", "Age of Vehicle (y.)", "Mileage (km)",
                    "Acceleration (m/s²)", "Road Type",
-                   "Traffic Conditions", "Temperature (°C)", "Humidity (rel.)",
+                   "Traffic Conditions", "Temperature (°C)", "Humidity (%)",
                    "Wind Speed (m/s)", "Air Pressure (hPa)", "Max speed (km/h)"},
                context_column, 0),
         Labels(std::initializer_list<std::string>{"Values"}, context_column, 1)});
