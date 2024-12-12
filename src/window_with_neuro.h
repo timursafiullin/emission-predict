@@ -246,35 +246,35 @@ namespace Graph_lib
         std::vector<NeuralNetwork::Scalar> turn_CO2_output_to_standart_view(NeuralNetwork::RowVector a)
         {
             std::vector<NeuralNetwork::Scalar> ans(1);
-            ans[0] = (std::exp(a[0] / 6 * 500) - std::exp(23.3)) / 2770000 - 100;
+            ans[0] = (std::exp(a[0] / 6.0 * 500.0) - std::exp(23.3)) / 2770000.0 - 100.0;
             return ans;
         }
 
         std::vector<NeuralNetwork::Scalar> turn_NOX_output_to_standart_view(NeuralNetwork::RowVector a)
         {
             std::vector<NeuralNetwork::Scalar> ans(1);
-            ans[0] = (std::exp(a[0] / 6 * 2 - 44.7 / 1000));
+            ans[0] = (std::exp(a[0] / 6.0 * 2.0 - 44.7 / 1000.0));
             return ans;
         }
 
         std::vector<NeuralNetwork::Scalar> turn_PM_output_to_standart_view(NeuralNetwork::RowVector a)
         {
             std::vector<NeuralNetwork::Scalar> ans(1);
-            ans[0] = a[0] / 6 * 0.2 * 4;
+            ans[0] = a[0] / 6.0 * 0.2 * 4.0;
             return ans;
         }
 
         std::vector<NeuralNetwork::Scalar> turn_VOC_output_to_standart_view(NeuralNetwork::RowVector a)
         {
             std::vector<NeuralNetwork::Scalar> ans(1);
-            ans[0] = a[0] / 6 * 0.1 * 30;
+            ans[0] = a[0] / 6.0 * 0.1 * 30.0;
             return ans;
         }
 
         std::vector<NeuralNetwork::Scalar> turn_SO2_output_to_standart_view(NeuralNetwork::RowVector a)
         {
             std::vector<NeuralNetwork::Scalar> ans(1);
-            ans[0] = a[0] / 6 * 0.1 * 20;
+            ans[0] = a[0] / 6.0 * 0.1 * 20.0;
             return ans;
         }
 

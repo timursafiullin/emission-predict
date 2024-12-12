@@ -7,24 +7,24 @@ std::string filename = "../dataset/vehicle_emission_dataset.csv";
 std::vector<long double> DatasetCell::normalise_data()
 {
     std::vector<long double> vec(19);
-    vec[0] = turn_vehicle_type_to_double(vehicle_type) / 1000 * 6;
-    vec[1] = turn_fuel_type_to_double(fuel_type) / 1000 * 6;
+    vec[0] = turn_vehicle_type_to_double(vehicle_type) / 1000.0 * 6.0;
+    vec[1] = turn_fuel_type_to_double(fuel_type) / 1000.0 * 6.0;
     vec[2] = engine_size;
-    vec[3] = age_of_vehicle / 29 * 6;
-    vec[4] = mileage / 300000 * 6;
-    vec[5] = speed / 120 * 6;
-    vec[6] = acceleration / 5 * 6;
-    vec[7] = turn_road_type_to_double(road_type) / 1000 * 6;
-    vec[8] = turn_traffic_conditions_to_double(traffic_conditions) / 1000 * 6;
-    vec[9] = temperature / 40 * 6;
-    vec[10] = humidity / 100 * 6;
-    vec[11] = wind_speed / 20 * 6;
-    vec[12] = air_pressure / 1050 * 6;
-    vec[13] = CO2_emissions / 500 * 6;
-    vec[14] = NOx_emissions / 2 * 6;
-    vec[15] = PM_emissions / 0.2 * 6;
-    vec[16] = VOC_emissions / 0.1 * 6;
-    vec[17] = SO2_emissions / 0.1 * 6;
+    vec[3] = age_of_vehicle / 29.0 * 6.0;
+    vec[4] = mileage / 300000.0 * 6.0;
+    vec[5] = speed / 120.0 * 6.0;
+    vec[6] = acceleration / 5.0 * 6.0;
+    vec[7] = turn_road_type_to_double(road_type) / 1000.0 * 6.0;
+    vec[8] = turn_traffic_conditions_to_double(traffic_conditions) / 1000.0 * 6.0;
+    vec[9] = temperature / 40.0 * 6.0;
+    vec[10] = humidity / 100.0 * 6.0;
+    vec[11] = wind_speed / 20.0 * 6.0;
+    vec[12] = air_pressure / 1050.0 * 6.0;
+    vec[13] = CO2_emissions / 500.0 * 6.0;
+    vec[14] = NOx_emissions / 2.0 * 6.0;
+    vec[15] = PM_emissions / 0.2 * 6.0;
+    vec[16] = VOC_emissions / 0.1 * 6.0;
+    vec[17] = SO2_emissions / 0.1 * 6.0;
 
     return vec;
 }
