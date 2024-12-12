@@ -242,7 +242,7 @@ static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label)
 
 void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
 {
-  const char *error_message = window.validate_inboxes();
+  std::string error_message = window.validate_inboxes();
   bool validated = error_message == "";
   if (validated)
   {
@@ -285,7 +285,7 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
   }
   else
   {
-    show_error_message(error_message);
+    show_error_message(error_message.c_str());
   }
 }
 
@@ -297,7 +297,7 @@ void show_error_message(const char* message)
       win_width, win_height, "Error message"};
   win->begin();
   win->color(FL_WHITE);
-  Fl_Box *box = new Fl_Box(10, 10, 280, 130, message.c_str());
+  Fl_Box *box = new Fl_Box(10, 10, 280, 130, message);
   box->labelsize(14);                            // Увеличим размер шрифта
   box->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE); // Выравнивание по центру и внутри бокса
   win->end();
