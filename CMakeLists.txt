@@ -47,6 +47,7 @@ add_executable(
 target_link_libraries(${TARGET} PUBLIC
     graph_lib_old
     csv
+    -mwindows
 )
 
 target_include_directories(${TARGET} PUBLIC
