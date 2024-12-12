@@ -15,35 +15,39 @@
 
 namespace NeuralNetwork
 {
-    typedef size_t              Number;
-    typedef long double         Scalar;
-    typedef Eigen::MatrixXf     Matrix;
-    typedef Eigen::RowVectorXf  RowVector;
-    typedef Eigen::VectorXf     ColumnVector;
+    using Number            = size_t;
+    using Scalar            = long double;
+    using Matrix            = Eigen::MatrixXf;
+    using RowVector         = Eigen::RowVectorXf;
+    using ColumnVector      = Eigen::VectorXf;
+    using VectorNumber      = std::vector<Number>;
+    using VectorScalar      = std::vector<Scalar>;
+    using VectorMatrixPtr   = std::vector<Matrix*>;
+    using VectorRowPtr      = std::vector<RowVector*>;
 
-    const std::string exception_message_invalid_data_sizes{
+    static const std::string exception_message_invalid_data_sizes{
         "amount of input elements must be "
         "equal to amount of output elements"
    };
-    const std::string exception_message_invalid_learning_rate{
+    static const std::string exception_message_invalid_learning_rate{
         "learning rate mustn't be less than zero"
     };
-    const std::string exception_message_invalid_structure_length{
+    static const std::string exception_message_invalid_structure_length{
         "amount of layers mustn't be less than 1"
     };
-    const std::string exception_message_invalid_neuron_amount{
+    static const std::string exception_message_invalid_neuron_amount{
         "amount of neurons mustn't be less than 1"
     };
-    const std::string exception_message_invalid_input_size{
+    static const std::string exception_message_invalid_input_size{
         "amount of input values must be equal to input neurons"
     };
-    const std::string exception_message_invalid_output_size{
+    static const std::string exception_message_invalid_output_size{
         "amount of output values must be equal to output neurons"
     };
-    const std::string exception_message_invalid_layers_amount{
+    static const std::string exception_message_invalid_layers_amount{
         "invalid layers amount given"
     };
-    const std::string exception_message_invalid_layer_matrix{
+    static const std::string exception_message_invalid_layer_matrix{
         "invalid layer matrix given"
     };
 
@@ -97,7 +101,7 @@ namespace NeuralNetwork
          * @param l learning rate. Has default value.
          */
 	    NeuralNetwork(
-            std::vector<Number> s,
+            VectorNumber s,
             Scalar l = default_learning_rate_value
         );
 
@@ -125,8 +129,8 @@ namespace NeuralNetwork
          * 
          */
         void train(
-            std::vector<RowVector *> input_data,
-            std::vector<RowVector *> output_data
+            VectorRowPtr input_data,
+            VectorRowPtr output_data
         );
 
         /**
@@ -136,9 +140,9 @@ namespace NeuralNetwork
          * @param output_data 
          * @return Scalar
          */
-        std::vector<Scalar> test(
-            std::vector<RowVector *> input_data,
-            std::vector<RowVector *> output_data
+        VectorScalar test(
+            VectorRowPtr put_data,
+            VectorRowPtr output_data
         );
 
         /**
@@ -146,7 +150,7 @@ namespace NeuralNetwork
          * 
          * @return std::vector<Matrix*> 
          */
-        std::vector<Matrix*> get_weights()
+        VectorMatrixPtr get_weights()
         {
             return weights;
         }
@@ -178,7 +182,7 @@ namespace NeuralNetwork
          *
          * @return std::vector<Matrix*>
          */
-        std::vector<Matrix *> matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights);
+        VectorMatrixPtr matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights);
 
         /**
          * @brief   Convert matrix to vector of vectors of (scalar) strings.
@@ -221,7 +225,7 @@ namespace NeuralNetwork
          * @param output 
          * @return Scalar
          */
-        std::vector<Scalar> get_abs_error(
+        VectorScalar get_abs_error(
             RowVector& input,
             RowVector& output
         );
@@ -307,7 +311,7 @@ namespace NeuralNetwork
          * @param s vector pretending to be structure.
          */
         void validate_structure(
-            const std::vector<Number>& s
+            const VectorNumber& s
         ) const;
 
         /**
@@ -325,7 +329,7 @@ namespace NeuralNetwork
          * @param w vector pretending to be weights.
          */
         void validate_weights(
-            std::vector<Matrix*> w
+            VectorMatrixPtr w
         ) const;
 
         /**
@@ -336,8 +340,8 @@ namespace NeuralNetwork
          * @param o_d vector pretending to be outputs.
          */
         void validate_data(
-            std::vector<RowVector*> i_d,
-            std::vector<RowVector*> o_d
+            VectorRowPtr i_d,
+            VectorRowPtr o_d
         ) const;
 
         /**
@@ -369,7 +373,7 @@ namespace NeuralNetwork
          *          each of them must be > 0.
          * 
          */
-        std::vector<Number> structure;
+        VectorNumber structure;
 
         /**
          * @brief   Layers of network during calculations.
@@ -377,7 +381,7 @@ namespace NeuralNetwork
          *          Contains neurons of network including bias neuron.
          * 
          */
-        std::vector<RowVector*> neuron_layers;
+        VectorRowPtr neuron_layers;
 
         /**
          * @brief   Error contribution of each neuron.
@@ -386,7 +390,7 @@ namespace NeuralNetwork
          *          updating of weigts.
          * 
          */
-        std::vector<RowVector*> deltas;
+        VectorRowPtr deltas;
 
         /**
          * @brief   Connection weights between neurons.
@@ -394,7 +398,7 @@ namespace NeuralNetwork
          *          It must be conformed with structure of network.
          * 
          */
-        std::vector<Matrix*> weights;
+        VectorMatrixPtr weights;
 
         /**
          * @brief   Coeffitient of gradient decent rate.
@@ -405,7 +409,7 @@ namespace NeuralNetwork
         Scalar learning_rate;
     };
 
-    Scalar sum(std::vector<Scalar> a);
+    Scalar sum(VectorScalar a);
 }
 
 #endif

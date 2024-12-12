@@ -2,10 +2,11 @@
 #include <vector>
 #include <iostream>
 
+
 namespace NeuralNetwork
 {
     NeuralNetwork::NeuralNetwork(
-        std::vector<Number> s,
+        VectorNumber s,
         Scalar l)
     {
         validate_structure(s);
@@ -32,19 +33,19 @@ namespace NeuralNetwork
         return *neuron_layers.back();
     }
 
-    std::vector<Scalar> NeuralNetwork::test(
-        std::vector<RowVector *> input_data,
-        std::vector<RowVector *> output_data)
+    VectorScalar NeuralNetwork::test(
+        VectorRowPtr input_data,
+        VectorRowPtr output_data)
     {
         validate_data(input_data, output_data);
 
         Number dataset_size{input_data.size()};
 
-        std::vector<Scalar> main_error(structure.back());
+        VectorScalar main_error(structure.back());
 
         for (Number element{0}; element < dataset_size; ++element)
         {
-            std::vector<Scalar> error{get_abs_error(*input_data[element], *output_data[element])};
+            VectorScalar error{get_abs_error(*input_data[element], *output_data[element])};
             for (Number i{0}; i < error.size(); ++i)
                 main_error[i] += sqrtl(error[i] / dataset_size);
         }
@@ -53,8 +54,8 @@ namespace NeuralNetwork
     }
 
     void NeuralNetwork::train(
-        std::vector<RowVector *> input_data,
-        std::vector<RowVector *> output_data)
+        VectorRowPtr input_data,
+        VectorRowPtr output_data)
     {
         validate_data(input_data, output_data);
 
@@ -99,14 +100,14 @@ namespace NeuralNetwork
             (*deltas[layer]) = (*deltas[layer + 1]) * (weights[layer]->transpose());
     }
 
-    std::vector<Scalar> NeuralNetwork::get_abs_error(
+    VectorScalar NeuralNetwork::get_abs_error(
         RowVector &input,
         RowVector &output)
     {
         validate_input(input);
         validate_output(output);
 
-        std::vector<Scalar> error{};
+        VectorScalar error{};
 
         RowVector prediction{predict(input)};
 
@@ -199,7 +200,7 @@ namespace NeuralNetwork
     }
 
     void NeuralNetwork::validate_structure(
-        const std::vector<Number> &s) const
+        const VectorNumber &s) const
     {
         if (s.size() < 2)
             throw NetworkInvalidValue(exception_message_invalid_structure_length);
@@ -217,7 +218,7 @@ namespace NeuralNetwork
     }
 
     void NeuralNetwork::validate_weights(
-        std::vector<Matrix *> w) const
+        VectorMatrixPtr w) const
     {
         if (w.size() != structure.size() - 1)
             throw NetworkInvalidValue(exception_message_invalid_layers_amount);
@@ -229,8 +230,8 @@ namespace NeuralNetwork
     }
 
     void NeuralNetwork::validate_data(
-        std::vector<RowVector *> input_data,
-        std::vector<RowVector *> output_data) const
+        VectorRowPtr input_data,
+        VectorRowPtr output_data) const
     {
         if (input_data.size() != output_data.size())
             throw NetworkInvalidValue(exception_message_invalid_data_sizes);
@@ -250,7 +251,7 @@ namespace NeuralNetwork
             throw NetworkInvalidValue(exception_message_invalid_output_size);
     }
 
-    Scalar sum(std::vector<Scalar> a)
+    Scalar sum(VectorScalar a)
     {
         Scalar summary{0};
         for (Scalar s : a)
@@ -258,10 +259,10 @@ namespace NeuralNetwork
         return summary;
     }
 
-    std::vector<Matrix *> NeuralNetwork::matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights)
+    VectorMatrixPtr NeuralNetwork::matrix_vector_from_vectors(std::vector<std::vector<VectorScalar>> &weights)
     {
-        std::vector<Matrix *> matrices;
-        for (std::vector<std::vector<Scalar>> &w : weights)
+        VectorMatrixPtr matrices;
+        for (std::vector<VectorScalar> &w : weights)
         {
             if (!w.empty())
             {
@@ -299,7 +300,7 @@ namespace NeuralNetwork
         CsvWriter csv_weights{filename};
         csv_weights.open_file();
 
-        std::vector<Matrix *> weights{get_weights()};
+        VectorMatrixPtr weights{get_weights()};
         for (Matrix *l : weights)
         {
             std::vector<std::vector<std::string>> matrix_vector{matrix_to_vector(*l)};
@@ -317,7 +318,7 @@ namespace NeuralNetwork
     void NeuralNetwork::load_weights_from_file(std::string filename)
     {
         CsvReader csv_reader(filename);
-        std::vector<std::vector<std::vector<Scalar>>> vector_weights;
+        std::vector<std::vector<VectorScalar>> vector_weights;
         csv_reader.open_file();
         while (true)
         {
@@ -328,10 +329,10 @@ namespace NeuralNetwork
 
                 // if (layer_weights_string[0][0] == "")
                 //     throw FileIsClosedError();
-                std::vector<std::vector<Scalar>> matrix_weights;
+                std::vector<VectorScalar> matrix_weights;
                 for (const auto &row : layer_weights_string)
                 {
-                    std::vector<Scalar> row_scalar;
+                    VectorScalar row_scalar;
                     for (const auto &element : row)
                     {
                         row_scalar.push_back(std::stold(element));
@@ -346,7 +347,7 @@ namespace NeuralNetwork
             }
         }
         csv_reader.close_file();
-        std::vector<Matrix *> weights_converted = matrix_vector_from_vectors(vector_weights);
+        VectorMatrixPtr weights_converted = matrix_vector_from_vectors(vector_weights);
         for (Number layer{0}; layer < weights_converted.size(); ++layer)
             *weights[layer] = *weights_converted[layer];
     }
