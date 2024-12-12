@@ -6,6 +6,7 @@
 #include "dataset_reader.h"
 #include "gui.h"
 #include <vector>
+#include <regex>
 
 #define GLib Graph_lib
 
@@ -42,6 +43,45 @@ namespace Graph_lib
     {
     public:
         GasText(Point x, const std::string &s) : GLib::Text{x, s} {};
+    };
+
+    class ErrorWindow : public GLib::Window
+    {
+    public:
+        ErrorWindow(std::string error_message) : GLib::Window{GLib::Point((GLib::x_max() - 1) / 2, (GLib::y_max() - 1) / 2), 1, 1, "Error message"},
+                                                 error_message{error_message}
+        {
+            std::vector<std::string> parsed_error_message;
+            std::regex del("\n");
+            std::sregex_token_iterator token_iterator(error_message.begin(), error_message.end(), del, -1);
+            std::sregex_token_iterator i_end;
+
+            for (; token_iterator != i_end; ++token_iterator)
+                parsed_error_message.push_back(*token_iterator);
+
+            hh = parsed_error_message.size() * 40; // each line is 50 pixels in height
+            ww = (*std::max_element(parsed_error_message.begin(), parsed_error_message.end(),
+                                        [](const auto &a, const auto &b)
+                                        {
+                                            return a.size() < b.size();
+                                        })).size() * 7; // each symbol is 50 pixels wide
+
+            resize(ww, hh);
+
+            begin();
+            color(FL_WHITE);
+            Fl_Box *box = new Fl_Box(0, 0, ww, hh, error_message.c_str());
+            box->labelsize(14);                            // Увеличим размер шрифта
+            box->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE); // Выравнивание по центру и внутри бокса
+            end();
+            show();
+            Fl::run();
+        }
+
+    private:
+        std::string error_message;
+        int hh;
+        int ww;
     };
 
     class WindowWithNeuro : public GLib::Window

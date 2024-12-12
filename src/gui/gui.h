@@ -128,5 +128,6 @@ extern void callback_clear(GLib::Address, GLib::Address addr);
 
 extern int main_gui();
 extern std::string to_string_exp(double d);
+extern void show_error_message(std::string message);
 
 #endif
