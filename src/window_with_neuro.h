@@ -211,35 +211,35 @@ namespace Graph_lib
         NeuralNetwork::RowVector *get_output_CO2_ptr(std::vector<long double> vector)
         {
             NeuralNetwork::RowVector *output = new NeuralNetwork::RowVector(1);
-            (*output)[0] = vector[13];
+            (*output)[0] = vector[(unsigned long long)Index::CO2];
             return output;
         }
 
         NeuralNetwork::RowVector *get_output_NOX_ptr(std::vector<long double> vector)
         {
             NeuralNetwork::RowVector *output = new NeuralNetwork::RowVector(1);
-            (*output)[0] = vector[14];
+            (*output)[0] = vector[(unsigned long long)Index::NOx];
             return output;
         }
 
         NeuralNetwork::RowVector *get_output_PM_ptr(std::vector<long double> vector)
         {
             NeuralNetwork::RowVector *output = new NeuralNetwork::RowVector(1);
-            (*output)[0] = vector[15];
+            (*output)[0] = vector[(unsigned long long)Index::PM];
             return output;
         }
 
         NeuralNetwork::RowVector *get_output_VOC_ptr(std::vector<long double> vector)
         {
             NeuralNetwork::RowVector *output = new NeuralNetwork::RowVector(1);
-            (*output)[0] = vector[16];
+            (*output)[0] = vector[(unsigned long long)Index::VOC];
             return output;
         }
 
         NeuralNetwork::RowVector *get_output_SO2_ptr(std::vector<long double> vector)
         {
             NeuralNetwork::RowVector *output = new NeuralNetwork::RowVector(1);
-            (*output)[0] = vector[17];
+            (*output)[0] = vector[(unsigned long long)Index::SO2];
             return output;
         }
 
