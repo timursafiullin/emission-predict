@@ -148,7 +148,9 @@ namespace Graph_lib
             std::vector<std::string> inbox_values;
             for (size_t i = 0; i < inboxes.size(); ++i)
             {
-                inbox_values.push_back(inboxes[i]->get_string());
+                std::string inbox_value = inboxes[i]->get_string();
+                std::transform(inbox_value.begin(), inbox_value.end(), inbox_value.begin(), ::tolower);
+                inbox_values.push_back(inbox_value);
             }
             return inbox_values;
         }
@@ -285,12 +287,12 @@ namespace Graph_lib
             return evaluations;
         }
 
-        const char* validate_inboxes()
+        std::string validate_inboxes()
         {
             std::vector<std::string> inbox_values = get_values_from_inboxes();
             std::string validated = "";
             std::string message = "";
-            message += "----------------------------------------------\n";
+            message += "\n----------------------------------------------\n";
 
             Labels inbox_names = Labels{std::initializer_list<std::string>
             {
@@ -316,13 +318,13 @@ namespace Graph_lib
                 for (size_t i{}; i < inbox_values.size(); ++i)
                     if (inbox_values[i] == "")
                         validated += "[ERROR] Input box '" + inbox_names[i] + "' is empty.\n";
-                if (inbox_values[0] != "Truck" && inbox_values[0] != "Car" && inbox_values[0] != "Motorcycle" && inbox_values[0] != "Bus")
+                if (inbox_values[0] != "truck" && inbox_values[0] != "car" && inbox_values[0] != "motorcycle" && inbox_values[0] != "bus")
                     validated += "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck, Motorcycle or Bus.\n";
-                if (inbox_values[1] != "Petrol" && inbox_values[1] != "Electric" && inbox_values[1] != "Diesel" && inbox_values[1] != "Hybrid")
+                if (inbox_values[1] != "petrol" && inbox_values[1] != "electric" && inbox_values[1] != "diesel" && inbox_values[1] != "hybrid")
                     validated += "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel, Electric or Hybrid.\n";
-                if (inbox_values[6] != "City" && inbox_values[6] != "Highway" && inbox_values[6] != "Rural")
+                if (inbox_values[6] != "city" && inbox_values[6] != "highway" && inbox_values[6] != "rural")
                     validated += "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n";
-                if (inbox_values[7] != "Free flow" && inbox_values[7] != "Heavy" && inbox_values[7] != "Moderate")
+                if (inbox_values[7] != "free flow" && inbox_values[7] != "heavy" && inbox_values[7] != "moderate")
                     validated += "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n";
                 if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
                     validated += "[ERROR] Invalid value of 'Max speed': must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
@@ -333,7 +335,7 @@ namespace Graph_lib
             message += "----------------------------------------------\n";
             if (validated != "")
                 std::cout << message << std::endl;
-            return validated.c_str();
+            return validated;
         }
 
         void update_current_cell()
