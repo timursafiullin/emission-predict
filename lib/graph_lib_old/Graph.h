@@ -245,7 +245,6 @@ public:
   void set_label(Labels &labels);
   void set_label(LabelsList &labels_list);
 
-  //  void attach(Window)
 private:
     int x, y, w, h;
     int rows, cols;
@@ -276,12 +275,11 @@ public:
     if (w <= 0 || h <= 0)
       throw std::invalid_argument("Width and height must be positive.");
 
-    indent_y = h*0.025;
-    indent_x = w*0.025;
+    indent_y = h*0.06;
+    indent_x = w*0.045;
   };
 
   void draw_lines() const override;
-  //void add_point(int x, int y);
 
 private:
   int x, y, w, h, origin_x, origin_y, indent_y, indent_x;

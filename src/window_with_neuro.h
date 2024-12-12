@@ -21,8 +21,8 @@ namespace Graph_lib
             double max_graph = *std::max_element(points.begin(), points.end());
             double min_graph = *std::min_element(points.begin(), points.end());
 
-            xscale = (double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.025)) / (double)count;
-            yscale = (double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.025)) / (double)(max_graph - min_graph);
+            xscale = (double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)count;
+            yscale = (double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)(max_graph - min_graph);
 
             if (r2 - r1 <= 0)
                 error("bad graphing range");
