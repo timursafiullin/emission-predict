@@ -394,6 +394,8 @@ struct Text : Shape
 
   int font_size () const { return fnt_sz; }
 
+  double get_size () const { return fl_width(lab.c_str()); }
+
 private:
   std::string lab;  // label
   Font fnt{fl_font()};
