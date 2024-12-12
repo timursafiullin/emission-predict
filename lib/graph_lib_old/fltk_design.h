@@ -18,6 +18,8 @@ namespace COLORS
     const auto BLOODY_RED = fl_rgb_color(82, 0, 0);
     const auto GREEN_DARK_LEMON = fl_rgb_color(5, 110, 0);
     const auto RED_DARK_BERRY = fl_rgb_color(128, 0, 0);
+    const auto SOFT_RED = fl_rgb_color(255, 150, 159);
+    const auto SOFT_PINK = fl_rgb_color(252, 207, 211);
 };
 
 #endif // FL_DESIGN

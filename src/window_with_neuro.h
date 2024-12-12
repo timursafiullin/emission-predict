@@ -351,47 +351,47 @@ namespace Graph_lib
                 {
                     if (inbox_values[i] == "")
                     {
-                        inboxes[i]->set_color(COLORS::RED_DARK_BERRY);
+                        inboxes[i]->set_color(COLORS::SOFT_PINK);
                         validated += "[ERROR] Input box '" + inbox_names[i] + "' is empty.\n";
                     }
                     if (i != 0 && i != 1 && i != 6 && i != 7)
                         if (!is_string_double(inbox_values[i]))
                             {
-                                inboxes[i]->set_color(COLORS::RED_DARK_BERRY);
+                                inboxes[i]->set_color(COLORS::SOFT_PINK);
                                 validated += "[ERROR] Input box '" + inbox_names[i] + "' has invalid value.\n";
                             }
                 }
                 if (inbox_values[0] != "truck" && inbox_values[0] != "car" && inbox_values[0] != "motorcycle" && inbox_values[0] != "bus")
                 {
-                    inboxes[0]->set_color(COLORS::RED_DARK_BERRY);
+                    inboxes[0]->set_color(COLORS::SOFT_PINK);
                     validated += "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck, Motorcycle or Bus.\n";
                 }
                 if (inbox_values[1] != "petrol" && inbox_values[1] != "electric" && inbox_values[1] != "diesel" && inbox_values[1] != "hybrid")
                 {
-                    inboxes[1]->set_color(COLORS::RED_DARK_BERRY);
+                    inboxes[1]->set_color(COLORS::SOFT_PINK);
                     validated += "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel, Electric or Hybrid.\n";
                 }
                 if (inbox_values[6] != "city" && inbox_values[6] != "highway" && inbox_values[6] != "rural")
                 {
-                    inboxes[6]->set_color(COLORS::RED_DARK_BERRY);
+                    inboxes[6]->set_color(COLORS::SOFT_PINK);
                     validated += "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n";
                 }
                 if (inbox_values[7] != "free flow" && inbox_values[7] != "heavy" && inbox_values[7] != "moderate")
                 {
-                    inboxes[7]->set_color(COLORS::RED_DARK_BERRY);
+                    inboxes[7]->set_color(COLORS::SOFT_PINK);
                     validated += "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n";
                 }
                 if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
                 {
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
                     {
-                        inboxes[12]->set_color(COLORS::RED_DARK_BERRY);
+                        inboxes[12]->set_color(COLORS::SOFT_PINK);
                         validated += "[ERROR] Invalid value of 'Max speed': must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
                     }
                 }
                 else
                 {
-                    inboxes[12]->set_color(COLORS::RED_DARK_BERRY);
+                    inboxes[12]->set_color(COLORS::SOFT_PINK);
                     validated += "[ERROR] Max speed is invalid: must be number greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
                 }
             }
@@ -399,7 +399,7 @@ namespace Graph_lib
             {
                 for (size_t i = 0; i < inboxes.size(); ++i)
                 {
-                    inboxes[i]->set_color(COLORS::RED_DARK_BERRY);
+                    inboxes[i]->set_color(COLORS::SOFT_PINK);
                 }
                 validated += "[ERROR] All inboxes are empty.\n";
             }
