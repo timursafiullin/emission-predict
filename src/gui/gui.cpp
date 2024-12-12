@@ -139,9 +139,9 @@ const char * help_message
     "emissions (CO2, NOX, PM, VOC, SO2)\nbased on various input parameters " \
     "using a neural network. The program features a graphical user\ninterface (GUI) " \
     "that allows users to input vehicle data, visualize predictions, and manage historical data.\n\n" \
-    "Input parameters: vehicle type (Car, Truck, Motorcycle), fuel type (Petrol, Diesel, Electric),\n" \
-    "engine size (in liters), age of vehicle (in years), mileage (in kilometers),\n" \
-    "acceleration (m/s²), road type (City, Rural, Highway), traffic conditions " \
+    "Input parameters: vehicle type (Car, Truck, Motorcycle, Bus), fuel type (Petrol, Diesel, Electric, Hybrid),\n" \
+    "engine size (in liters), age of vehicle (in years), mileage (in kilometers)," \
+    "acceleration (m/s²),\nroad type (City, Rural, Highway), traffic conditions " \
     "(Heavy, Moderate, Free flow),\ntemperature (in °C), humidity (relative in %), " \
     "wind speed (m/s) and air pressure (in hPa).\n\nThen you need to input the max speed value. " \
     "It is the limit up to which the graph will be drawn.\n\n" \

@@ -316,10 +316,10 @@ namespace Graph_lib
                 for (size_t i{}; i < inbox_values.size(); ++i)
                     if (inbox_values[i] == "")
                         validated += "[ERROR] Input box '" + inbox_names[i] + "' is empty.\n";
-                if (inbox_values[0] != "Truck" && inbox_values[0] != "Car" && inbox_values[0] != "Motorcycle")
-                    validated += "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck or Motorcycle.\n";
-                if (inbox_values[1] != "Petrol" && inbox_values[1] != "Electric" && inbox_values[1] != "Diesel")
-                    validated += "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel or Electric.\n";
+                if (inbox_values[0] != "Truck" && inbox_values[0] != "Car" && inbox_values[0] != "Motorcycle" && inbox_values[0] != "Bus")
+                    validated += "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck, Motorcycle or Bus.\n";
+                if (inbox_values[1] != "Petrol" && inbox_values[1] != "Electric" && inbox_values[1] != "Diesel" && inbox_values[1] != "Hybrid")
+                    validated += "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel, Electric or Hybrid.\n";
                 if (inbox_values[6] != "City" && inbox_values[6] != "Highway" && inbox_values[6] != "Rural")
                     validated += "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n";
                 if (inbox_values[7] != "Free flow" && inbox_values[7] != "Heavy" && inbox_values[7] != "Moderate")
@@ -332,7 +332,7 @@ namespace Graph_lib
             message += validated;
             message += "----------------------------------------------\n";
             if (validated != "")
-                std::cout << message;
+                std::cout << message << std::endl;
             return validated.c_str();
         }
 
