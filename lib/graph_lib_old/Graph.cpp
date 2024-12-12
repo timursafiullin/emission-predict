@@ -151,12 +151,12 @@ void GraphCanvas::draw_lines() const
   // Vertical Axis
   fl_line(origin_x, y+indent_y, origin_x-arrow_x, y+indent_y+arrow_y);
   fl_line(origin_x, y+indent_y, origin_x+arrow_x, y+indent_y+arrow_y);
-  fl_line(origin_x, y+h-indent_y, origin_x, y+indent_y);
+  fl_line(origin_x, y+h*0.975, origin_x, y+indent_y);
 
   // Horizontal axis
   fl_line(x+w-indent_x, origin_y, x+w-indent_x-arrow_x, origin_y+arrow_y);
   fl_line(x+w-indent_x, origin_y, x+w-indent_x-arrow_x, origin_y-arrow_y);
-  fl_line(x+indent_x, origin_y, x+w-indent_x, origin_y);
+  fl_line(x+w*0.025, origin_y, x+w-indent_x, origin_y);
 }
 
 inline std::pair<double, double> line_intersect (Point p1, Point p2, Point p3, Point p4, bool& parallel)
