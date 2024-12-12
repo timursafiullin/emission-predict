@@ -63,26 +63,26 @@ static constexpr unsigned int  amount_of_features                   { 18        
  * @brief Indexes of features
  * 
  */
-enum class Index
+enum class Index : unsigned long long
 {
-    vehicle_type_index = 0,
-    fuel_type_index,
-    engine_size_index,
-    age_index,
-    mileage_index,
-    speed_index,
-    acceleration_index,
-    road_type_index,
-    traffic_conditions_index,
-    temperature_index,
-    humidity_index,
-    wind_speed_index,
-    air_pressure_index,
-    CO2_index,
-    NOx_index,
-    PM_index,
-    VOC_index,
-    SO2_index
+    vehicle_type = 0,
+    fuel_type,
+    engine_size,
+    age,
+    mileage,
+    speed,
+    acceleration,
+    road_type,
+    traffic_conditions,
+    temperature,
+    humidity,
+    wind_speed,
+    air_pressure,
+    CO2,
+    NOx,
+    PM,
+    VOC,
+    SO2
 };
 
 /**
@@ -168,7 +168,7 @@ struct DatasetCell
     long double             SO2_emissions;
 
 private:
-    // Helper function to convert categorical values to numerical representations
+    // Helper function to convert categorical values to numerical representation
 
     static long double turn_vehicle_type_to_double      ( std::string vehicle   );
     static long double turn_fuel_type_to_double         ( std::string fuel      );
