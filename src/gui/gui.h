@@ -57,7 +57,7 @@ constexpr unsigned int gas_button_w{30}, gas_button_h{30};
 // Help window
 constexpr unsigned int help_window_width{650};
 constexpr unsigned int help_window_height{450};
-extern const char * help_message;
+extern std::string help_message;
 // const char * help_message 
 // {
 //     "Instruction\n" \

@@ -133,7 +133,7 @@ void callback_clear(GLib::Address, GLib::Address addr)
   std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
 }
 
-const char * help_message 
+std::string help_message 
 {
     "The Emission Prediction Program is designed to predict vehicle " \
     "emissions (CO2, NOX, PM, VOC, SO2)\nbased on various input parameters " \
@@ -174,7 +174,7 @@ void show_help_message()
 
     win->color(FL_WHITE);
 
-    Fl_Box *box = new Fl_Box(10, 10, help_window_width-20, help_window_height-20, help_message);
+    Fl_Box *box = new Fl_Box(10, 10, help_window_width-20, help_window_height-20, help_message.c_str());
     box->labelsize(13);
     box->align(FL_ALIGN_TOP_LEFT | FL_ALIGN_INSIDE);
   
