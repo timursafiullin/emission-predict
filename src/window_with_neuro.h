@@ -377,8 +377,13 @@ namespace Graph_lib
             if (!is_all_empty)
             {
                 for (size_t i{}; i < inbox_values.size()-1; ++i)
+                {
                     if (inbox_values[i] == "")
                         validated += "[ERROR] Input box '" + inbox_names[i] + "' is empty.\n";
+                    if (i != 0 && i != 1 && i != 6 && i != 7)
+                        if (!is_string_double(inbox_values[i]))
+                            validated += "[ERROR] Input box '" + inbox_names[i] + "' has invalid value.\n";
+                }
                 if (inbox_values[0] != "truck" && inbox_values[0] != "car" && inbox_values[0] != "motorcycle" && inbox_values[0] != "bus")
                     validated += "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck, Motorcycle or Bus.\n";
                 if (inbox_values[1] != "petrol" && inbox_values[1] != "electric" && inbox_values[1] != "diesel" && inbox_values[1] != "hybrid")
@@ -387,13 +392,13 @@ namespace Graph_lib
                     validated += "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n";
                 if (inbox_values[7] != "free flow" && inbox_values[7] != "heavy" && inbox_values[7] != "moderate")
                     validated += "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n";
-                if (inbox_values[12] != "")
+                if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
                 {
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
                         validated += "[ERROR] Invalid value of 'Max speed': must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
                 }
                 else
-                    validated += "[ERROR] Max speed is empty: must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
+                    validated += "[ERROR] Max speed is invalid: must be number greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
             }
             else
                 validated += "[ERROR] All inboxes are empty.\n";
