@@ -277,6 +277,26 @@ namespace Graph_lib
             return ans;
         }
 
+        bool is_string_double(const std::string &str)
+        {
+            for (char const &c : str)
+            {
+                if (std::isdigit(c) == 0 && c != '.')
+                    return false;
+            }
+            return true;
+        }
+
+        bool is_string_int(const std::string &str)
+        {
+            for (char const &c : str)
+            {
+                if (std::isdigit(c) == 0)
+                    return false;
+            }
+            return true;
+        }
+
         std::vector<double> evaluate_network(char network)
         {
             int max_speed = current_cell.speed;
