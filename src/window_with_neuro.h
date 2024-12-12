@@ -375,7 +375,7 @@ namespace Graph_lib
 
             if (!is_all_empty)
             {
-                for (size_t i{}; i < inbox_values.size(); ++i)
+                for (size_t i{}; i < inbox_values.size()-1; ++i)
                     if (inbox_values[i] == "")
                         validated += "[ERROR] Input box '" + inbox_names[i] + "' is empty.\n";
                 if (inbox_values[0] != "truck" && inbox_values[0] != "car" && inbox_values[0] != "motorcycle" && inbox_values[0] != "bus")
@@ -386,8 +386,13 @@ namespace Graph_lib
                     validated += "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n";
                 if (inbox_values[7] != "free flow" && inbox_values[7] != "heavy" && inbox_values[7] != "moderate")
                     validated += "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n";
-                if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
-                    validated += "[ERROR] Invalid value of 'Max speed': must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
+                if (inbox_values[12] != "")
+                {
+                    if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
+                        validated += "[ERROR] Invalid value of 'Max speed': must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
+                }
+                else
+                    validated += "[ERROR] Max speed is empty: must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
             }
             else
                 validated += "[ERROR] All inboxes are empty.\n";
