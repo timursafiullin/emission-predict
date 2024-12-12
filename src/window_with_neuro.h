@@ -202,7 +202,7 @@ namespace Graph_lib
         std::vector<NeuralNetwork::Scalar> turn_CO2_output_to_standart_view(NeuralNetwork::RowVector a)
         {
             std::vector<NeuralNetwork::Scalar> ans(1);
-            ans[0] = (std::exp(a[0] / 6 * 500) - std::exp(23.3)) / 2770000;
+            ans[0] = (std::exp(a[0] / 6 * 500) - std::exp(23.3)) / 2770000 - 100;
             return ans;
         }
 
