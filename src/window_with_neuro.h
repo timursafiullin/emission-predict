@@ -11,6 +11,40 @@
 
 #define GLib Graph_lib
 
+static const std::string invalid_traffic_conditions_error_message {
+    "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n"
+    };
+static const std::string invalid_road_type_error_message {
+    "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n"
+    };
+static const std::string invalid_fuel_type_error_message {
+    "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel, Electric or Hybrid.\n"
+    };
+static const std::string invalid_vehicle_type_error_message {
+    "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck, Bus or Motorcycle\n"
+    };
+static const std::string all_empty_inboxes_error_message {
+    "[ERROR] All inboxes are empty.\n"
+    };
+static const std::string input_box_error_message {
+        "[ERROR] Input box '"
+    };
+static const std::string is_empty_error_message_end {
+        "' is empty.\n"
+    };
+static const std::string invalid_value_error_message_end {
+    "' has invalid value.\n"
+    };
+static const std::string invalid_value_of_max_speed_error_message {
+        "[ERROR] Invalid value of 'Max speed': must be greater than "
+    };
+static const std::string max_speed_invalid_error_message {
+        "[ERROR] Invalid value of 'Max speed': must be greater than "
+    };
+static const std::string line_separator {
+        "----------------------------------------------\n"
+    };
+
 namespace Graph_lib
 {
     class FunctionStepping : public GLib::Shape
@@ -379,31 +413,47 @@ namespace Graph_lib
                 for (size_t i{}; i < inbox_values.size()-1; ++i)
                 {
                     if (inbox_values[i] == "")
-                        validated += "[ERROR] Input box '" + inbox_names[i] + "' is empty.\n";
+                        validated += input_box_error_message + inbox_names[i] + is_empty_error_message_end;
                     if (i != 0 && i != 1 && i != 6 && i != 7)
                         if (!is_string_double(inbox_values[i]))
-                            validated += "[ERROR] Input box '" + inbox_names[i] + "' has invalid value.\n";
+                            validated += input_box_error_message + inbox_names[i] + invalid_value_error_message_end;
                 }
-                if (inbox_values[0] != "truck" && inbox_values[0] != "car" && inbox_values[0] != "motorcycle" && inbox_values[0] != "bus")
-                    validated += "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck, Motorcycle or Bus.\n";
-                if (inbox_values[1] != "petrol" && inbox_values[1] != "electric" && inbox_values[1] != "diesel" && inbox_values[1] != "hybrid")
-                    validated += "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel, Electric or Hybrid.\n";
-                if (inbox_values[6] != "city" && inbox_values[6] != "highway" && inbox_values[6] != "rural")
-                    validated += "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n";
-                if (inbox_values[7] != "free flow" && inbox_values[7] != "heavy" && inbox_values[7] != "moderate")
-                    validated += "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n";
+                if (inbox_values[0] != truck_type &&
+                    inbox_values[0] != car_type &&
+                    inbox_values[0] != motorcycle_type &&
+                    inbox_values[0] != bus_type
+                    )
+                    validated += invalid_vehicle_type_error_message;
+                if (inbox_values[1] != petrol_type &&
+                    inbox_values[1] != electric_type &&
+                    inbox_values[1] != diesel_type &&
+                    inbox_values[1] != hybrid_type
+                    )
+                    validated += invalid_fuel_type_error_message;
+                if (
+                    inbox_values[6] != city_type &&
+                    inbox_values[6] != highway_type &&
+                    inbox_values[6] != rural_type
+                    )
+                    validated += invalid_road_type_error_message;
+                if (
+                    inbox_values[7] != free_flow_type &&
+                    inbox_values[7] != heavy_type &&
+                    inbox_values[7] != moderate_type
+                    )
+                    validated += invalid_traffic_conditions_error_message;
                 if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
                 {
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
-                        validated += "[ERROR] Invalid value of 'Max speed': must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
+                        validated += invalid_value_of_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
                 }
                 else
-                    validated += "[ERROR] Max speed is invalid: must be number greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
+                    validated += max_speed_invalid_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
             }
             else
-                validated += "[ERROR] All inboxes are empty.\n";
+                validated += all_empty_inboxes_error_message;
             message += validated;
-            message += "----------------------------------------------\n";
+            message += line_separator;
             if (validated != "")
                 std::cout << message << std::endl;
             return validated;
