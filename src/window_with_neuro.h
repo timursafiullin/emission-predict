@@ -33,6 +33,7 @@ namespace Graph_lib
 
         void set_string(std::string s) override
         {
+            s[0] = std::toupper(s[0]);
             reinterpret_cast<Fl_Choice *>(pw)->value(std::find(values.begin(), values.end(), s) - values.begin());
         }
 

@@ -5,8 +5,9 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
-
 #include <cmath>
+#include <regex>
+#include <iterator>
 
 #define GLib Graph_lib
 
@@ -94,19 +95,30 @@ void callback_history(GLib::Address, GLib::Address addr)
     return;
 
   std::ifstream save_file(path);
-  std::vector<std::string> inbox_values;
-  if (save_file.is_open())
-  {
-    std::string value;
-    while (std::getline(save_file, value))
-      inbox_values.push_back(value);
-  }
-  else
+  if (!save_file.is_open())
   {
     std::cerr << "[ERROR] History file not found" << std::endl;
+    show_error_message(window, "[ERROR] History file not found");
     return;
   }
+  std::string file_contents(std::istreambuf_iterator<char>{save_file}, {});
   save_file.close();
+
+  std::regex file_regex_wrapped(file_regex, std::regex_constants::icase);
+  if (!std::regex_match(file_contents.begin(), file_contents.end(), file_regex_wrapped))
+  {
+    std::cerr << "[ERROR] History file is not in the correct format" << std::endl;
+    show_error_message(window, "[ERROR] History file is not in the correct format");
+    return;
+  }
+
+  std::vector<std::string> inbox_values;
+  std::regex del("\n");
+  std::sregex_token_iterator token_iterator(file_contents.begin(), file_contents.end(), del, -1);
+  std::sregex_token_iterator end;
+
+  for (; token_iterator != end; ++token_iterator)
+    inbox_values.push_back(*token_iterator);
 
   std::vector<GLib::In_box *> inboxes = window.inboxes; // copy inboxes
 
@@ -114,6 +126,7 @@ void callback_history(GLib::Address, GLib::Address addr)
     inboxes[i]->set_string(inbox_values[i]);
 
   std::cout << "[ACTION] Data pasted successfully." << std::endl;
+  show_error_message(window, "[ACTION] Data pasted successfully.");
 }
 
 void callback_clear(GLib::Address, GLib::Address addr)
@@ -143,6 +156,7 @@ void callback_clear(GLib::Address, GLib::Address addr)
 
   window.redraw();
   std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
+  show_error_message(window, "[ACTION] Shapes and input boxes have been cleared.");
 }
 
 std::string help_message 

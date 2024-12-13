@@ -105,6 +105,9 @@ const unsigned int inbox_y{1 + table_y + table_height / table_rows};
 const unsigned int inbox_w{-1 + table_width / table_cols};
 const unsigned int inbox_h{-1 + table_height / table_rows};
 
+// SAVE FILE REGEX
+const std::string file_regex = "^(Truck|Car|Motorcycle|Bus)\n(Petrol|Electric|Diesel|hybrid)\n([0-9]+[.])?[0-9]+\n[0-9]+\n[0-9]+\n([0-9]+[.])?[0-9]+\n(City|Highway|Rural)\n(Free flow|Heavy|Moderate)\n[+-]?([0-9]+[.])?[0-9]+\n([0-9]+[.])?[0-9]+\n([0-9]+[.])?[0-9]+\n([0-9]+[.])?[0-9]+\n[0-9]+\n$";
+
 extern LabelsList labels_list;
 
 struct EmissionState
