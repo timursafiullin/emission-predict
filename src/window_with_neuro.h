@@ -138,13 +138,11 @@ namespace Graph_lib
             13,
             1};
 
-        NeuralNetwork::Scalar l{1e-30};
-
-        NeuralNetwork::NeuralNetwork CO2{neuro_structure, l};
-        NeuralNetwork::NeuralNetwork NOX{neuro_structure, l};
-        NeuralNetwork::NeuralNetwork PM{neuro_structure, l};
-        NeuralNetwork::NeuralNetwork VOC{neuro_structure, l};
-        NeuralNetwork::NeuralNetwork SO2{neuro_structure, l};
+        NeuralNetwork::NeuralNetwork CO2{neuro_structure};
+        NeuralNetwork::NeuralNetwork NOX{neuro_structure};
+        NeuralNetwork::NeuralNetwork PM{neuro_structure};
+        NeuralNetwork::NeuralNetwork VOC{neuro_structure};
+        NeuralNetwork::NeuralNetwork SO2{neuro_structure};
 
         void load_networks()
         {
