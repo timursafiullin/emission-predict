@@ -11,6 +11,10 @@
 
 #define GLib Graph_lib
 
+
+static const std::string bad_graphing_range_error_message { "bad graphing range" };
+static const std::string non_positive_graphing_count_error_message { "non-positive graphing count" };
+
 static const std::string invalid_traffic_conditions_error_message {
     "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n"
     };
@@ -45,6 +49,16 @@ static const std::string line_separator {
         "----------------------------------------------\n"
     };
 
+constexpr unsigned long long amount_of_inputs {13};
+constexpr unsigned long long amount_of_hidden_neurons {13};
+constexpr unsigned long long amount_of_outputs {1};
+
+static const std::string CO2_filepath { "../weights/weights_CO2.csv" };
+static const std::string NOx_filepath { "../weights/weights_NOX.csv" };
+static const std::string PM_filepath  { "../weights/weights_PM.csv" };
+static const std::string VOC_filepath { "../weights/weights_VOC.csv" };
+static const std::string SO2_filepath { "../weights/weights_SO2.csv" };
+
 namespace Graph_lib
 {
     class FunctionStepping : public GLib::Shape
@@ -61,9 +75,9 @@ namespace Graph_lib
             yscale = (double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)(max_graph - min_graph);
 
             if (r2 - r1 <= 0)
-                error("bad graphing range");
+                error(bad_graphing_range_error_message);
             if (count <= 0)
-                error("non-positive graphing count");
+                error(non_positive_graphing_count_error_message);
             double dist = (r2 - r1) / count;
             double r = r1;
             for (int i = 0; i < count; ++i)
@@ -127,16 +141,16 @@ namespace Graph_lib
                                                                                                                        title,
                                                                                                                        background_color} {};
         std::vector<NeuralNetwork::Number> neuro_structure{
-            13,
-            13,
-            13,
-            13,
-            13,
-            13,
-            13,
-            13,
-            13,
-            1};
+            amount_of_inputs,
+            amount_of_hidden_neurons,
+            amount_of_hidden_neurons,
+            amount_of_hidden_neurons,
+            amount_of_hidden_neurons,
+            amount_of_hidden_neurons,
+            amount_of_hidden_neurons,
+            amount_of_hidden_neurons,
+            amount_of_hidden_neurons,
+            amount_of_outputs};
 
         NeuralNetwork::NeuralNetwork CO2{neuro_structure};
         NeuralNetwork::NeuralNetwork NOX{neuro_structure};
@@ -146,11 +160,11 @@ namespace Graph_lib
 
         void load_networks()
         {
-            CO2.load_weights_from_file("../weights/weights_CO2.csv");
-            NOX.load_weights_from_file("../weights/weights_NOX.csv");
-            PM.load_weights_from_file("../weights/weights_PM.csv");
-            VOC.load_weights_from_file("../weights/weights_VOC.csv");
-            SO2.load_weights_from_file("../weights/weights_SO2.csv");
+            CO2.load_weights_from_file(CO2_filepath);
+            NOX.load_weights_from_file(NOx_filepath);
+            PM.load_weights_from_file(PM_filepath);
+            VOC.load_weights_from_file(VOC_filepath);
+            SO2.load_weights_from_file(SO2_filepath);
         }
 
         using Window::attach;
@@ -385,7 +399,7 @@ namespace Graph_lib
             std::vector<std::string> inbox_values = get_values_from_inboxes();
             std::string validated = "";
             std::string message = "";
-            message += "\n----------------------------------------------\n";
+            message += "\n" + line_separator;
 
             Labels inbox_names = Labels{std::initializer_list<std::string>
             {
