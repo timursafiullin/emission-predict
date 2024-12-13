@@ -31,7 +31,7 @@ namespace Graph_lib
             return values[index];
         }
 
-        void set_string (std::string s) override
+        void set_string(std::string s) override
         {
             reinterpret_cast<Fl_Choice *>(pw)->value(std::find(values.begin(), values.end(), s) - values.begin());
         }
@@ -39,9 +39,10 @@ namespace Graph_lib
         void attach(GLib::Window &win) override
         {
             pw = new Fl_Choice(loc.x, loc.y, width, height, nullptr);
+            reinterpret_cast<Fl_Choice *>(pw)->down_box(FL_FLAT_BOX);
+            pw->box(FL_FLAT_BOX);
             for (size_t i = 0; i < values.size(); i++)
                 reinterpret_cast<Fl_Choice *>(pw)->add(values[i].c_str());
-            pw->box(FL_FLAT_BOX);
             own = &win;
         }
 

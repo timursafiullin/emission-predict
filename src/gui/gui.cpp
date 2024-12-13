@@ -441,7 +441,6 @@ try
       in_box->add("Moderate");
       win.attach(*in_box);
     }
-    //if (false) {}
     else
     {
       GLib::In_box *in_box =  new GLib::In_box{
