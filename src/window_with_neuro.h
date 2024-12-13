@@ -12,55 +12,64 @@
 #define GLib Graph_lib
 
 
-static const std::string bad_graphing_range_error_message { "bad graphing range" };
-static const std::string non_positive_graphing_count_error_message { "non-positive graphing count" };
-
-static const std::string invalid_traffic_conditions_error_message {
-    "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n"
-    };
-static const std::string invalid_road_type_error_message {
-    "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n"
-    };
-static const std::string invalid_fuel_type_error_message {
-    "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel, Electric or Hybrid.\n"
-    };
-static const std::string invalid_vehicle_type_error_message {
-    "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck, Bus or Motorcycle\n"
-    };
-static const std::string all_empty_inboxes_error_message {
-    "[ERROR] All inboxes are empty.\n"
-    };
-static const std::string input_box_error_message {
-        "[ERROR] Input box '"
-    };
-static const std::string is_empty_error_message_end {
-        "' is empty.\n"
-    };
-static const std::string invalid_value_error_message_end {
-    "' has invalid value.\n"
-    };
-static const std::string invalid_value_of_max_speed_error_message {
-        "[ERROR] Invalid value of 'Max speed': must be greater than "
-    };
-static const std::string max_speed_invalid_error_message {
-        "[ERROR] Invalid value of 'Max speed': must be greater than "
-    };
-static const std::string line_separator {
-        "----------------------------------------------\n"
-    };
-
-constexpr unsigned long long amount_of_inputs {13};
-constexpr unsigned long long amount_of_hidden_neurons {13};
-constexpr unsigned long long amount_of_outputs {1};
-
-static const std::string CO2_filepath { "../weights/weights_CO2.csv" };
-static const std::string NOx_filepath { "../weights/weights_NOX.csv" };
-static const std::string PM_filepath  { "../weights/weights_PM.csv" };
-static const std::string VOC_filepath { "../weights/weights_VOC.csv" };
-static const std::string SO2_filepath { "../weights/weights_SO2.csv" };
-
 namespace Graph_lib
 {
+    static const std::string bad_graphing_range_error_message { "bad graphing range" };
+    static const std::string non_positive_graphing_count_error_message { "non-positive graphing count" };
+
+    static const std::string invalid_traffic_conditions_error_message {
+        "[ERROR] Invalid value of 'Traffic conditions': must be Heavy, Moderate or Free flow.\n"
+        };
+    static const std::string invalid_road_type_error_message {
+        "[ERROR] Invalid value of 'Road type': must be City, Highway or Rural.\n"
+        };
+    static const std::string invalid_fuel_type_error_message {
+        "[ERROR] Invalid value of 'Fuel type': must be Petrol, Diesel, Electric or Hybrid.\n"
+        };
+    static const std::string invalid_vehicle_type_error_message {
+        "[ERROR] Invalid value of 'Vehicle type': must be Car, Truck, Bus or Motorcycle\n"
+        };
+    static const std::string all_empty_inboxes_error_message {
+        "[ERROR] All inboxes are empty.\n"
+        };
+    static const std::string input_box_error_message {
+            "[ERROR] Input box '"
+        };
+    static const std::string is_empty_error_message_end {
+            "' is empty.\n"
+        };
+    static const std::string invalid_value_error_message_end {
+        "' has invalid value.\n"
+        };
+    static const std::string invalid_value_of_max_speed_error_message {
+            "[ERROR] Invalid value of 'Max speed': must be greater than "
+        };
+    static const std::string max_speed_invalid_error_message {
+            "[ERROR] Invalid value of 'Max speed': must be greater than "
+        };
+    static const std::string line_separator {
+            "----------------------------------------------\n"
+        };
+
+    constexpr unsigned long long amount_of_inputs {13};
+    constexpr unsigned long long amount_of_hidden_neurons {13};
+    constexpr unsigned long long amount_of_outputs {1};
+
+    static const std::string CO2_filepath { "../weights/weights_CO2.csv" };
+    static const std::string NOx_filepath { "../weights/weights_NOX.csv" };
+    static const std::string PM_filepath  { "../weights/weights_PM.csv" };
+    static const std::string VOC_filepath { "../weights/weights_VOC.csv" };
+    static const std::string SO2_filepath { "../weights/weights_SO2.csv" };
+
+    enum NetworkTags
+    {
+        CO2_tag = 'C',
+        NOx_tag = 'N',
+        PM_tag = 'P',
+        VOC_tag = 'V',
+        SO2_tag = 'S',
+    };
+
     class FunctionStepping : public GLib::Shape
     {
     public:
@@ -358,31 +367,31 @@ namespace Graph_lib
                 NeuralNetwork::RowVector network_input{*get_input_ptr(current_cell.normalise_data())};
                 switch (network)
                 {
-                case 'C':
+                case CO2_tag:
                 {
                     NeuralNetwork::RowVector pr = CO2.predict(network_input);
                     ans = turn_CO2_output_to_standart_view(pr);
                     break;
                 }
-                case 'N':
+                case NOx_tag:
                 {
                     NeuralNetwork::RowVector pr = NOX.predict(network_input);
                     ans = turn_NOX_output_to_standart_view(pr);
                     break;
                 }
-                case 'P':
+                case PM_tag:
                 {
                     NeuralNetwork::RowVector pr = PM.predict(network_input);
                     ans = turn_PM_output_to_standart_view(pr);
                     break;
                 }
-                case 'V':
+                case VOC_tag:
                 {
                     NeuralNetwork::RowVector pr = VOC.predict(network_input);
                     ans = turn_VOC_output_to_standart_view(pr);
                     break;
                 }
-                case 'S':
+                case SO2_tag:
                 {
                     NeuralNetwork::RowVector pr = SO2.predict(network_input);
                     ans = turn_SO2_output_to_standart_view(pr);
