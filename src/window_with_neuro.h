@@ -13,6 +13,42 @@
 
 namespace Graph_lib
 {
+    class Choose_In_box : public GLib::In_box
+    {
+    public:
+        Choose_In_box(Point xy, int w, int h, std::string s) : In_box(xy, w, h, s) {}
+
+        void add(std::string s)
+        {
+            values.push_back(s);
+        }
+
+        std::string get_string() override
+        {
+            int index = reinterpret_cast<Fl_Choice *>(pw)->value();
+            if (index == -1)
+                return "";
+            return values[index];
+        }
+
+        void set_string (std::string s) override
+        {
+            reinterpret_cast<Fl_Choice *>(pw)->value(std::find(values.begin(), values.end(), s) - values.begin());
+        }
+
+        void attach(GLib::Window &win) override
+        {
+            pw = new Fl_Choice(loc.x, loc.y, width, height, nullptr);
+            for (size_t i = 0; i < values.size(); i++)
+                reinterpret_cast<Fl_Choice *>(pw)->add(values[i].c_str());
+            pw->box(FL_FLAT_BOX);
+            own = &win;
+        }
+
+    private:
+        std::vector<std::string> values;
+    };
+
     class FunctionStepping : public GLib::Shape
     {
     public:

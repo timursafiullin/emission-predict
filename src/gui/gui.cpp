@@ -399,9 +399,56 @@ try
   //INBOXES
   for (size_t i = 0; i < table_rows - 1; ++i)
   {
-    win.attach(*(new GLib::In_box{
-        GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
-        inbox_w, inbox_h, ""}));
+    if (i == 0)
+    {
+      GLib::Choose_In_box *in_box = new GLib::Choose_In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      in_box->add("Truck");
+      in_box->add("Car");
+      in_box->add("Motorcycle");
+      in_box->add("Bus");
+      win.attach(*in_box);
+    }
+    else if (i == 1)
+    {
+      GLib::Choose_In_box *in_box = new GLib::Choose_In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      in_box->add("Petrol");
+      in_box->add("Electric");
+      in_box->add("Diesel");
+      in_box->add("Hybrid");
+      win.attach(*in_box);
+    }
+    else if (i == 6)
+    {
+      GLib::Choose_In_box *in_box = new GLib::Choose_In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      in_box->add("City");
+      in_box->add("Highway");
+      in_box->add("Rural");
+      win.attach(*in_box);
+    }
+    else if (i == 7)
+    {
+      GLib::Choose_In_box *in_box = new GLib::Choose_In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      in_box->add("Free flow");
+      in_box->add("Heavy");
+      in_box->add("Moderate");
+      win.attach(*in_box);
+    }
+    //if (false) {}
+    else
+    {
+      GLib::In_box *in_box =  new GLib::In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      win.attach(*in_box);
+    }
   }
 
   //AXIS LABELS
