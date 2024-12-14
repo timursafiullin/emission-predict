@@ -54,10 +54,7 @@ namespace Graph_lib
     static const std::string invalid_value_error_message_end {
         "' has invalid value.\n"
         };
-    static const std::string invalid_value_of_max_speed_error_message {
-            "[ERROR] Invalid value of 'Max speed': must be greater than "
-        };
-    static const std::string max_speed_invalid_error_message {
+    static const std::string invalid_max_speed_error_message {
             "[ERROR] Invalid value of 'Max speed': must be greater than "
         };
     static const std::string invalid_engine_size_value_error_message {
@@ -507,21 +504,24 @@ namespace Graph_lib
                     )
                     validated += invalid_fuel_type_error_message;
 
-                if (std::stold(inbox_values[engine_size_index]) < 0 || 
+                if (std::stold(inbox_values[engine_size_index]) < min_engine_size || 
                     std::stold(inbox_values[engine_size_index]) > max_engine_size 
                     )
                     validated += invalid_engine_size_value_error_message;
 
-                if (std::stold(inbox_values[age_of_vehicle_index]) < 0 ||
-                    std::stold(inbox_values[age_of_vehicle_index]) > max_age_of_vehicle)
+                if (std::stold(inbox_values[age_of_vehicle_index]) < min_age_value ||
+                    std::stold(inbox_values[age_of_vehicle_index]) > max_age_value
+                    )
                     validated += invalid_age_error_message;
 
-                if (std::stold(inbox_values[mileage_index]) < 0 ||
-                    std::stold(inbox_values[mileage_index]) > max_mileage)
+                if (std::stold(inbox_values[mileage_index]) < min_mileage ||
+                    std::stold(inbox_values[mileage_index]) > max_mileage
+                    )
                     validated += invalid_mileage_error_message;
 
-                if (std::stold(inbox_values[acceleration_index]) < 0 ||
-                    std::stold(inbox_values[acceleration_index]) > max_acceleration)
+                if (std::stold(inbox_values[acceleration_index]) < min_acceleration ||
+                    std::stold(inbox_values[acceleration_index]) > max_acceleration
+                    )
                     validated += invalid_acceleration_error_message;
 
                 if (
@@ -548,7 +548,7 @@ namespace Graph_lib
                     )
                     validated += invalid_humidity_error_message;
                 
-                if (std::stold(inbox_values[wind_speed_index]) < 0 ||
+                if (std::stold(inbox_values[wind_speed_index]) < min_wind_speed ||
                     std::stold(inbox_values[wind_speed_index]) > max_wind_speed
                     )
                     validated += invalid_wind_speed_error_message;
@@ -561,10 +561,10 @@ namespace Graph_lib
                 if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
                 {
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
-                        validated += invalid_value_of_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
+                        validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
                 }
                 else
-                    validated += max_speed_invalid_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
+                    validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
             }
             else
                 validated += all_empty_inboxes_error_message;
