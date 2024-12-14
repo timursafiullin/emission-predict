@@ -678,14 +678,6 @@ namespace NeuralNetwork
          */
         Scalar learning_rate;
     };
-
-    // Scalar sum_ffnn(VectorScalar a)
-    // {
-    //     Scalar summary{0};
-    //     for (Scalar s : a)
-    //         summary += s;
-    //     return summary;
-    // }
 }
 
 #endif
