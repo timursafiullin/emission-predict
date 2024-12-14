@@ -71,6 +71,23 @@ namespace Graph_lib
         SO2_tag = 'S',
     };
 
+    enum InboxIndexes
+    {
+        vehicle_type_index,
+        fuel_type_index,
+        engine_size_index,
+        age_of_vehicle_index,
+        mileage_index,
+        acceleration_index,
+        road_type_index,
+        traffic_conditions_index,
+        temperature_index,
+        humidity_index,
+        wind_speed_index,
+        air_pressure_index,
+        max_speed_index
+    };
+
     class FunctionStepping : public GLib::Shape
     {
     public:
@@ -440,30 +457,34 @@ namespace Graph_lib
                         if (!is_string_double(inbox_values[i]))
                             validated += input_box_error_message + inbox_names[i] + invalid_value_error_message_end;
                 }
-                if (inbox_values[0] != truck_type &&
-                    inbox_values[0] != car_type &&
-                    inbox_values[0] != motorcycle_type &&
-                    inbox_values[0] != bus_type
+                if (inbox_values[vehicle_type_index] != truck_type &&
+                    inbox_values[vehicle_type_index] != car_type &&
+                    inbox_values[vehicle_type_index] != motorcycle_type &&
+                    inbox_values[vehicle_type_index] != bus_type
                     )
                     validated += invalid_vehicle_type_error_message;
-                if (inbox_values[1] != petrol_type &&
-                    inbox_values[1] != electric_type &&
-                    inbox_values[1] != diesel_type &&
-                    inbox_values[1] != hybrid_type
+
+                if (inbox_values[fuel_type_index] != petrol_type &&
+                    inbox_values[fuel_type_index] != electric_type &&
+                    inbox_values[fuel_type_index] != diesel_type &&
+                    inbox_values[fuel_type_index] != hybrid_type
                     )
                     validated += invalid_fuel_type_error_message;
+
                 if (
-                    inbox_values[6] != city_type &&
-                    inbox_values[6] != highway_type &&
-                    inbox_values[6] != rural_type
+                    inbox_values[road_type_index] != city_type &&
+                    inbox_values[road_type_index] != highway_type &&
+                    inbox_values[road_type_index] != rural_type
                     )
                     validated += invalid_road_type_error_message;
+
                 if (
-                    inbox_values[7] != free_flow_type &&
-                    inbox_values[7] != heavy_type &&
-                    inbox_values[7] != moderate_type
+                    inbox_values[traffic_conditions_index] != free_flow_type &&
+                    inbox_values[traffic_conditions_index] != heavy_type &&
+                    inbox_values[traffic_conditions_index] != moderate_type
                     )
                     validated += invalid_traffic_conditions_error_message;
+
                 if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
                 {
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
