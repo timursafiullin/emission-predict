@@ -15,11 +15,17 @@
 
 namespace Graph_lib
 {
-    constexpr long double max_engine_size                               { 30000.0 };
-    constexpr long double min_temperature                               { -100.0  };
-    constexpr long double max_temperature                               { 100.0   };
-    constexpr long double min_air_pressure                              { 500.0   };
-    constexpr long double max_air_pressure                              { 1100.0  };
+    constexpr long double min_engine_size                               { 0.6     };
+    constexpr long double max_engine_size                               { 6.0     };
+    constexpr long double max_acceleration                              { 5.0     };
+    constexpr long double min_temperature                               { -10.0   };
+    constexpr long double max_temperature                               { 40.0    };
+    constexpr long double min_air_pressure                              { 950.0   };
+    constexpr long double max_air_pressure                              { 1050.0  };
+    constexpr long double max_mileage                                   { 3e5     };
+    constexpr long double max_age_of_vehicle                            { 30.0    };
+    constexpr long double max_wind_speed                                { 20.0    };
+    constexpr long double max_humidity                                  { 100.0   };
 
     static const std::string bad_graphing_range_error_message           { "bad graphing range"          };
     static const std::string non_positive_graphing_count_error_message  { "non-positive graphing count" };
@@ -55,28 +61,28 @@ namespace Graph_lib
             "[ERROR] Invalid value of 'Max speed': must be greater than "
         };
     static const std::string invalid_engine_size_value_error_message {
-            "[ERROR] Invalid value of 'Engine Size': must be positive and lesser than 3 * 10^4 liter\n"
+            "[ERROR] Invalid value of 'Engine Size': must be positive and be real number in [" + std::to_string(double(min_engine_size)) + ", " + std::to_string(double(max_engine_size)) + "]\n"
         };
     static const std::string invalid_age_error_message {
-            "[ERROR] Invalid value of 'Age of Vehicle': must be positive\n"
+            "[ERROR] Invalid value of 'Age of Vehicle': must be positive real number less than " + std::to_string(int(max_age_of_vehicle)) + "\n"
         };
     static const std::string invalid_mileage_error_message {
-            "[ERROR] Invalid value of 'Mileage': must be positive\n"
+            "[ERROR] Invalid value of 'Mileage': must be positive real number less than " + std::to_string(int(max_mileage)) + "\n"
         };
     static const std::string invalid_acceleration_error_message {
-            "[ERROR] Invalid value of 'Acceleration': must be positive\n"
+            "[ERROR] Invalid value of 'Acceleration': must be positive and be real number in [0, " + std::to_string(int(max_acceleration)) + "]\n"
         };
     static const std::string invalid_temperature_error_message {
-            "[ERROR] Invalid value of 'Temperature': too unrealistic value\n"
+            "[ERROR] Invalid value of 'Temperature': must be real number in [" + std::to_string(double(min_temperature)) + ", " + std::to_string(double(max_temperature)) + "]\n"
         };
     static const std::string invalid_humidity_error_message {
-            "[ERROR] Invalid value of 'Humidity': too unrealistic value\n"
+            "[ERROR] Invalid value of 'Humidity': must be real number in [0, " + std::to_string(int(max_humidity)) + "]\n"
         };
     static const std::string invalid_wind_speed_error_message {
-            "[ERROR] Invalid value of 'Wind Speed': too unrealistic value\n"
+            "[ERROR] Invalid value of 'Wind Speed': must be real number in [0, " + std::to_string(int(max_wind_speed)) + "]\n"
         };
     static const std::string invalid_pressure_error_message {
-            "[ERROR] Invalid value of 'Air Pressure': too unrealistic value\n"
+            "[ERROR] Invalid value of 'Air Pressure': must be real number in [" + std::to_string(int(min_air_pressure)) + ", " + std::to_string(int(max_air_pressure)) + "]\n"
         };
     static const std::string line_separator {
             "----------------------------------------------\n"
@@ -506,13 +512,16 @@ namespace Graph_lib
                     )
                     validated += invalid_engine_size_value_error_message;
 
-                if (std::stold(inbox_values[age_of_vehicle_index]) < 0)
+                if (std::stold(inbox_values[age_of_vehicle_index]) < 0 ||
+                    std::stold(inbox_values[age_of_vehicle_index]) > max_age_of_vehicle)
                     validated += invalid_age_error_message;
 
-                if (std::stold(inbox_values[mileage_index]) < 0)
+                if (std::stold(inbox_values[mileage_index]) < 0 ||
+                    std::stold(inbox_values[mileage_index]) > max_mileage)
                     validated += invalid_mileage_error_message;
 
-                if (std::stold(inbox_values[acceleration_index]) < 0)
+                if (std::stold(inbox_values[acceleration_index]) < 0 ||
+                    std::stold(inbox_values[acceleration_index]) > max_acceleration)
                     validated += invalid_acceleration_error_message;
 
                 if (
@@ -535,12 +544,12 @@ namespace Graph_lib
                     validated += invalid_temperature_error_message;
                 
                 if (std::stold(inbox_values[humidity_index]) < 0 ||
-                    std::stold(inbox_values[humidity_index]) > 100
+                    std::stold(inbox_values[humidity_index]) > max_humidity
                     )
                     validated += invalid_humidity_error_message;
                 
                 if (std::stold(inbox_values[wind_speed_index]) < 0 ||
-                    std::stold(inbox_values[wind_speed_index]) > 50
+                    std::stold(inbox_values[wind_speed_index]) > max_wind_speed
                     )
                     validated += invalid_wind_speed_error_message;
                 
