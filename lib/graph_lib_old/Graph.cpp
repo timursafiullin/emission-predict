@@ -159,6 +159,27 @@ void GraphCanvas::draw_lines() const
   fl_line(x+w*0.025, origin_y, x+w-indent_x, origin_y);
 }
 
+Journal::Journal(
+  int x, int y, int w, int h,
+  Fl_Color background_color,
+  Fl_Color border_color,
+  Fl_Color inner_color,
+  Fl_Color text_color
+) : x{x}, y{y}, w{w}, h{h},
+    background_color{background_color},
+    border_color {border_color},
+    inner_color{inner_color},
+    text_color{text_color}
+{
+  
+}
+
+
+void Journal::add_button(Button new_widget)
+{
+  buttons_list.push_back(new_widget);
+}
+
 inline std::pair<double, double> line_intersect (Point p1, Point p2, Point p3, Point p4, bool& parallel)
 // does two lines (p1,p2) and (p3,p4) intersect?
 // if yes return the distance of the intersect point as distances from p1

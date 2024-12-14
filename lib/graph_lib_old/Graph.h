@@ -9,6 +9,7 @@
 
 #include "Objects.h"
 #include "Window.h"
+#include "GUI.h"
 
 //constexpr char context_column = 'C';
 //constexpr char context_row = 'R';
@@ -284,6 +285,29 @@ public:
 private:
   int x, y, w, h, origin_x, origin_y, indent_y, indent_x;
   Fl_Color background_color, axis_color, grid_color;
+};
+
+class Journal : Shape
+{
+public:
+  Journal() {}
+  Journal(
+    int x, int y, int w, int h,
+    Fl_Color background_color = COLORS::WHITE,
+    Fl_Color border_color = COLORS::BLACK,
+    Fl_Color inner_color = COLORS::BLACK,
+    Fl_Color text_color = COLORS::BLACK
+  );
+  
+  void set_header(std::string header_name);
+  void add_button(Button new_widget);
+  
+  std::vector<Button> get_buttons() { return buttons_list; }
+
+private:
+  unsigned int x, y, w, h;
+  Fl_Color background_color, border_color, inner_color, text_color;
+  std::vector<Button> buttons_list;
 };
 
 using Fct = std::function<double(double)>;
