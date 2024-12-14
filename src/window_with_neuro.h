@@ -18,13 +18,17 @@ namespace Graph_lib
     constexpr long double min_engine_size                               { 0.6     };
     constexpr long double max_engine_size                               { 6.0     };
     constexpr long double max_acceleration                              { 5.0     };
+    constexpr long double min_acceleration                              { 0.0     };
     constexpr long double min_temperature                               { -10.0   };
     constexpr long double max_temperature                               { 40.0    };
     constexpr long double min_air_pressure                              { 950.0   };
     constexpr long double max_air_pressure                              { 1050.0  };
     constexpr long double max_mileage                                   { 3e5     };
+    constexpr long double min_mileage                                   { 0.0     };
     constexpr long double max_age_of_vehicle                            { 30.0    };
+    constexpr long double min_age_of_vehicle                            { 0.0     };
     constexpr long double max_wind_speed                                { 20.0    };
+    constexpr long double min_wind_speed                                { 0.0     };
     constexpr long double max_humidity                                  { 100.0   };
 
     static const std::string bad_graphing_range_error_message           { "bad graphing range"          };
@@ -509,8 +513,8 @@ namespace Graph_lib
                     )
                     validated += invalid_engine_size_value_error_message;
 
-                if (std::stold(inbox_values[age_of_vehicle_index]) < min_age_value ||
-                    std::stold(inbox_values[age_of_vehicle_index]) > max_age_value
+                if (std::stold(inbox_values[age_of_vehicle_index]) < min_age_of_vehicle ||
+                    std::stold(inbox_values[age_of_vehicle_index]) > max_age_of_vehicle
                     )
                     validated += invalid_age_error_message;
 
