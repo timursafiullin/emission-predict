@@ -96,7 +96,7 @@ namespace NeuralNetwork
     class FFNN {
     public:
         /**
-         * @brief   Construct a new FFNN object,
+         * @brief   Construct a new Neural Network object,
          *          ready to train.
          * 
          * @param s structure of network.
@@ -123,7 +123,7 @@ namespace NeuralNetwork
         }
 
         /**
-         * @brief Destroy the FFNN object
+         * @brief Destroy the Neural Network object
          * 
          */
         ~FFNN()
