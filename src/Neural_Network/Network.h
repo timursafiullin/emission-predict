@@ -101,22 +101,16 @@ namespace NeuralNetwork
          * 
          * @param s structure of network.
          * @param l learning rate. Has default value.
+         * @param activaion_function activation function
+         * @param activation_function_derivative activation function derivative
          */
 	    FFNN(
             VectorNumber s,
             Scalar l = default_learning_rate_value,
             T f =
-            ([] (Scalar x) 
-                {
-                    return 1 / (1 + std::pow(std::exp(1.0), -x));
-                }
-            ),
+            ([] (Scalar x) { return 1 / (1 + std::pow(std::exp(1.0), -x)); } ),
             T f_der =
-            ([] (Scalar x)
-                {
-                    return std::pow(std::exp(1.0), -x) / std::pow(1 + std::pow(std::exp(1.0), -x), 2);
-                }
-            )
+            ([] (Scalar x) { return std::pow(std::exp(1.0), -x) / std::pow(1 + std::pow(std::exp(1.0), -x), 2); })
         )
         {
             validate_structure(s);
