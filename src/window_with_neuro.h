@@ -8,6 +8,7 @@
 #include <vector>
 #include <regex>
 #include <math.h>
+#include <functional>
 
 #define GLib Graph_lib
 
@@ -161,11 +162,11 @@ namespace Graph_lib
             amount_of_hidden_neurons,
             amount_of_outputs};
 
-        NeuralNetwork::NeuralNetwork CO2{neuro_structure};
-        NeuralNetwork::NeuralNetwork NOX{neuro_structure};
-        NeuralNetwork::NeuralNetwork PM{neuro_structure};
-        NeuralNetwork::NeuralNetwork VOC{neuro_structure};
-        NeuralNetwork::NeuralNetwork SO2{neuro_structure};
+        NeuralNetwork::FFNN<std::function<long double(long double)>> CO2 {neuro_structure};
+        NeuralNetwork::FFNN<std::function<long double(long double)>> PM {neuro_structure};
+        NeuralNetwork::FFNN<std::function<long double(long double)>> NOX {neuro_structure};
+        NeuralNetwork::FFNN<std::function<long double(long double)>> VOC {neuro_structure};
+        NeuralNetwork::FFNN<std::function<long double(long double)>> SO2 {neuro_structure};
 
         void load_networks()
         {
