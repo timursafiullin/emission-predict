@@ -15,11 +15,22 @@
 
 namespace Graph_lib
 {
-    constexpr long double max_engine_size                               { 30000.0 };
-    constexpr long double min_temperature                               { -100.0  };
-    constexpr long double max_temperature                               { 100.0   };
-    constexpr long double min_air_pressure                              { 500.0   };
-    constexpr long double max_air_pressure                              { 1100.0  };
+    // available data limits, based on the dataset
+
+    constexpr long double min_engine_size                               { 0.8      };
+    constexpr long double max_engine_size                               { 6.0      };
+    constexpr long double min_age_value                                 { 0.0      };
+    constexpr long double max_age_value                                 { 29.0     };
+    constexpr long double min_mileage                                   { 56.0     };
+    constexpr long double max_mileage                                   { 300000.0 };
+    constexpr long double min_acceleration                              { 0.0      };
+    constexpr long double max_acceleration                              { 5.0      };
+    constexpr long double min_temperature                               { -10.0    };
+    constexpr long double max_temperature                               { 40.0     };
+    constexpr long double min_wind_speed                                { 0.0      };
+    constexpr long double max_wind_speed                                { 20.0     };
+    constexpr long double min_air_pressure                              { 950.0    };
+    constexpr long double max_air_pressure                              { 1050.0   };
 
     static const std::string bad_graphing_range_error_message           { "bad graphing range"          };
     static const std::string non_positive_graphing_count_error_message  { "non-positive graphing count" };
@@ -48,35 +59,32 @@ namespace Graph_lib
     static const std::string invalid_value_error_message_end {
         "' has invalid value.\n"
         };
-    static const std::string invalid_value_of_max_speed_error_message {
-            "[ERROR] Invalid value of 'Max speed': must be greater than "
-        };
-    static const std::string max_speed_invalid_error_message {
+    static const std::string invalid_max_speed_error_message {
             "[ERROR] Invalid value of 'Max speed': must be greater than "
         };
     static const std::string invalid_engine_size_value_error_message {
-            "[ERROR] Invalid value of 'Engine Size': must be positive and lesser than 3 * 10^4 liter\n"
+            "[ERROR] Invalid value of 'Engine Size': must be >= 0.6 and <= 6.0\n"
         };
     static const std::string invalid_age_error_message {
-            "[ERROR] Invalid value of 'Age of Vehicle': must be positive\n"
+            "[ERROR] Invalid value of 'Age of Vehicle': must be >= 0.0 and <= 29.0\n"
         };
     static const std::string invalid_mileage_error_message {
-            "[ERROR] Invalid value of 'Mileage': must be positive\n"
+            "[ERROR] Invalid value of 'Mileage': must be >= 56.0 and <= 300000.0\n"
         };
     static const std::string invalid_acceleration_error_message {
-            "[ERROR] Invalid value of 'Acceleration': must be positive\n"
+            "[ERROR] Invalid value of 'Acceleration': must be >= 0.0 and <= 5.0\n"
         };
     static const std::string invalid_temperature_error_message {
-            "[ERROR] Invalid value of 'Temperature': too unrealistic value\n"
+            "[ERROR] Invalid value of 'Temperature': must be >= -10.0 and <= 40.0\n"
         };
     static const std::string invalid_humidity_error_message {
-            "[ERROR] Invalid value of 'Humidity': too unrealistic value\n"
+            "[ERROR] Invalid value of 'Humidity': must be >= 0.0 and <= 100.0\n"
         };
     static const std::string invalid_wind_speed_error_message {
-            "[ERROR] Invalid value of 'Wind Speed': too unrealistic value\n"
+            "[ERROR] Invalid value of 'Wind Speed': must be >= 0.0 and <= 20.0\n"
         };
     static const std::string invalid_pressure_error_message {
-            "[ERROR] Invalid value of 'Air Pressure': too unrealistic value\n"
+            "[ERROR] Invalid value of 'Air Pressure': must be >= 950.0 and <= 1050.0\n"
         };
     static const std::string line_separator {
             "----------------------------------------------\n"
@@ -501,18 +509,24 @@ namespace Graph_lib
                     )
                     validated += invalid_fuel_type_error_message;
 
-                if (std::stold(inbox_values[engine_size_index]) < 0 || 
+                if (std::stold(inbox_values[engine_size_index]) < min_engine_size || 
                     std::stold(inbox_values[engine_size_index]) > max_engine_size 
                     )
                     validated += invalid_engine_size_value_error_message;
 
-                if (std::stold(inbox_values[age_of_vehicle_index]) < 0)
+                if (std::stold(inbox_values[age_of_vehicle_index]) < min_age_value ||
+                    std::stold(inbox_values[age_of_vehicle_index]) > max_age_value
+                    )
                     validated += invalid_age_error_message;
 
-                if (std::stold(inbox_values[mileage_index]) < 0)
+                if (std::stold(inbox_values[mileage_index]) < min_mileage ||
+                    std::stold(inbox_values[mileage_index]) > max_mileage
+                    )
                     validated += invalid_mileage_error_message;
 
-                if (std::stold(inbox_values[acceleration_index]) < 0)
+                if (std::stold(inbox_values[acceleration_index]) < min_acceleration ||
+                    std::stold(inbox_values[acceleration_index]) > max_acceleration
+                    )
                     validated += invalid_acceleration_error_message;
 
                 if (
@@ -539,8 +553,8 @@ namespace Graph_lib
                     )
                     validated += invalid_humidity_error_message;
                 
-                if (std::stold(inbox_values[wind_speed_index]) < 0 ||
-                    std::stold(inbox_values[wind_speed_index]) > 50
+                if (std::stold(inbox_values[wind_speed_index]) < min_wind_speed ||
+                    std::stold(inbox_values[wind_speed_index]) > max_wind_speed
                     )
                     validated += invalid_wind_speed_error_message;
                 
@@ -552,10 +566,10 @@ namespace Graph_lib
                 if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
                 {
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
-                        validated += invalid_value_of_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
+                        validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
                 }
                 else
-                    validated += max_speed_invalid_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
+                    validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
             }
             else
                 validated += all_empty_inboxes_error_message;
