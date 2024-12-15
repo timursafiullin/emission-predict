@@ -13,6 +13,58 @@
 
 namespace Graph_lib
 {
+    class Box : public GLib::Widget
+    {
+    public:
+        Box(Point xy, int w, int h, const std::string &s) : Widget{xy, w, h, s, nullptr}, label{s} {}
+
+        void attach(GLib::Window &win) override
+        {
+            pw = new Fl_Box(loc.x, loc.y, width, height, label.c_str());
+            pw->box(FL_FLAT_BOX);
+            own = &win;
+        }
+
+        void position(GLib::Point xy)
+        {
+            reinterpret_cast<Fl_Box *>(pw)->position(xy.x, xy.y);
+        }
+
+        void set_label(const std::string &s)
+        {
+            label = s;
+            pw->label(label.c_str());
+        }
+
+        std::string get_label()
+        {
+            return label;
+        }
+
+        void box(const Fl_Boxtype &b)
+        {
+            pw->box(b);
+        }
+
+        void set_color(const Fl_Color &c)
+        {
+            pw->color(c);
+        }
+
+        bool visible()
+        {
+            return pw->visible();
+        }
+
+        void align(Fl_Align alignment)
+        {
+            pw->align(alignment);
+        }
+
+    private:
+        std::string label;
+    };
+
     class Choose_In_box : public GLib::In_box
     {
     public:
@@ -127,6 +179,8 @@ namespace Graph_lib
         std::vector<GLib::GasText *> gas_texts;
         std::vector<GLib::FunctionStepping *> functions;
         GLib::Text *end_label_y;
+        std::vector<Point> graph_points = {};
+        std::vector<double> graph_evaluations = {};
 
         void attach(GLib::In_box &w)
         {
@@ -142,6 +196,20 @@ namespace Graph_lib
             gas_texts.push_back(&s);
             shapes.push_back(&s);
         }
+
+        void attach(GLib::Box &b)
+        {
+            begin();
+            b.attach(*this);
+            end();
+            widgets.push_back(&b);
+        }
+        /*
+        void detach(Fl_Box &b)
+        {
+            b.hide();
+        }
+        */
 
         void attach(GLib::FunctionStepping &s)
         {
@@ -189,7 +257,6 @@ namespace Graph_lib
             {
                 inboxes[i]->set_color(COLORS::WHITE);
             }
-            std::cout << "a" << std::endl;
             redraw();
         }
 

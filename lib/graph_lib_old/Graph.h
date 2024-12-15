@@ -222,9 +222,10 @@ public:
 
   Shape(const Shape&) = delete;  // don't copy Shapes
   Shape& operator= (const Shape&) = delete;
+  
+  std::vector<Point> points;  // not used by all shapes
 
 private:
-  std::vector<Point> points;  // not used by all shapes
   Color lcolor{static_cast<Color>(fl_color())};
   Line_style ls{0};
   Color fcolor{Color::invisible};

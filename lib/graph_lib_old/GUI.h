@@ -50,10 +50,14 @@ public:
 
   virtual void attach (Window&) = 0;
 
+  void clean_pointer () { delete pw; }
+
   virtual void draw()
   {
     pw->draw();
   };  // Add virtual draw method
+
+  bool visible () { return pw->visible(); }
 
   Window& window () { return *own; }
 

@@ -2,16 +2,16 @@
 
 namespace Graph_lib {
 
-Window::Window(int ww, int hh, const std::string& title, Fl_Color background_color) : Fl_Window{ww, hh, title.c_str()}, w{ww}, h{hh}
+Window::Window(int ww, int hh, const std::string& title, Fl_Color background_color) : Fl_Double_Window{ww, hh, title.c_str()}, w{ww}, h{hh}
 {
   this->color(background_color);
   init(); 
 }
 
-Window::Window(int ww, int hh, const std::string& title) : Fl_Window{ww, hh, title.c_str()}, w{ww}, h{hh} { init(); }
+Window::Window(int ww, int hh, const std::string& title) : Fl_Double_Window{ww, hh, title.c_str()}, w{ww}, h{hh} { init(); }
 
 Window::Window(Point xy, int ww, int hh, const std::string& title)
-    : Fl_Window{xy.x, xy.y, ww, hh, title.c_str()}, w{ww}, h{hh}
+    : Fl_Double_Window{xy.x, xy.y, ww, hh, title.c_str()}, w{ww}, h{hh}
 {
   init();
 }
@@ -25,7 +25,7 @@ void Window::init()
 
 void Window::draw()
 {
-  Fl_Window::draw();
+  Fl_Double_Window::draw();
   for (unsigned int i = 0; i < shapes.size(); ++i)
   {
     shapes[i]->draw();
@@ -33,7 +33,8 @@ void Window::draw()
 
   for (unsigned int i = 0; i < widgets.size(); ++i)
   {
-    widgets[i]->draw();
+    if (widgets[i]->visible())
+      widgets[i]->draw();
   }
 }
 
@@ -50,7 +51,10 @@ void Window::detach(Widget& w)
   w.hide();
   for (unsigned int i = widgets.size(); 0 < i; --i)  // guess last attached will be first released
     if (widgets[i - 1] == &w)
+    {
       widgets.erase(widgets.begin() + (i - 1));
+      w.clean_pointer();
+    }
 }
 
 void Window::attach(Shape& s) { shapes.push_back(&s); }

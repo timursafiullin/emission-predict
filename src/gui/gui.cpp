@@ -9,6 +9,10 @@
 #include <regex>
 #include <iterator>
 
+#if (defined(_WIN32) || defined(_WIN64))
+#include <winuser.h>
+#endif
+
 #define GLib Graph_lib
 
 std::string to_string_exp(double d)
@@ -134,6 +138,8 @@ void callback_clear(GLib::Address, GLib::Address addr)
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
 
+  window.graph_points = {}; // clear graph points
+
   window.end_label_y->set_label("Emissions, g/km"); // clear y axis label
 
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
@@ -153,6 +159,11 @@ void callback_clear(GLib::Address, GLib::Address addr)
 
   for (size_t i = 0; i < widgets.size(); i++)
     window.attach(*widgets[i]); // restore all widgets
+
+  reinterpret_cast<GLib::Box *>(window.widgets.back())->set_color(COLORS::WHITE); // restore cursor_box state. In fact always the last widget
+  reinterpret_cast<GLib::Box *>(window.widgets.back())->box(FL_BORDER_BOX);
+  //reinterpret_cast<GLib::Box *>(window.widgets.back())->align(FL_ALIGN_LEFT);
+  reinterpret_cast<GLib::Box *>(window.widgets.back())->hide();
 
   window.redraw();
   std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
@@ -282,6 +293,9 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     fl_color(state.graph_color);
     GLib::FunctionStepping *func = new GLib::FunctionStepping{
         evaluations, 0, window.current_cell.speed, GLib::Point(canvas_origin_x, canvas_origin_y)};
+
+    window.graph_points = func->points;
+    window.graph_evaluations = evaluations;
 
     window.attach(*func);
 
@@ -503,7 +517,56 @@ try
 
   win.load_networks();
 
+  GLib::Box *cursor_box = new GLib::Box(GLib::Point(0, 0), 160, 35, "");
+  win.attach(*cursor_box);
+  cursor_box->set_color(COLORS::WHITE);
+  cursor_box->box(FL_BORDER_BOX);
+  //cursor_box->align(FL_ALIGN_LEFT);
+  cursor_box->hide();
+
+#if (defined(_WIN32) || defined(_WIN64))
+  while (true)
+  {
+    POINT p;
+    if (GetCursorPos(&p))
+    {
+      int window_x = win.x_root();
+      int window_y = win.y_root();
+      int x = p.x - window_x;
+      int y = p.y - window_y;
+
+      for (size_t i = 0; i < win.graph_points.size(); ++i)
+      {
+        GLib::Point current_point = win.graph_points[i];
+
+        if (x - 6 <= current_point.x && x + 6 >= current_point.x && y - 6 <= current_point.y && y + 6 >= current_point.y)
+        {
+          double graph_evaluation = win.graph_evaluations[i];
+          std::string label_string = "Speed: " + std::to_string(i) + "\nEmissions: " + to_string_exp(graph_evaluation);
+          cursor_box->position(GLib::Point(x, y - 35));
+          if (label_string != cursor_box->get_label())
+            cursor_box->set_label(label_string);
+          cursor_box->show();
+          break;
+        }
+        else
+        {
+          cursor_box->hide();
+        }
+      }
+    }
+    else
+      throw std::runtime_error("can't fetch cursor");
+    if (!win.shown())
+    {
+      return 0;
+    }
+    win.redraw();
+    Fl::wait();
+  }
+#else
   return Fl::run();
+#endif
 }
 catch (std::exception &e)
 {
