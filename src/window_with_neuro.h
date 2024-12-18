@@ -457,6 +457,8 @@ private:
 
         bool is_string_double(const std::string &str)
         {
+            if (str.empty())
+                return false;
             for (char const &c : str)
             {
                 if (std::isdigit(c) == 0 && c != '.' && c != '-')
@@ -467,6 +469,8 @@ private:
 
         bool is_string_int(const std::string &str)
         {
+            if (str.empty())
+                return false;
             for (char const &c : str)
             {
                 if (std::isdigit(c) == 0)
@@ -553,21 +557,8 @@ private:
 
             if (!is_all_empty)
             {
-                for (size_t i{}; i < inbox_values.size()-1; ++i)
-                {
-                    if (inbox_values[i] == "")
-                    {
-                        inboxes[i]->set_color(COLORS::SOFT_PINK);
-                        validated += input_box_error_message + inbox_names[i] + is_empty_error_message_end;
-                    }
-                    if (i != 0 && i != 1 && i != 6 && i != 7)
-                        if (!is_string_double(inbox_values[i]))
-                            {
-                                inboxes[i]->set_color(COLORS::SOFT_PINK);
-                                validated += input_box_error_message + inbox_names[i] + invalid_value_error_message_end;
-                            }
-                }
-                if (inbox_values[vehicle_type_index] != truck_type &&
+                if (inbox_values[vehicle_type_index].empty() ||
+                    inbox_values[vehicle_type_index] != truck_type &&
                     inbox_values[vehicle_type_index] != car_type &&
                     inbox_values[vehicle_type_index] != motorcycle_type &&
                     inbox_values[vehicle_type_index] != bus_type
@@ -577,7 +568,8 @@ private:
                         validated += invalid_vehicle_type_error_message;
                     }
 
-                if (inbox_values[fuel_type_index] != petrol_type &&
+                if (inbox_values[fuel_type_index].empty() ||
+                    inbox_values[fuel_type_index] != petrol_type &&
                     inbox_values[fuel_type_index] != electric_type &&
                     inbox_values[fuel_type_index] != diesel_type &&
                     inbox_values[fuel_type_index] != hybrid_type
@@ -587,7 +579,7 @@ private:
                     validated += invalid_fuel_type_error_message;
                 }
 
-                if (std::stold(inbox_values[engine_size_index]) < min_engine_size || 
+                if (inbox_values[engine_size_index].empty() || std::stold(inbox_values[engine_size_index]) < min_engine_size || 
                     std::stold(inbox_values[engine_size_index]) > max_engine_size 
                     )
                 {
@@ -595,56 +587,55 @@ private:
                     validated += invalid_engine_size_value_error_message;
                 }
 
-                if (std::stold(inbox_values[age_of_vehicle_index]) < min_age_of_vehicle ||
+                if (inbox_values[age_of_vehicle_index].empty() || std::stold(inbox_values[age_of_vehicle_index]) < min_age_of_vehicle ||
                     std::stold(inbox_values[age_of_vehicle_index]) > max_age_of_vehicle
                     )
                     validated += invalid_age_error_message;
 
-                if (std::stold(inbox_values[mileage_index]) < min_mileage ||
+                if (inbox_values[mileage_index].empty() || std::stold(inbox_values[mileage_index]) < min_mileage ||
                     std::stold(inbox_values[mileage_index]) > max_mileage
                     )
                     validated += invalid_mileage_error_message;
 
-                if (std::stold(inbox_values[acceleration_index]) < min_acceleration ||
+                if (inbox_values[acceleration_index].empty() || std::stold(inbox_values[acceleration_index]) < min_acceleration ||
                     std::stold(inbox_values[acceleration_index]) > max_acceleration
                     )
                     validated += invalid_acceleration_error_message;
 
-                if (
+                if (inbox_values[road_type_index].empty() ||
                     inbox_values[road_type_index] != city_type &&
                     inbox_values[road_type_index] != highway_type &&
                     inbox_values[road_type_index] != rural_type
                     )
                     validated += invalid_road_type_error_message;
 
-                if (
+                if (inbox_values[traffic_conditions_index].empty() ||
                     inbox_values[traffic_conditions_index] != free_flow_type &&
                     inbox_values[traffic_conditions_index] != heavy_type &&
                     inbox_values[traffic_conditions_index] != moderate_type
                     )
                     validated += invalid_traffic_conditions_error_message;
 
-                if (std::stold(inbox_values[temperature_index]) < min_temperature ||
-                    std::stold(inbox_values[temperature_index]) > max_temperature
-                    )
+                if (inbox_values[temperature_index].empty() || std::stold(inbox_values[temperature_index]) < min_temperature ||
+                    std::stold(inbox_values[temperature_index]) > max_temperature)
                     validated += invalid_temperature_error_message;
                 
-                if (std::stold(inbox_values[humidity_index]) < 0 ||
+                if (inbox_values[humidity_index].empty() || std::stold(inbox_values[humidity_index]) < 0 ||
                     std::stold(inbox_values[humidity_index]) > max_humidity
                     )
                     validated += invalid_humidity_error_message;
                 
-                if (std::stold(inbox_values[wind_speed_index]) < min_wind_speed ||
+                if (inbox_values[wind_speed_index].empty() || std::stold(inbox_values[wind_speed_index]) < min_wind_speed ||
                     std::stold(inbox_values[wind_speed_index]) > max_wind_speed
                     )
                     validated += invalid_wind_speed_error_message;
                 
-                if (std::stold(inbox_values[air_pressure_index]) < min_air_pressure ||
+                if (inbox_values[air_pressure_index].empty() || std::stold(inbox_values[air_pressure_index]) < min_air_pressure ||
                     std::stold(inbox_values[air_pressure_index]) > max_air_pressure
                     )
                     validated += invalid_pressure_error_message;
 
-                if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
+                if (inbox_values[12] != "" && is_string_int(inbox_values[12]))
                 {
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
                     {
