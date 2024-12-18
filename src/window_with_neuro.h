@@ -9,9 +9,9 @@
 #include <regex>
 #include <math.h>
 #include <functional>
+#include <time.h>
 
 #define GLib Graph_lib
-
 
 namespace Graph_lib
 {
@@ -158,12 +158,13 @@ namespace Graph_lib
         GasText(Point x, const std::string &s) : GLib::Text{x, s} {};
     };
 
-class JournalRecord : public DatasetCell
+class JournalRecord : public Button
 {
 public:
-    JournalRecord() {};
+    JournalRecord(Point p, int w, int h, std::string l, Callback c)
+    : Button{p, w, h, l, c} {};
 
-    std::string         record_time;
+    char*               record_time;
 
     std::string         vehicle_type;
     std::string         fuel_type;
@@ -178,6 +179,25 @@ public:
     long double         wind_speed;
     long double         air_pressure;
     long double         max_speed;
+
+    std::vector<std::string> get_data()
+    {
+        std::vector<std::string> data;
+        data.push_back((std::string)vehicle_type);
+        data.push_back((std::string)fuel_type);
+        data.push_back((std::string)std::to_string(engine_size));
+        data.push_back((std::string)std::to_string(age_of_vehicle));
+        data.push_back((std::string)std::to_string(mileage));
+        data.push_back((std::string)std::to_string(acceleration));
+        data.push_back((std::string)road_type);
+        data.push_back((std::string)traffic_conditions);
+        data.push_back((std::string)std::to_string(temperature));
+        data.push_back((std::string)std::to_string(humidity));
+        data.push_back((std::string)std::to_string(wind_speed));
+        data.push_back((std::string)std::to_string(air_pressure));
+        data.push_back((std::string)std::to_string(max_speed));
+        return data;
+    }
 };
 
 class Journal : Shape
@@ -195,21 +215,44 @@ public:
         background_color{background_color},
         border_color {border_color},
         inner_color{inner_color},
-        text_color{text_color}
-    {
-    
-    }
+        text_color{text_color},
+        cell_w{w},
+        cell_h{h / MAX_RECORDS}
+    {}
     
     void draw_lines() const override
     {
         // Some code
     };
 
-    void add_record(const JournalRecord& cell)
+    void add_record(Point p, Callback c, const DatasetCell& cell)
     {
-        if (journal.size() < MAX_RECORDS)
-            journal.push_back(cell);
-        add_button();
+        //char* temporary_time;
+        //time_t rawtime(time_t *t);
+        //size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timp);
+        //struct tm *timeinfo;
+        //strftime(temporary_time, 20, "%H:%M:%S", timeinfo);
+
+        JournalRecord* record = new JournalRecord{p, cell_w, cell_h, (std::string)"1234", c};
+
+        record->vehicle_type = cell.vehicle_type;
+        record->fuel_type = cell.fuel_type;
+        record->engine_size = cell.engine_size;
+        record->age_of_vehicle = cell.age_of_vehicle;
+        record->mileage = cell.mileage;
+        record->acceleration = cell.acceleration;
+        record->road_type = cell.road_type;
+        record->traffic_conditions = cell.traffic_conditions;
+        record->temperature = cell.temperature;
+        record->humidity = cell.humidity;
+        record->wind_speed = cell.wind_speed;
+        record->air_pressure = cell.air_pressure;
+        record->max_speed = cell.speed;
+
+        if (journal_records.size() >= MAX_RECORDS)
+            journal_records.erase(journal_records.begin());
+
+        journal_records.push_back(record);
     }
 
     void set_header(std::string name)
@@ -236,7 +279,8 @@ public:
         this->text_color = text_color;
     }
 
-    std::vector<Button>         buttons;
+    std::vector<JournalRecord*>  journal_records;
+    int cell_w, cell_h;
 
 private:
     static const size_t         MAX_RECORDS = 10;
@@ -246,9 +290,6 @@ private:
     Fl_Color                    border_color;
     Fl_Color                    inner_color;
     Fl_Color                    text_color;
-    std::vector<JournalRecord>  journal;
-
-    void add_button();
 };
 
     class WindowWithNeuro : public GLib::Window
@@ -292,6 +333,7 @@ private:
 
         std::vector<GLib::In_box *> inboxes;
         std::vector<GLib::GasText *> gas_texts;
+        std::vector<GLib::Button *> journal_buttons;
         std::vector<GLib::FunctionStepping *> functions;
         GLib::Text *end_label_y;
 
@@ -349,6 +391,42 @@ private:
                 if (shapes[i - 1] == &s)
                     shapes.erase(shapes.begin() + (i - 1));
         }
+
+        void attach(GLib::JournalRecord &w)
+        {
+            journal_buttons.push_back(&w);
+            begin();
+            w.attach(*this);
+            end();
+            widgets.push_back(&w);
+        }
+        
+        void detach(GLib::JournalRecord &w)
+        {
+            for (unsigned int i = 0; i < journal_buttons.size(); ++i)
+                if (journal_buttons[i] == &w)
+                    journal_buttons.erase(journal_buttons.begin() + (i));
+
+            w.hide();
+            for (unsigned int i = 0; i < widgets.size(); ++i)
+                if (widgets[i] == &w)
+                    widgets.erase(widgets.begin() + (i));
+        }
+
+        void draw_journal_buttons()
+        {
+            for (unsigned int i = 0; i < journal_buttons.size(); ++i)
+            {
+                attach(*journal.journal_records[i]);
+            }
+                // GLib::Button* button = new GLib::Button{
+                //     GLib::Point(journal_x+1, journal_y+1),
+                //     journal.cell_w,
+                //     journal.cell_h,
+                //     (std::string) record_variable.record_time,
+                //     callback_journal};
+            }
+
 
         void reset_inboxes_colors()
         {
@@ -657,6 +735,16 @@ private:
             return validated;
         }
 
+        static void callback_journal(GLib::Address, GLib::Address addr)
+        {
+            auto *pb = static_cast<JournalRecord *>(addr);
+            auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
+            std::vector<std::string> inbox_values{pb->get_data()};
+            for (size_t i = 0; i < window.inboxes.size(); i++)
+                window.inboxes[i]->set_string(inbox_values[i]);
+        }
+
+
         void update_current_cell()
         {
             std::vector<std::string> inbox_values = get_values_from_inboxes();
@@ -674,6 +762,8 @@ private:
             current_cell.wind_speed = (is_string_double(inbox_values[10])) ? (std::stold(inbox_values[10])) : (NAN);
             current_cell.air_pressure = (is_string_double(inbox_values[11])) ? (std::stold(inbox_values[11])) : (NAN);
             current_cell.speed = (is_string_double(inbox_values[12])) ? (std::stold(inbox_values[12])) : (NAN);
+
+            journal.add_record(GLib::Point(journal_x+1, journal_y+1), callback_journal, current_cell);
         }
 
         void update_journal(
