@@ -158,48 +158,104 @@ namespace Graph_lib
         GasText(Point x, const std::string &s) : GLib::Text{x, s} {};
     };
 
-    class ErrorWindow : public GLib::Window
+class JournalRecord : public DatasetCell
+{
+public:
+    JournalRecord() {};
+
+    std::string         record_time;
+
+    std::string         vehicle_type;
+    std::string         fuel_type;
+    long double         engine_size;
+    unsigned long       age_of_vehicle;
+    unsigned long long  mileage;
+    long double         acceleration;
+    std::string         road_type;
+    std::string         traffic_conditions;
+    long double         temperature;
+    long double         humidity;
+    long double         wind_speed;
+    long double         air_pressure;
+    long double         max_speed;
+};
+
+class Journal : Shape
+{
+public:
+    Journal() {}
+    Journal(
+        int x, int y, int w, int h, std::string header_name = "",
+        Fl_Color background_color = COLORS::WHITE,
+        Fl_Color border_color = COLORS::BLACK,
+        Fl_Color inner_color = COLORS::BLACK,
+        Fl_Color text_color = COLORS::BLACK
+    ) : x{x}, y{y}, w{w}, h{h},
+        header_name{header_name},
+        background_color{background_color},
+        border_color {border_color},
+        inner_color{inner_color},
+        text_color{text_color}
     {
-    public:
-        ErrorWindow(std::string error_message) : GLib::Window{GLib::Point((GLib::x_max() - 1) / 2, (GLib::y_max() - 1) / 2), 1, 1, "Error message"},
-                                                 error_message{error_message}
-        {
-            std::vector<std::string> parsed_error_message;
-            std::regex del("\n");
-            std::sregex_token_iterator token_iterator(error_message.begin(), error_message.end(), del, -1);
-            std::sregex_token_iterator i_end;
-
-            for (; token_iterator != i_end; ++token_iterator)
-                parsed_error_message.push_back(*token_iterator);
-
-            hh = parsed_error_message.size() * 40; // each line is 40 pixels in height
-            ww = (*std::max_element(parsed_error_message.begin(), parsed_error_message.end(),
-                                        [](const auto &a, const auto &b)
-                                        {
-                                            return a.size() < b.size();
-                                        })).size() * 7; // each symbol is 7 pixels wide
-
-            resize(ww, hh);
-
-            begin();
-            color(FL_WHITE);
-            Fl_Box *box = new Fl_Box(0, 0, ww, hh, error_message.c_str());
-            box->labelsize(14);                            // Увеличим размер шрифта
-            box->align(FL_ALIGN_CENTER | FL_ALIGN_INSIDE); // Выравнивание по центру и внутри бокса
-            end();
-            show();
-            Fl::run();
-        }
-
-    private:
-        std::string error_message;
-        int hh;
-        int ww;
+    
+    }
+    
+    void draw_lines() const override
+    {
+        // Some code
     };
+
+    void add_record(const JournalRecord& cell)
+    {
+        if (journal.size() < MAX_RECORDS)
+            journal.push_back(cell);
+        add_button();
+    }
+
+    void set_header(std::string name)
+    {
+        header_name = name;
+    }
+
+    void update_journal_parameters(
+            int x, int y, int w, int h, std::string header_name = "",
+            Fl_Color background_color = COLORS::WHITE,
+            Fl_Color border_color = COLORS::BLACK,
+            Fl_Color inner_color = COLORS::BLACK,
+            Fl_Color text_color = COLORS::BLACK
+    )
+    {
+        this->x = x;
+        this->y = y;
+        this->w = w;
+        this->h = h;
+        this->header_name = header_name;
+        this->background_color = background_color;
+        this->border_color = border_color;
+        this->inner_color = inner_color;
+        this->text_color = text_color;
+    }
+
+    std::vector<Button>         buttons;
+
+private:
+    static const size_t         MAX_RECORDS = 10;
+    int                         x, y, w, h;
+    std::string                 header_name;
+    Fl_Color                    background_color;
+    Fl_Color                    border_color;
+    Fl_Color                    inner_color;
+    Fl_Color                    text_color;
+    std::vector<JournalRecord>  journal;
+
+    void add_button();
+};
 
     class WindowWithNeuro : public GLib::Window
     {
     public:
+        Journal journal;
+
         WindowWithNeuro(int ww, int hh, const std::string &title, Fl_Color background_color = FL_WHITE) : GLib::Window{ww,
                                                                                                                        hh,
                                                                                                                        title,
@@ -294,6 +350,16 @@ namespace Graph_lib
                     shapes.erase(shapes.begin() + (i - 1));
         }
 
+        void reset_inboxes_colors()
+        {
+            for (size_t i = 0; i < inboxes.size(); ++i)
+            {
+                inboxes[i]->set_color(COLORS::WHITE);
+            }
+            std::cout << "a" << std::endl;
+            redraw();
+        }
+
         std::vector<std::string> get_values_from_inboxes()
         {
             std::vector<std::string> inbox_values;
@@ -303,6 +369,7 @@ namespace Graph_lib
                 std::transform(inbox_value.begin(), inbox_value.end(), inbox_value.begin(), ::tolower);
                 inbox_values.push_back(inbox_value);
             }
+            
             return inbox_values;
         }
 
@@ -489,29 +556,44 @@ namespace Graph_lib
                 for (size_t i{}; i < inbox_values.size()-1; ++i)
                 {
                     if (inbox_values[i] == "")
+                    {
+                        inboxes[i]->set_color(COLORS::SOFT_PINK);
                         validated += input_box_error_message + inbox_names[i] + is_empty_error_message_end;
+                    }
                     if (i != 0 && i != 1 && i != 6 && i != 7)
                         if (!is_string_double(inbox_values[i]))
-                            validated += input_box_error_message + inbox_names[i] + invalid_value_error_message_end;
+                            {
+                                inboxes[i]->set_color(COLORS::SOFT_PINK);
+                                validated += input_box_error_message + inbox_names[i] + invalid_value_error_message_end;
+                            }
                 }
                 if (inbox_values[vehicle_type_index] != truck_type &&
                     inbox_values[vehicle_type_index] != car_type &&
                     inbox_values[vehicle_type_index] != motorcycle_type &&
                     inbox_values[vehicle_type_index] != bus_type
                     )
-                    validated += invalid_vehicle_type_error_message;
+                    {
+                        inboxes[0]->set_color(COLORS::SOFT_PINK);
+                        validated += invalid_vehicle_type_error_message;
+                    }
 
                 if (inbox_values[fuel_type_index] != petrol_type &&
                     inbox_values[fuel_type_index] != electric_type &&
                     inbox_values[fuel_type_index] != diesel_type &&
                     inbox_values[fuel_type_index] != hybrid_type
                     )
+                {
+                    inboxes[1]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_fuel_type_error_message;
+                }
 
                 if (std::stold(inbox_values[engine_size_index]) < min_engine_size || 
                     std::stold(inbox_values[engine_size_index]) > max_engine_size 
                     )
+                {
+                    inboxes[2]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_engine_size_value_error_message;
+                }
 
                 if (std::stold(inbox_values[age_of_vehicle_index]) < min_age_of_vehicle ||
                     std::stold(inbox_values[age_of_vehicle_index]) > max_age_of_vehicle
@@ -565,7 +647,10 @@ namespace Graph_lib
                 if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
                 {
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
+                    {
+                        inboxes[12]->set_color(COLORS::SOFT_PINK);
                         validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
+                    }
                 }
                 else
                     validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
@@ -576,6 +661,8 @@ namespace Graph_lib
             message += line_separator;
             if (validated != "")
                 std::cout << message << std::endl;
+            
+            redraw();
             return validated;
         }
 
@@ -596,6 +683,24 @@ namespace Graph_lib
             current_cell.wind_speed = (is_string_double(inbox_values[10])) ? (std::stold(inbox_values[10])) : (NAN);
             current_cell.air_pressure = (is_string_double(inbox_values[11])) ? (std::stold(inbox_values[11])) : (NAN);
             current_cell.speed = (is_string_double(inbox_values[12])) ? (std::stold(inbox_values[12])) : (NAN);
+        }
+
+        void update_journal(
+            int x, int y, int w, int h, std::string header_name = "",
+            Fl_Color background_color = COLORS::WHITE,
+            Fl_Color border_color = COLORS::BLACK,
+            Fl_Color inner_color = COLORS::BLACK,
+            Fl_Color text_color = COLORS::BLACK
+        )
+        {
+            this->journal.update_journal_parameters(
+                x, y, w, h,
+                header_name,
+                background_color,
+                border_color,
+                inner_color,
+                text_color
+            );
         }
     };
 }

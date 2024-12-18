@@ -32,7 +32,7 @@ dlcList<EmissionState> emissions{};
 
 static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label);
 void show_graph(GLib::WindowWithNeuro &window, EmissionState &state);
-void show_error_message(std::string message);
+void show_error_message(GLib::WindowWithNeuro &window, std::string message);
 
 // CALLBACKS
 void callback_predict(GLib::Address, GLib::Address addr)
@@ -59,8 +59,13 @@ void callback_save(GLib::Address, GLib::Address addr)
   bool validated = window.validate_inboxes() == "";
   if (validated)
   {
+    const char *path = fl_file_chooser("Save a file", "*.txt", NULL, 0);
+
+    if (path == nullptr)
+      return;
+
     std::ofstream save_file;
-    save_file.open("saved_inputs.txt");
+    save_file.open(path);
     if (save_file.is_open())
     {
       std::vector<std::string> inbox_values = window.get_values_from_inboxes();
@@ -69,12 +74,12 @@ void callback_save(GLib::Address, GLib::Address addr)
     }
     save_file.close();
     std::cout << "[ACTION] File has been written." << std::endl;
-    show_error_message("[ACTION] File has been written.");
+    show_error_message(window, "[ACTION] File has been written.");
   }
   else
   {
     std::cout << "[ERROR] Bad data given to save. Try again." << std::endl;
-    show_error_message("[ERROR] Bad data given to save. Try again.");
+    show_error_message(window, "[ERROR] Bad data given to save. Try again.");
   }
 }
 
@@ -83,7 +88,12 @@ void callback_history(GLib::Address, GLib::Address addr)
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
 
-  std::ifstream save_file("saved_inputs.txt");
+  const char *path = fl_file_chooser("Choose a file", "*.txt", NULL, 0);
+
+  if (path == nullptr)
+    return;
+
+  std::ifstream save_file(path);
   std::vector<std::string> inbox_values;
   if (save_file.is_open())
   {
@@ -225,6 +235,21 @@ static void callback_prev(GLib::Address, GLib::Address addr)
   window.redraw();
 }
 
+static void callback_journal(GLib::Address, GLib::Address addr)
+{
+  auto *pb = static_cast<GLib::Button *>(addr);
+  auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
+
+  if (window.get_w() == window_width)
+  {
+    window.resize(window_width_journal, window_height);
+  }
+  else
+    window.resize(window_width, window_height);
+
+  window.redraw();
+}
+
 static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label)
 {
   unsigned int gas_label_x{graph_canvas_x + graph_canvas_w / 2 - gas_label.size() * 4 + 20}, gas_label_y{next_gas_y + 20};
@@ -248,6 +273,8 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
   bool validated = error_message == "";
   if (validated)
   {
+    // window.journal.add_record();
+
     show_gas_label(window, state.gas_label);
     window.update_current_cell();
     int max_speed = window.current_cell.speed;
@@ -289,13 +316,14 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
   }
   else
   {
-    show_error_message(error_message);
+    show_error_message(window, error_message);
   }
 }
 
-void show_error_message(std::string message)
+void show_error_message(GLib::WindowWithNeuro &window, std::string message)
 {
- GLib::ErrorWindow win{message};
+  fl_alert(message.c_str());
+  window.reset_inboxes_colors();
 }
 
 int main_gui()
@@ -311,6 +339,11 @@ try
   GLib::WindowWithNeuro win{
       window_width, window_height,
       main_window_title, COLORS::LIGHT_GRAY};
+
+  win.update_journal(
+    journal_x, journal_y,
+    journal_width, journal_height
+  );
 
   // TABLE OF PARAMETERS AND VALUES
   GLib::Table parameters_table{
@@ -332,7 +365,7 @@ try
   // SAVE BUTTON
   GLib::Button save_button{
       GLib::Point(save_button_x, save_button_y),
-      button_w_div_2, button_h,
+      button_w, button_h,
       save_button_label,
       callback_save};
   win.attach(save_button);
@@ -340,7 +373,7 @@ try
   // HISTORY BUTTON
   GLib::Button load_button{
       GLib::Point(load_button_x, load_button_y),
-      button_w_div_2, button_h,
+      button_w, button_h,
       load_button_label,
       callback_history};
   win.attach(load_button);
@@ -385,6 +418,13 @@ try
   prev_button.set_box_type(FL_OVAL_BOX);
   win.attach(prev_button);
 
+  GLib::Button journal_button{
+      GLib::Point(journal_button_x, journal_button_y),
+      button_w, button_h,
+      journal_button_label,
+      callback_journal};
+  win.attach(journal_button);
+
   //INBOXES
   for (size_t i = 0; i < table_rows - 1; ++i)
   {
@@ -396,12 +436,28 @@ try
   //AXIS LABELS
   for (size_t i = 1; i <= num_of_graph_labels_x; ++i)
   {
+    fl_color(COLORS::LIGHT_GRAY);
+    GLib::Point origin_point_low_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y};
+    GLib::Point origin_point_high_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y - int(canvas_origin_y - graph_canvas_y)};
+    GLib::Line *axis_line = new GLib::Line{origin_point_low_graph, origin_point_high_graph};
+    axis_line->set_style(1);
+    win.attach(*axis_line);
+    fl_color(COLORS::BLACK);
+
     GLib::Point origin_point_low{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y + 5};
     GLib::Point origin_point_high{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y - 5};
     win.attach(*(new GLib::Line(origin_point_low, origin_point_high)));
   }
   for (size_t i = 1; i <= num_of_graph_labels_y; ++i)
   {
+    fl_color(COLORS::LIGHT_GRAY);
+    GLib::Point origin_point_left_graph{canvas_origin_x, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
+    GLib::Point origin_point_right_graph{canvas_origin_x + int(graph_canvas_x + graph_canvas_w - canvas_origin_x), canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
+    GLib::Line *axis_line = new GLib::Line{origin_point_left_graph, origin_point_right_graph};
+    axis_line->set_style(1);
+    win.attach(*axis_line);
+    fl_color(COLORS::BLACK);
+
     GLib::Point origin_point_left{canvas_origin_x - 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
     GLib::Point origin_point_right{canvas_origin_x + 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
     win.attach(*(new GLib::Line(origin_point_left, origin_point_right)));

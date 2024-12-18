@@ -110,6 +110,8 @@ struct In_box : Widget
     reinterpret_cast<Fl_Input *>(pw)->value(s.c_str());
   }
 
+  void set_color (Fl_Color c) { pw->color(c); }
+
   void attach (Window& win);
 };
 
@@ -173,14 +175,9 @@ struct Menu : Widget
   void draw() override;
 };
 
+}  // namespace Graph_lib
+
 //------------------------------------------------------------------------------
 
-class DropdownList : public Fl_Menu_Button
-{
-public:
-  DropdownList(int x, int y, int w, int h, const char* label = 0, Callback callback = 0, int flags = 0);
-};
-
-}  // namespace Graph_lib
 
 #endif  // GUI_GUARD

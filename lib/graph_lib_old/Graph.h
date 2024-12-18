@@ -10,9 +10,6 @@
 #include "Objects.h"
 #include "Window.h"
 
-//constexpr char context_column = 'C';
-//constexpr char context_row = 'R';
-
 namespace Graph_lib {
 
 // defense against ill-behaved Linux macros:
