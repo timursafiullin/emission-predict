@@ -18,7 +18,7 @@
 std::string to_string_exp(double d)
 {
   std::ostringstream os;
-  os << std::scientific << std::setprecision(5) << d;
+  os << std::scientific << std::setprecision(6) << d;
   return os.str();
 }
 
@@ -162,7 +162,6 @@ void callback_clear(GLib::Address, GLib::Address addr)
 
   reinterpret_cast<GLib::Box *>(window.widgets.back())->set_color(COLORS::WHITE); // restore cursor_box state. In fact always the last widget
   reinterpret_cast<GLib::Box *>(window.widgets.back())->box(FL_BORDER_BOX);
-  //reinterpret_cast<GLib::Box *>(window.widgets.back())->align(FL_ALIGN_LEFT);
   reinterpret_cast<GLib::Box *>(window.widgets.back())->hide();
 
   window.redraw();
@@ -315,7 +314,7 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     }
     for (size_t i = 0; i <= num_of_graph_labels_y; ++i)
     {
-      GLib::Point origin_point{canvas_origin_x - 62, ((i != 0) ? (10) : (0)) + canvas_origin_y - 5 - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
+      GLib::Point origin_point{canvas_origin_x - 67, ((i != 0) ? (10) : (0)) + canvas_origin_y - 5 - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
       std::string value = to_string_exp((double)min_graph + (double)(max_graph - min_graph) / (double)num_of_graph_labels_y * (double)i);
       if (i == num_of_graph_labels_y)
         window.end_label_y->set_label("Emissions, g/km (10^" + std::to_string(std::stoi(value.substr(value.find("e") + 1, value.size()))) + ")");
@@ -517,11 +516,10 @@ try
 
   win.load_networks();
 
-  GLib::Box *cursor_box = new GLib::Box(GLib::Point(0, 0), 160, 35, "");
+  GLib::Box *cursor_box = new GLib::Box(GLib::Point(0, 0), 170, 35, "");
   win.attach(*cursor_box);
   cursor_box->set_color(COLORS::WHITE);
   cursor_box->box(FL_BORDER_BOX);
-  //cursor_box->align(FL_ALIGN_LEFT);
   cursor_box->hide();
 
 #if (defined(_WIN32) || defined(_WIN64))
