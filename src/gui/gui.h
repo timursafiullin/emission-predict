@@ -58,32 +58,6 @@ constexpr unsigned int gas_button_w{30}, gas_button_h{30};
 constexpr unsigned int help_window_width{650};
 constexpr unsigned int help_window_height{450};
 extern std::string help_message;
-// const char * help_message 
-// {
-//     "Instruction\n" \
-//     "The Emission Prediction Program is designed to predict vehicle " \
-//     "emissions (CO2, NOX, PM, VOC, SO2) based on various input parameters " \
-//     "using a neural network. The program features a graphical user interface (GUI) " \
-//     "that allows users to input vehicle data, visualize predictions, and manage historical data.\n" \
-//     "Input parameters: vehicle type (Car, Truck, Motorcycle), fuel type (Petrol, Diesel, Electric), " \
-//     "engine size (in liters), age of vehicle (in years), mileage (in kilometers), " \
-//     "acceleration (m/s²), road type (City, Rural, Highway), traffic conditions " \
-//     "(Heavy, Moderate, Free flow), temperature (in °C), humidity (relative in %), " \
-//     "wind speed (m/s) and air pressure (in hPa).\nThen you need to input the max speed value. " \
-//     "It is the limit up to which the graph will be drawn.\n" \
-//     "There is few buttons: under parameters table there are buttons to predict, save, load and clear." \
-//     "There is also a help button to show this message.\n" \
-//     "Button 'predict' will show the prediction graph. " \
-//     "Button 'save' will save the current parameters and the prediction in a file. " \
-//     "Button 'load' will load the parameters and the prediction from a file. " \
-//     "Button 'clear' will clear the parameters and the prediction.\n" \
-//     "There is also two buttons to navigate through the historical data: " \
-//     "'<' and '>'. They are located at the top of the graph canvas.\n\n" \
-//     "This program provides a user-friendly interface for predicting vehicle " \
-//     "emissions using advanced neural network techniques. By following the " \
-//     "instructions above, users can effectively utilize the program to " \
-//     "analyze and visualize emissions data."
-// };
 
 // Menu for table
 const unsigned int vehicle_type_x{table_x + table_width / table_cols};
@@ -96,8 +70,8 @@ const unsigned int graph_canvas_w{504};
 const unsigned int graph_canvas_h{505};
 const unsigned int canvas_origin_x{96}; // was 62
 const unsigned int canvas_origin_y{489};
-const unsigned int num_of_graph_labels_x{8};
-const unsigned int num_of_graph_labels_y{8};
+const unsigned int max_num_of_graph_labels{8};
+const std::vector<unsigned int> graph_labels_steps = {1, 2, 5, 10, 25, 50, 100, 500, 1000};
 
 // FDFK
 const unsigned int inbox_x{1 + table_x + table_width / table_cols};

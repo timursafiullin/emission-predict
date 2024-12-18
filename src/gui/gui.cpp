@@ -38,6 +38,7 @@ dlcList<EmissionState> emissions{};
 static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label);
 void show_graph(GLib::WindowWithNeuro &window, EmissionState &state);
 void show_error_message(GLib::WindowWithNeuro &window, std::string message);
+void show_graph_labels(GLib::WindowWithNeuro &window, std::vector<double> evaluations, int max_speed);
 
 // CALLBACKS
 void callback_predict(GLib::Address, GLib::Address addr)
@@ -141,6 +142,11 @@ void callback_clear(GLib::Address, GLib::Address addr)
   window.graph_points = {}; // clear graph points
 
   window.end_label_y->set_label("Emissions, g/km"); // clear y axis label
+
+  std::vector<GLib::Line *> axis_labels = window.axis_labels; // copy axis lines
+
+  for (size_t i = 0; i < axis_labels.size(); i++)
+    window.detach(*axis_labels[i]); // delete axis lines
 
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
@@ -296,38 +302,104 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     window.graph_points = func->points;
     window.graph_evaluations = evaluations;
 
+    show_graph_labels(window, evaluations, max_speed);
+
     window.attach(*func);
-
-    fl_color(COLORS::BLACK);
-    std::vector<GLib::GasText *> graph_labels;
-
-    double max_graph = *std::max_element(evaluations.begin(), evaluations.end());
-    double min_graph = *std::min_element(evaluations.begin(), evaluations.end());
-
-    for (size_t i = 0; i <= num_of_graph_labels_x; ++i)
-    {
-      std::string value = std::to_string(int((double)(max_speed - 0) / (double)num_of_graph_labels_x * (double)i));
-      GLib::GasText *current_text = new GLib::GasText{GLib::Point{0, 0}, value};
-      GLib::Point origin_point{((i != 0) ? (-int(current_text->get_size() * 1.5) / 2) : (0)) + canvas_origin_x + 5 + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y + 21};
-      current_text->move(origin_point.x, origin_point.y);
-      graph_labels.push_back(current_text);
-    }
-    for (size_t i = 0; i <= num_of_graph_labels_y; ++i)
-    {
-      GLib::Point origin_point{canvas_origin_x - 67, ((i != 0) ? (10) : (0)) + canvas_origin_y - 5 - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-      std::string value = to_string_exp((double)min_graph + (double)(max_graph - min_graph) / (double)num_of_graph_labels_y * (double)i);
-      if (i == num_of_graph_labels_y)
-        window.end_label_y->set_label("Emissions, g/km (10^" + std::to_string(std::stoi(value.substr(value.find("e") + 1, value.size()))) + ")");
-      graph_labels.push_back(new GLib::GasText { origin_point, value.substr(0, value.find("e"))});
-    }
-
-    for (size_t i = 0; i < graph_labels.size(); ++i)
-      window.attach(*graph_labels[i]);
   }
   else
   {
     show_error_message(window, error_message);
   }
+}
+
+void show_graph_labels(GLib::WindowWithNeuro &window, std::vector<double> evaluations, int max_speed)
+{
+
+  std::vector<GLib::Line *> axis_labels = window.axis_labels; // copy axis lines
+
+  for (size_t i = 0; i < axis_labels.size(); i++)
+    window.detach(*axis_labels[i]); // delete axis lines
+
+  double max_graph = *std::max_element(evaluations.begin(), evaluations.end());
+  double min_graph = *std::min_element(evaluations.begin(), evaluations.end());
+
+  // generate x and y label numbers
+  std::vector<unsigned int> graph_labels_x;
+  std::vector<double> graph_labels_y;
+
+  for (size_t i = 0; i < graph_labels_steps.size(); ++i)
+  {
+    if ((double)max_speed / (double)graph_labels_steps[i] <= max_num_of_graph_labels) // find lowest beautiful step
+    {
+      for (size_t j = 0; j <= (double)max_speed / (double)graph_labels_steps[i]; ++j)
+      {
+        graph_labels_x.push_back(graph_labels_steps[i] * j);
+      }
+      break;
+    }
+  }
+  for (size_t i = 0; i < graph_labels_x.size(); ++i)
+  {
+    graph_labels_y.push_back((double)min_graph + (double)(max_graph - min_graph) / (double)graph_labels_x.size() * (double)i);
+  }
+
+  // marks and lines
+  fl_color(COLORS::BLACK);
+  std::vector<GLib::GasText *> graph_labels;
+
+  // x
+  for (size_t i = 1; i < graph_labels_x.size(); ++i)
+  {
+    fl_color(COLORS::LIGHT_GRAY);
+    GLib::Point origin_point_low_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y};
+    GLib::Point origin_point_high_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y - int(canvas_origin_y - graph_canvas_y)};
+    GLib::Line *axis_line = new GLib::Line{origin_point_low_graph, origin_point_high_graph};
+    axis_line->set_style(1);
+    window.attach(*axis_line);
+    fl_color(COLORS::BLACK);
+
+    GLib::Point origin_point_low{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y + 5};
+    GLib::Point origin_point_high{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y - 5};
+    window.attach(*(new GLib::Line(origin_point_low, origin_point_high)));
+  }
+  // y
+  for (size_t i = 1; i < graph_labels_x.size(); ++i)
+  {
+    fl_color(COLORS::LIGHT_GRAY);
+    GLib::Point origin_point_left_graph{canvas_origin_x, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    GLib::Point origin_point_right_graph{canvas_origin_x + int(graph_canvas_x + graph_canvas_w - canvas_origin_x), canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    GLib::Line *axis_line = new GLib::Line{origin_point_left_graph, origin_point_right_graph};
+    axis_line->set_style(1);
+    window.attach(*axis_line);
+    fl_color(COLORS::BLACK);
+
+    GLib::Point origin_point_left{canvas_origin_x - 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    GLib::Point origin_point_right{canvas_origin_x + 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    window.attach(*(new GLib::Line(origin_point_left, origin_point_right)));
+  }
+
+  // numbers
+  // x
+  for (size_t i = 0; i < graph_labels_x.size(); ++i)
+  {
+    std::string value = std::to_string(graph_labels_x[i]);
+    GLib::GasText *current_text = new GLib::GasText{GLib::Point{0, 0}, value};
+    GLib::Point origin_point{((i != 0) ? (-int(current_text->get_size() * 1.5) / 2) : (0)) + canvas_origin_x + 5 + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y + 21};
+    current_text->move(origin_point.x, origin_point.y);
+    graph_labels.push_back(current_text);
+  }
+  // y
+  for (size_t i = 0; i < graph_labels_x.size(); ++i)
+  {
+    GLib::Point origin_point{canvas_origin_x - 67, ((i != 0) ? (10) : (0)) + canvas_origin_y - 5 - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    std::string value = to_string_exp(graph_labels_y[i]);
+    if (i == graph_labels_x.size())
+      window.end_label_y->set_label("Emissions, g/km (10^" + std::to_string(std::stoi(value.substr(value.find("e") + 1, value.size()))) + ")");
+    graph_labels.push_back(new GLib::GasText{origin_point, value.substr(0, value.find("e"))});
+  }
+
+  for (size_t i = 0; i < graph_labels.size(); ++i)
+    window.attach(*graph_labels[i]);
 }
 
 void show_error_message(GLib::WindowWithNeuro &window, std::string message)
@@ -475,36 +547,6 @@ try
           inbox_w, inbox_h, ""};
       win.attach(*in_box);
     }
-  }
-
-  //AXIS LABELS
-  for (size_t i = 1; i <= num_of_graph_labels_x; ++i)
-  {
-    fl_color(COLORS::LIGHT_GRAY);
-    GLib::Point origin_point_low_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y};
-    GLib::Point origin_point_high_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y - int(canvas_origin_y - graph_canvas_y)};
-    GLib::Line *axis_line = new GLib::Line{origin_point_low_graph, origin_point_high_graph};
-    axis_line->set_style(1);
-    win.attach(*axis_line);
-    fl_color(COLORS::BLACK);
-
-    GLib::Point origin_point_low{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y + 5};
-    GLib::Point origin_point_high{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y - 5};
-    win.attach(*(new GLib::Line(origin_point_low, origin_point_high)));
-  }
-  for (size_t i = 1; i <= num_of_graph_labels_y; ++i)
-  {
-    fl_color(COLORS::LIGHT_GRAY);
-    GLib::Point origin_point_left_graph{canvas_origin_x, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-    GLib::Point origin_point_right_graph{canvas_origin_x + int(graph_canvas_x + graph_canvas_w - canvas_origin_x), canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-    GLib::Line *axis_line = new GLib::Line{origin_point_left_graph, origin_point_right_graph};
-    axis_line->set_style(1);
-    win.attach(*axis_line);
-    fl_color(COLORS::BLACK);
-
-    GLib::Point origin_point_left{canvas_origin_x - 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-    GLib::Point origin_point_right{canvas_origin_x + 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-    win.attach(*(new GLib::Line(origin_point_left, origin_point_right)));
   }
 
   GLib::Text *end_label_y = new GLib::Text{GLib::Point(graph_canvas_x + 22, graph_canvas_y + 20), "Emissions, g/km"};

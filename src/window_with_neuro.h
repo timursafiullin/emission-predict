@@ -178,9 +178,16 @@ namespace Graph_lib
         std::vector<GLib::In_box *> inboxes;
         std::vector<GLib::GasText *> gas_texts;
         std::vector<GLib::FunctionStepping *> functions;
+        std::vector<GLib::Line *> axis_labels;
         GLib::Text *end_label_y;
         std::vector<Point> graph_points = {};
         std::vector<double> graph_evaluations = {};
+
+        void attach(GLib::Line &s)
+        {
+            axis_labels.push_back(&s);
+            shapes.push_back(&s);
+        }
 
         void attach(GLib::In_box &w)
         {
@@ -204,17 +211,22 @@ namespace Graph_lib
             end();
             widgets.push_back(&b);
         }
-        /*
-        void detach(Fl_Box &b)
-        {
-            b.hide();
-        }
-        */
 
         void attach(GLib::FunctionStepping &s)
         {
             functions.push_back(&s);
             shapes.push_back(&s);
+        }
+
+        void detach(GLib::Line &s)
+        {
+            for (unsigned int i = axis_labels.size(); 0 < i; --i)
+                if (axis_labels[i - 1] == &s)
+                    axis_labels.erase(axis_labels.begin() + (i - 1));
+
+            for (unsigned int i = shapes.size(); 0 < i; --i)
+                if (shapes[i - 1] == &s)
+                    shapes.erase(shapes.begin() + (i - 1));
         }
 
         void detach(GLib::In_box &w)
@@ -379,7 +391,7 @@ namespace Graph_lib
             int max_speed = current_cell.speed;
             std::vector<double> evaluations;
 
-            for (size_t current_speed = 0; current_speed < max_speed; ++current_speed)
+            for (size_t current_speed = 0; current_speed <= max_speed; ++current_speed)
             {
                 current_cell.speed = current_speed;
                 std::vector<NeuralNetwork::Scalar> ans;
@@ -488,16 +500,18 @@ namespace Graph_lib
                 }
                 if (inbox_values[12] != "" && is_string_double(inbox_values[12]))
                 {
+                    /*
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
                     {
                         inboxes[12]->set_color(COLORS::RED_DARK_BERRY);
                         validated += "[ERROR] Invalid value of 'Max speed': must be greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
                     }
+                    */
                 }
                 else
                 {
                     inboxes[12]->set_color(COLORS::RED_DARK_BERRY);
-                    validated += "[ERROR] Max speed is invalid: must be number greater than " + std::to_string(num_of_graph_labels_x) + ".\n";
+                    validated += "[ERROR] Max speed must be number.\n";
                 }
             }
             else
