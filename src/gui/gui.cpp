@@ -273,6 +273,8 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
   bool validated = error_message == "";
   if (validated)
   {
+    // window.journal.add_record();
+
     show_gas_label(window, state.gas_label);
     window.update_current_cell();
     int max_speed = window.current_cell.speed;
@@ -337,6 +339,11 @@ try
   GLib::WindowWithNeuro win{
       window_width, window_height,
       main_window_title, COLORS::LIGHT_GRAY};
+
+  win.update_journal(
+    journal_x, journal_y,
+    journal_width, journal_height
+  );
 
   // TABLE OF PARAMETERS AND VALUES
   GLib::Table parameters_table{

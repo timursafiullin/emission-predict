@@ -46,9 +46,104 @@ namespace Graph_lib
         GasText(Point x, const std::string &s) : GLib::Text{x, s} {};
     };
 
+class JournalRecord : public DatasetCell
+{
+public:
+    JournalRecord() {};
+
+    std::string         record_time;
+
+    std::string         vehicle_type;
+    std::string         fuel_type;
+    long double         engine_size;
+    unsigned long       age_of_vehicle;
+    unsigned long long  mileage;
+    long double         acceleration;
+    std::string         road_type;
+    std::string         traffic_conditions;
+    long double         temperature;
+    long double         humidity;
+    long double         wind_speed;
+    long double         air_pressure;
+    long double         max_speed;
+};
+
+class Journal : Shape
+{
+public:
+    Journal() {}
+    Journal(
+        int x, int y, int w, int h, std::string header_name = "",
+        Fl_Color background_color = COLORS::WHITE,
+        Fl_Color border_color = COLORS::BLACK,
+        Fl_Color inner_color = COLORS::BLACK,
+        Fl_Color text_color = COLORS::BLACK
+    ) : x{x}, y{y}, w{w}, h{h},
+        header_name{header_name},
+        background_color{background_color},
+        border_color {border_color},
+        inner_color{inner_color},
+        text_color{text_color}
+    {
+    
+    }
+    
+    void draw_lines() const override
+    {
+        // Some code
+    };
+
+    void add_record(const JournalRecord& cell)
+    {
+        if (journal.size() < MAX_RECORDS)
+            journal.push_back(cell);
+        add_button();
+    }
+
+    void set_header(std::string name)
+    {
+        header_name = name;
+    }
+
+    void update_journal_parameters(
+            int x, int y, int w, int h, std::string header_name = "",
+            Fl_Color background_color = COLORS::WHITE,
+            Fl_Color border_color = COLORS::BLACK,
+            Fl_Color inner_color = COLORS::BLACK,
+            Fl_Color text_color = COLORS::BLACK
+    )
+    {
+        this->x = x;
+        this->y = y;
+        this->w = w;
+        this->h = h;
+        this->header_name = header_name;
+        this->background_color = background_color;
+        this->border_color = border_color;
+        this->inner_color = inner_color;
+        this->text_color = text_color;
+    }
+
+    std::vector<Button>         buttons;
+
+private:
+    static const size_t         MAX_RECORDS = 10;
+    int                         x, y, w, h;
+    std::string                 header_name;
+    Fl_Color                    background_color;
+    Fl_Color                    border_color;
+    Fl_Color                    inner_color;
+    Fl_Color                    text_color;
+    std::vector<JournalRecord>  journal;
+
+    void add_button();
+};
+
     class WindowWithNeuro : public GLib::Window
     {
     public:
+        Journal journal;
+
         WindowWithNeuro(int ww, int hh, const std::string &title, Fl_Color background_color = FL_WHITE) : GLib::Window{ww,
                                                                                                                        hh,
                                                                                                                        title,
@@ -164,6 +259,7 @@ namespace Graph_lib
                 std::transform(inbox_value.begin(), inbox_value.end(), inbox_value.begin(), ::tolower);
                 inbox_values.push_back(inbox_value);
             }
+            
             return inbox_values;
         }
 
@@ -429,6 +525,24 @@ namespace Graph_lib
             current_cell.wind_speed = (is_string_double(inbox_values[10])) ? (std::stold(inbox_values[10])) : (NAN);
             current_cell.air_pressure = (is_string_double(inbox_values[11])) ? (std::stold(inbox_values[11])) : (NAN);
             current_cell.speed = (is_string_double(inbox_values[12])) ? (std::stold(inbox_values[12])) : (NAN);
+        }
+
+        void update_journal(
+            int x, int y, int w, int h, std::string header_name = "",
+            Fl_Color background_color = COLORS::WHITE,
+            Fl_Color border_color = COLORS::BLACK,
+            Fl_Color inner_color = COLORS::BLACK,
+            Fl_Color text_color = COLORS::BLACK
+        )
+        {
+            this->journal.update_journal_parameters(
+                x, y, w, h,
+                header_name,
+                background_color,
+                border_color,
+                inner_color,
+                text_color
+            );
         }
     };
 }

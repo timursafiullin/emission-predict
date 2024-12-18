@@ -88,7 +88,3 @@ int Menu::attach(Button* p)
   //  owned.push_back(p);
   return attach(*p);
 }
-
-DropdownList::DropdownList(int x, int y, int w, int h, const char* label, Callback callback, int flags) : Fl_Menu_Button(x, y, w, h, label)
-{
-}
