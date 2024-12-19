@@ -84,6 +84,7 @@ void callback_save(GLib::Address, GLib::Address addr)
 }
 
 void callback_load(GLib::Address, GLib::Address addr)
+void callback_load(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
@@ -275,7 +276,7 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
   {
     show_gas_label(window, state.gas_label);
     window.update_current_cell();
-    //window.draw_journal_buttons();
+    window.draw_journal_buttons();
     int max_speed = window.current_cell.speed;
     std::vector<double> evaluations;
 
@@ -374,6 +375,7 @@ try
       GLib::Point(load_button_x, load_button_y),
       button_w, button_h,
       load_button_label,
+      callback_load};
       callback_load};
   win.attach(load_button);
 

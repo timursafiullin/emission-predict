@@ -9,9 +9,9 @@
 #include <regex>
 #include <math.h>
 #include <functional>
+#include <time.h>
 
 #define GLib Graph_lib
-
 
 namespace Graph_lib
 {
@@ -158,12 +158,13 @@ namespace Graph_lib
         GasText(Point x, const std::string &s) : GLib::Text{x, s} {};
     };
 
-class JournalRecord : public DatasetCell
+class JournalRecord : public Button
 {
 public:
-    JournalRecord() {};
+    JournalRecord(Point p, int w, int h, std::string l, Callback c)
+    : Button{p, w, h, l, c} {};
 
-    std::string         record_time;
+    char*               record_time;
 
     std::string         vehicle_type;
     std::string         fuel_type;
@@ -178,77 +179,96 @@ public:
     long double         wind_speed;
     long double         air_pressure;
     long double         max_speed;
+
+    std::vector<std::string> get_data()
+    {
+        std::vector<std::string> data;
+        data.push_back((std::string)vehicle_type);
+        data.push_back((std::string)fuel_type);
+        data.push_back((std::string)std::to_string(engine_size));
+        data.push_back((std::string)std::to_string(age_of_vehicle));
+        data.push_back((std::string)std::to_string(mileage));
+        data.push_back((std::string)std::to_string(acceleration));
+        data.push_back((std::string)road_type);
+        data.push_back((std::string)traffic_conditions);
+        data.push_back((std::string)std::to_string(temperature));
+        data.push_back((std::string)std::to_string(humidity));
+        data.push_back((std::string)std::to_string(wind_speed));
+        data.push_back((std::string)std::to_string(air_pressure));
+        data.push_back((std::string)std::to_string(max_speed));
+        return data;
+    }
 };
 
-class Journal : Shape
+class Journal
 {
 public:
     Journal() {}
     Journal(
-        int x, int y, int w, int h, std::string header_name = "",
-        Fl_Color background_color = COLORS::WHITE,
-        Fl_Color border_color = COLORS::BLACK,
-        Fl_Color inner_color = COLORS::BLACK,
-        Fl_Color text_color = COLORS::BLACK
+        int x, int y, int w, int h
     ) : x{x}, y{y}, w{w}, h{h},
-        header_name{header_name},
-        background_color{background_color},
-        border_color {border_color},
-        inner_color{inner_color},
-        text_color{text_color}
-    {
-    
-    }
-    
-    void draw_lines() const override
-    {
-        // Some code
-    };
+        cell_w{w},
+        cell_h{h / MAX_RECORDS}
+    {}
 
-    void add_record(const JournalRecord& cell)
+    void add_record(Point p, Callback c, const DatasetCell& cell)
     {
-        if (journal.size() < MAX_RECORDS)
-            journal.push_back(cell);
-        add_button();
+        time_t rawtime;
+        struct tm *timeinfo;
+        char buffer[80];
+
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+
+        strftime(buffer, sizeof(buffer), "%H:%M:%S", timeinfo);
+
+        for (int i{0}; i < journal_records.size(); ++i)
+        {
+            journal_records[i]->move(0, cell_h + 1);
+        }
+        JournalRecord* record = new JournalRecord{p, cell_w, cell_h, (std::string)buffer, c};
+
+        record->vehicle_type = cell.vehicle_type;
+        record->fuel_type = cell.fuel_type;
+        record->engine_size = cell.engine_size;
+        record->age_of_vehicle = cell.age_of_vehicle;
+        record->mileage = cell.mileage;
+        record->acceleration = cell.acceleration;
+        record->road_type = cell.road_type;
+        record->traffic_conditions = cell.traffic_conditions;
+        record->temperature = cell.temperature;
+        record->humidity = cell.humidity;
+        record->wind_speed = cell.wind_speed;
+        record->air_pressure = cell.air_pressure;
+        record->max_speed = cell.speed;
+
+        journal_records.push_back(record);
+
+        delete_last_record();
     }
 
-    void set_header(std::string name)
-    {
-        header_name = name;
-    }
-
-    void update_journal_parameters(
-            int x, int y, int w, int h, std::string header_name = "",
-            Fl_Color background_color = COLORS::WHITE,
-            Fl_Color border_color = COLORS::BLACK,
-            Fl_Color inner_color = COLORS::BLACK,
-            Fl_Color text_color = COLORS::BLACK
-    )
+    void update_journal_parameters(int x, int y, int w, int h)
     {
         this->x = x;
         this->y = y;
         this->w = w;
         this->h = h;
-        this->header_name = header_name;
-        this->background_color = background_color;
-        this->border_color = border_color;
-        this->inner_color = inner_color;
-        this->text_color = text_color;
+        this->cell_w = w;
+        this->cell_h = (h - (MAX_RECORDS - 1)) / (MAX_RECORDS);
     }
 
-    std::vector<Button>         buttons;
+    std::vector<JournalRecord*>  journal_records;
+    int cell_w, cell_h;
 
 private:
-    static const size_t         MAX_RECORDS = 10;
+    static const size_t         MAX_RECORDS = 18;
     int                         x, y, w, h;
-    std::string                 header_name;
-    Fl_Color                    background_color;
-    Fl_Color                    border_color;
-    Fl_Color                    inner_color;
-    Fl_Color                    text_color;
-    std::vector<JournalRecord>  journal;
 
-    void add_button();
+    void delete_last_record()
+    {
+        if (journal_records.size() >= MAX_RECORDS)
+            journal_records.erase(journal_records.begin());
+    }
 };
 
     class WindowWithNeuro : public GLib::Window
@@ -292,6 +312,7 @@ private:
 
         std::vector<GLib::In_box *> inboxes;
         std::vector<GLib::GasText *> gas_texts;
+        std::vector<GLib::Button *> buttons;
         std::vector<GLib::FunctionStepping *> functions;
         GLib::Text *end_label_y;
 
@@ -349,6 +370,36 @@ private:
                 if (shapes[i - 1] == &s)
                     shapes.erase(shapes.begin() + (i - 1));
         }
+
+        void attach(GLib::Button &w)
+        {
+            buttons.push_back(&w);
+            begin();
+            w.attach(*this);
+            end();
+            widgets.push_back(&w);
+        }
+        
+        void detach(GLib::Button &w)
+        {
+            for (unsigned int i = 0; i < buttons.size(); ++i)
+                if (buttons[i] == &w)
+                    buttons.erase(buttons.begin() + (i));
+
+            w.hide();
+            for (unsigned int i = 0; i < widgets.size(); ++i)
+                if (widgets[i] == &w)
+                    widgets.erase(widgets.begin() + (i));
+        }
+
+        void draw_journal_buttons()
+        {
+            for (unsigned int i = 0; i < journal.journal_records.size(); ++i)
+                attach(*journal.journal_records[i]);
+            detach(*journal.journal_records[0]);
+            std::cout << journal.journal_records.size() << std::endl;
+        }
+
 
         void reset_inboxes_colors()
         {
@@ -690,6 +741,16 @@ private:
             return validated;
         }
 
+        static void callback_journal(GLib::Address, GLib::Address addr)
+        {
+            auto *pb = static_cast<JournalRecord *>(addr);
+            auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
+            std::vector<std::string> inbox_values{pb->get_data()};
+            for (size_t i = 0; i < window.inboxes.size(); i++)
+                window.inboxes[i]->set_string(inbox_values[i]);
+        }
+
+
         void update_current_cell()
         {
             std::vector<std::string> inbox_values = get_values_from_inboxes();
@@ -707,24 +768,13 @@ private:
             current_cell.wind_speed = (is_string_double(inbox_values[10])) ? (std::stold(inbox_values[10])) : (NAN);
             current_cell.air_pressure = (is_string_double(inbox_values[11])) ? (std::stold(inbox_values[11])) : (NAN);
             current_cell.speed = (is_string_double(inbox_values[12])) ? (std::stold(inbox_values[12])) : (NAN);
+
+            journal.add_record(GLib::Point(journal_x, journal_y), callback_journal, current_cell);
         }
 
-        void update_journal(
-            int x, int y, int w, int h, std::string header_name = "",
-            Fl_Color background_color = COLORS::WHITE,
-            Fl_Color border_color = COLORS::BLACK,
-            Fl_Color inner_color = COLORS::BLACK,
-            Fl_Color text_color = COLORS::BLACK
-        )
+        void update_journal(int x, int y, int w, int h)
         {
-            this->journal.update_journal_parameters(
-                x, y, w, h,
-                header_name,
-                background_color,
-                border_color,
-                inner_color,
-                text_color
-            );
+            this->journal.update_journal_parameters(x, y, w, h);
         }
     };
 }

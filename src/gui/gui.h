@@ -22,7 +22,7 @@ constexpr unsigned int table_cols{2};
 constexpr unsigned int table_rows{14};
 
 // Journal
-constexpr unsigned int journal_x{863};
+constexpr unsigned int journal_x{854};
 constexpr unsigned int journal_y{21};
 constexpr unsigned int journal_width{266};
 constexpr unsigned int journal_height{505};
