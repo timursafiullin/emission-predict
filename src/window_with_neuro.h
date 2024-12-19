@@ -843,7 +843,7 @@ private:
                 else
                 {
                     inboxes[12]->set_color(COLORS::SOFT_PINK);
-                    validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
+                    validated += invalid_max_speed_error_message + ".\n";
                 }
             }
             else
