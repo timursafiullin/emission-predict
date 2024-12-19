@@ -200,30 +200,16 @@ public:
     }
 };
 
-class Journal : Shape
+class Journal
 {
 public:
     Journal() {}
     Journal(
-        int x, int y, int w, int h, std::string header_name = "",
-        Fl_Color background_color = COLORS::WHITE,
-        Fl_Color border_color = COLORS::BLACK,
-        Fl_Color inner_color = COLORS::BLACK,
-        Fl_Color text_color = COLORS::BLACK
+        int x, int y, int w, int h
     ) : x{x}, y{y}, w{w}, h{h},
-        header_name{header_name},
-        background_color{background_color},
-        border_color {border_color},
-        inner_color{inner_color},
-        text_color{text_color},
         cell_w{w},
         cell_h{h / MAX_RECORDS}
     {}
-    
-    void draw_lines() const override
-    {
-        // Some code
-    };
 
     void add_record(Point p, Callback c, const DatasetCell& cell)
     {
@@ -261,28 +247,12 @@ public:
         delete_last_record();
     }
 
-    void set_header(std::string name)
-    {
-        header_name = name;
-    }
-
-    void update_journal_parameters(
-            int x, int y, int w, int h, std::string header_name = "",
-            Fl_Color background_color = COLORS::WHITE,
-            Fl_Color border_color = COLORS::BLACK,
-            Fl_Color inner_color = COLORS::BLACK,
-            Fl_Color text_color = COLORS::BLACK
-    )
+    void update_journal_parameters(int x, int y, int w, int h)
     {
         this->x = x;
         this->y = y;
         this->w = w;
         this->h = h;
-        this->header_name = header_name;
-        this->background_color = background_color;
-        this->border_color = border_color;
-        this->inner_color = inner_color;
-        this->text_color = text_color;
         this->cell_w = w;
         this->cell_h = (h - (MAX_RECORDS - 1)) / (MAX_RECORDS);
     }
@@ -293,11 +263,6 @@ public:
 private:
     static const size_t         MAX_RECORDS = 18;
     int                         x, y, w, h;
-    std::string                 header_name;
-    Fl_Color                    background_color;
-    Fl_Color                    border_color;
-    Fl_Color                    inner_color;
-    Fl_Color                    text_color;
 
     void delete_last_record()
     {
@@ -427,25 +392,11 @@ private:
                     widgets.erase(widgets.begin() + (i));
         }
 
-        //void detach(GLib::JournalRecord &w)
-        //{
-        //    for (unsigned int i = 0; i < buttons.size(); ++i)
-        //        if (buttons[i] == &w)
-        //            buttons.erase(buttons.begin() + (i));
-//
-        //    w.hide();
-        //    for (unsigned int i = 0; i < widgets.size(); ++i)
-        //        if (widgets[i] == &w)
-        //            widgets.erase(widgets.begin() + (i));
-        //}
-
         void draw_journal_buttons()
         {
-            detach(*journal.journal_records[journal.journal_records.size() - 1]);
             for (unsigned int i = 0; i < journal.journal_records.size(); ++i)
-            {
                 attach(*journal.journal_records[i]);
-            }
+            detach(*journal.journal_records[journal.journal_records.size() - 1]);
         }
 
 
@@ -787,22 +738,9 @@ private:
             journal.add_record(GLib::Point(journal_x, journal_y), callback_journal, current_cell);
         }
 
-        void update_journal(
-            int x, int y, int w, int h, std::string header_name = "",
-            Fl_Color background_color = COLORS::WHITE,
-            Fl_Color border_color = COLORS::BLACK,
-            Fl_Color inner_color = COLORS::BLACK,
-            Fl_Color text_color = COLORS::BLACK
-        )
+        void update_journal(int x, int y, int w, int h)
         {
-            this->journal.update_journal_parameters(
-                x, y, w, h,
-                header_name,
-                background_color,
-                border_color,
-                inner_color,
-                text_color
-            );
+            this->journal.update_journal_parameters(x, y, w, h);
         }
     };
 }
