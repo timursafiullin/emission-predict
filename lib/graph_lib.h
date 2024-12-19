@@ -1,2 +1,5 @@
-#include "graph_lib/Objects.h"
-#include "graph_lib/Window.h"
+#include "graph_lib_old/Graph.h"
+#include "graph_lib_old/Window.h"
+#include "graph_lib_old/GUI.h"
+#include "graph_lib_old/Objects.h"
+#include "csv.h"

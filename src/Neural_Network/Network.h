@@ -4,6 +4,7 @@
 #include <Eigen/Eigen>
 #include <exception>
 #include "csv.h"
+#include <vector>
 
 /*
     Neural network class v 1.0
@@ -15,40 +16,43 @@
 
 namespace NeuralNetwork
 {
-    typedef size_t              Number;
-    typedef long double         Scalar;
-    typedef Eigen::MatrixXf     Matrix;
-    typedef Eigen::RowVectorXf  RowVector;
-    typedef Eigen::VectorXf     ColumnVector;
+    using Number            = size_t;
+    using Scalar            = long double;
+    using Matrix            = Eigen::MatrixXf;
+    using RowVector         = Eigen::RowVectorXf;
+    using ColumnVector      = Eigen::VectorXf;
+    using VectorNumber      = std::vector<Number>;
+    using VectorScalar      = std::vector<Scalar>;
+    using VectorMatrixPtr   = std::vector<Matrix*>;
+    using VectorRowPtr      = std::vector<RowVector*>;
 
-    const std::string exception_message_invalid_data_sizes{
+    static const std::string exception_message_invalid_data_sizes{
         "amount of input elements must be "
         "equal to amount of output elements"
-    };
-    const std::string exception_message_invalid_learning_rate{
+   };
+    static const std::string exception_message_invalid_learning_rate{
         "learning rate mustn't be less than zero"
     };
-    const std::string exception_message_invalid_structure_length{
+    static const std::string exception_message_invalid_structure_length{
         "amount of layers mustn't be less than 1"
     };
-    const std::string exception_message_invalid_neuron_amount{
+    static const std::string exception_message_invalid_neuron_amount{
         "amount of neurons mustn't be less than 1"
     };
-    const std::string exception_message_invalid_input_size{
+    static const std::string exception_message_invalid_input_size{
         "amount of input values must be equal to input neurons"
     };
-    const std::string exception_message_invalid_output_size{
+    static const std::string exception_message_invalid_output_size{
         "amount of output values must be equal to output neurons"
     };
-    const std::string exception_message_invalid_layers_amount{
+    static const std::string exception_message_invalid_layers_amount{
         "invalid layers amount given"
     };
-    const std::string exception_message_invalid_layer_matrix{
+    static const std::string exception_message_invalid_layer_matrix{
         "invalid layer matrix given"
     };
 
-    constexpr Scalar default_learning_rate_value                { 0.005 };
-    constexpr Scalar default_critical_difference_between_errors { -0.05 };
+    constexpr Scalar default_learning_rate_value { 1e-10 };
 
 
     /**
@@ -85,34 +89,52 @@ namespace NeuralNetwork
 
     /**
      * @brief   Simple implementation of feedforward neural network
-     *          with linear activation function, trained by stohastic gradient decent.
+     *          with given activation function, trained by stohastic gradient decent.
      * 
      */
-    class NeuralNetwork {
+    template <class T>
+    class FFNN {
     public:
         /**
-         * @brief   Construct a new Neural Network object,
+         * @brief   Construct a new FFNN object,
          *          ready to train.
          * 
          * @param s structure of network.
          * @param l learning rate. Has default value.
+         * @param activaion_function activation function
+         * @param activation_function_derivative activation function derivative
          */
-	    NeuralNetwork(
-            std::vector<Number> s,
-            Scalar l = default_learning_rate_value
-        );
+	    FFNN(
+            VectorNumber s,
+            Scalar l = default_learning_rate_value,
+            T f =
+            ([] (Scalar x) { return 1 / (1 + std::pow(std::exp(1.0), -x)); } ),
+            T f_der =
+            ([] (Scalar x) { return std::pow(std::exp(1.0), -x) / std::pow(1 + std::pow(std::exp(1.0), -x), 2); })
+        )
+        {
+            validate_structure(s);
+            structure = s;
+            validate_learning_rate(l);
+            learning_rate = l;
+            initialize_storage_objects();
+            activation_function = f;
+            activation_function_derivative = f_der;
+        }
 
         /**
-         * @brief   Construct a new Neural Network object,
-         *          with already given weights.
+         * @brief Destroy the FFNN object
          * 
-         * @param s structure of network.
-         * @param w already trained weights of model.
          */
-        NeuralNetwork(
-            std::vector<Number> s,
-            std::vector<Matrix*> w
-        );
+        ~FFNN()
+        {
+            for (auto layer : neuron_layers)
+                delete layer;
+            for (auto layer : deltas)
+                delete layer;
+            for (auto layer : weights)
+                delete layer;
+        }
 
         /**
          * @brief   Calculates prediction by input.
@@ -122,23 +144,32 @@ namespace NeuralNetwork
          */
         RowVector predict(
             RowVector& input
-        );
+        )
+        {
+            propagate_forward(input);
+            return *neuron_layers.back();
+        }
 
         /**
          * @brief Train model on dataset.
          * 
-         * @param input_data 
-         * @param output_data 
-         * @param critical_difference_between_errors difference between previous
-         *              and current errors when training stops to prevent
-         *              divergence of gradient decent.
+         * @param input_data
+         * @param output_data
          * 
          */
         void train(
-            std::vector<RowVector*> input_data,
-            std::vector<RowVector*> output_data,
-            Scalar critical_difference_between_errors = default_critical_difference_between_errors
-        );
+            VectorRowPtr input_data,
+            VectorRowPtr output_data
+        )
+        {
+            validate_data(input_data, output_data);
+
+            for (Number element{0}; element < input_data.size(); ++element)
+            {
+                propagate_forward(*input_data[element]);
+                propagate_backward(*output_data[element]);
+            }
+        }
 
         /**
          * @brief   Calculates main square error on dataset.
@@ -147,57 +178,158 @@ namespace NeuralNetwork
          * @param output_data 
          * @return Scalar
          */
-        std::vector<Scalar> test(
-            std::vector<RowVector*> input_data,
-            std::vector<RowVector*> output_data
-        );
+        VectorScalar test(
+            VectorRowPtr input_data,
+            VectorRowPtr output_data
+        )
+        {
+            validate_data(input_data, output_data);
+
+            Number dataset_size{input_data.size()};
+
+            VectorScalar main_error(structure.back());
+
+            for (Number element{0}; element < dataset_size; ++element)
+            {
+                VectorScalar error{get_abs_error(*input_data[element], *output_data[element])};
+                for (Number i{0}; i < error.size(); ++i)
+                    main_error[i] += sqrtl(error[i] / dataset_size);
+            }
+
+            return main_error;
+        }
 
         /**
          * @brief   Get the weights of connections.
          * 
          * @return std::vector<Matrix*> 
          */
-        std::vector<Matrix*> get_weights()
+        VectorMatrixPtr get_weights()
         {
             return weights;
         }
-
-        /**
-         * @brief   Convert vector of vectors of vectors of scalars to vector of matrices.
-         *
-         * @return std::vector<Matrix*>
-         */
-        std::vector<Matrix *> matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights);
-
-        /**
-         * @brief   Convert matrix to vector of vectors of (scalar) strings.
-         *
-         * @return std::vector<std::vector<std::string>>
-         */
-        std::vector<std::vector<std::string>> matrix_to_vector(Matrix &matrix);
 
         /**
          * @brief   Save the weights of connections to file.
          *
          * @param filename Path to weights file.
          */
-        void save_weights_to_file(std::string filename);
+        void save_weights_to_file(std::string filename)
+        {
+            CsvWriter csv_weights{filename};
+            csv_weights.open_file();
+
+            VectorMatrixPtr weights{get_weights()};
+            for (Matrix *l : weights)
+            {
+                std::vector<std::vector<std::string>> matrix_vector{matrix_to_vector(*l)};
+                for (std::vector<std::string> v : matrix_vector)
+                {
+                    csv_weights.write_row(v);
+                }
+                if (l != weights.back())
+                    csv_weights.write_empty_row();
+            }
+
+            csv_weights.close_file();
+        }
 
         /**
          * @brief   Set the weights of connections. Get them from file.
          *
          * @param filename Path to weights file.
          */
-        void load_weights_from_file(std::string filename);
+        void load_weights_from_file(std::string filename)
+        {
+            CsvReader csv_reader(filename);
+            std::vector<std::vector<VectorScalar>> vector_weights;
+            csv_reader.open_file();
+            while (true)
+            {
+                try
+                {
 
-        NeuralNetwork(
-            const NeuralNetwork &) = delete;
+                    std::vector<std::vector<std::string>> layer_weights_string = csv_reader.read_until_blank_line();
 
-        NeuralNetwork& operator= (
-            const NeuralNetwork&
+                    // if (layer_weights_string[0][0] == "")
+                    //     throw FileIsClosedError();
+                    std::vector<VectorScalar> matrix_weights;
+                    for (const auto &row : layer_weights_string)
+                    {
+                        VectorScalar row_scalar;
+                        for (const auto &element : row)
+                        {
+                            row_scalar.push_back(std::stold(element));
+                        }
+                        matrix_weights.push_back(row_scalar);
+                    }
+                    vector_weights.push_back(matrix_weights);
+                }
+                catch (const FileIsClosedError &e)
+                {
+                    break;
+                }
+            }
+            csv_reader.close_file();
+            VectorMatrixPtr weights_converted = matrix_vector_from_vectors(vector_weights);
+            for (Number layer{0}; layer < weights_converted.size(); ++layer)
+                *weights[layer] = *weights_converted[layer];
+        }
+
+        FFNN(
+            const FFNN &) = delete;
+
+        FFNN& operator= (
+            const FFNN &
         ) = delete;
 
     private:
+        /**
+         * @brief   Convert vector of vectors of vectors of scalars to vector of matrices.
+         *
+         * @return std::vector<Matrix*>
+         */
+        VectorMatrixPtr matrix_vector_from_vectors(std::vector<std::vector<std::vector<Scalar>>> &weights)
+        {
+            VectorMatrixPtr matrices;
+            for (std::vector<VectorScalar> &w : weights)
+            {
+                if (!w.empty())
+                {
+                    long long unsigned int rows{w.size()};
+                    long long unsigned int cols{w[0].size()};
+                    Matrix *current_matrix = new Matrix(rows, cols);
+
+                    for (size_t i = 0; i < rows; i++)
+                        for (size_t j = 0; j < cols; j++)
+                            (*current_matrix)(i, j) = w[i][j];
+
+                    matrices.push_back(current_matrix);
+                }
+            }
+            return matrices;
+        }
+
+        /**
+         * @brief   Convert matrix to vector of vectors of (scalar) strings.
+         *
+         * @return std::vector<std::vector<std::string>>
+         */
+        std::vector<std::vector<std::string>> matrix_to_vector(Matrix &matrix)
+        {
+            std::vector<std::vector<std::string>> m;
+            for (size_t i = 0; i < matrix.rows(); i++)
+            {
+                std::vector<std::string> row;
+                for (size_t j = 0; j < matrix.cols(); j++)
+                {
+                    row.push_back(std::to_string(matrix(i, j)));
+                }
+                m.push_back(row);
+            }
+            return m;
+        }
+
         /**
          * @brief   Calculates neuron values.
          * 
@@ -205,7 +337,21 @@ namespace NeuralNetwork
          */
 	    void propagate_forward(
             RowVector& input
-        );
+        )
+        {
+            validate_input(input);
+            // set the input to input layer
+            // block returns a part of the given vector or matrix
+            neuron_layers.front()->block(0, 0, 1, neuron_layers.front()->size() - 1) = input;
+
+            // propagate the data forward and then
+            // apply the activation function to network
+            for (Number layer{1}; layer < structure.size(); ++layer)
+            {
+                (*neuron_layers[layer]) = (*neuron_layers[layer - 1]) * (*weights[layer - 1]);
+                apply_activation_function_to_neuron_layer(layer);
+            }
+        }
 
         /**
          * @brief   Calculates delta and updates weights.
@@ -214,7 +360,12 @@ namespace NeuralNetwork
          */
 	    void propagate_backward(
             RowVector& output
-        );
+        )
+        {
+            validate_output(output);
+            calculate_deltas(output);
+            update_weights();
+        }
 
         /**
          * @brief   Calculates delta using neuron values.
@@ -223,7 +374,13 @@ namespace NeuralNetwork
          */
 	    void calculate_deltas(
             RowVector& output
-        );
+        )
+        {
+            (*deltas.back()) = output - (*neuron_layers.back());
+
+            for (Number layer{structure.size() - 2}; layer > 0; --layer)
+                (*deltas[layer]) = (*deltas[layer + 1]) * (weights[layer]->transpose());
+        }
 
         /**
          * @brief   Get the main square error of prediction by input.
@@ -232,16 +389,47 @@ namespace NeuralNetwork
          * @param output 
          * @return Scalar
          */
-        std::vector<Scalar> get_abs_error(
+        VectorScalar get_abs_error(
             RowVector& input,
             RowVector& output
-        );
+        )
+        {
+            validate_input(input);
+            validate_output(output);
+
+            VectorScalar error{};
+
+            RowVector prediction{predict(input)};
+
+            for (Number i{0}; i < output.size(); ++i)
+                error.push_back(abs(prediction[i] - output[i]));
+
+            return error;
+        }
 
         /**
          * @brief   Updates values of weights after calculating delta.
          * 
          */
-	    void update_weights();
+	    void update_weights()
+        {
+            // structure.size()-1 = weights.size()
+            for (Number layer{0}; layer < structure.size() - 1; ++layer)
+            {
+                // iterating over the different layers (from first hidden to output layer)
+                // if this layer is the output layer, there is no bias neuron there, number of neurons specified = number of cols
+                // if this layer not the output layer, there is a bias neuron and number of neurons specified = number of cols -1
+                if (layer != structure.size() - 2)
+                    for (Number c = 0; c < weights[layer]->cols() - 1; ++c)
+                        for (Number r = 0; r < weights[layer]->rows(); ++r)
+                            weights[layer]->coeffRef(r, c) += calculate_weights_change(layer, c, r);
+
+                else
+                    for (Number c = 0; c < weights[layer]->cols(); c++)
+                        for (Number r = 0; r < weights[layer]->rows(); r++)
+                            weights[layer]->coeffRef(r, c) += calculate_weights_change(layer, c, r);
+            }
+        }
 
         /**
          * @brief   Calculating value of changing single weight.
@@ -255,14 +443,32 @@ namespace NeuralNetwork
             Number layer,
             Number c,
             Number r
-        );
+        )
+        {
+            return learning_rate * deltas[layer + 1]->coeffRef(c) *
+                activation_function_derivative(neuron_layers[layer + 1]->coeffRef(c)) *
+                neuron_layers[layer]->coeffRef(r);
+        }
 
         /**
          * @brief   Creates storage obgects layers according to the
          *          structure and initializes them.
          * 
          */
-        void initialize_storage_objects();
+        void initialize_storage_objects()
+        {
+            for (Number layer{0}; layer < structure.size(); ++layer)
+            {
+                if (layer == structure.size() - 1)
+                    neuron_layers.push_back(new RowVector(structure[layer]));
+                else
+                    neuron_layers.push_back(new RowVector(structure[layer] + 1));
+
+                deltas.push_back(new RowVector(neuron_layers[layer]->size()));
+
+                initialize_storage_objects_layer(layer);
+            }
+        }
 
         /**
          * @brief   Initializes one layer of storage objects.
@@ -276,7 +482,30 @@ namespace NeuralNetwork
          */
         void initialize_storage_objects_layer(
             Number layer
-        );
+        )
+        {
+            // output layer mustn't have bias neuron
+            if (layer == structure.size() - 1)
+            {
+                weights.push_back(new Matrix(structure[layer - 1] + 1, structure[layer]));
+                weights.back()->setRandom();
+                return;
+            }
+
+            // coeffRef gives the reference of value at that place
+            neuron_layers.back()->coeffRef(structure[layer]) = 1.0;
+
+            // input layer of neurons needn't be initialized
+            if (layer == 0)
+                return;
+
+            // inner layers processing includes adding bias neuron
+            weights.push_back(new Matrix(structure[layer - 1] + 1, structure[layer] + 1));
+            weights.back()->setRandom();
+            weights.back()->col(structure[layer]).setZero();
+            weights.back()->coeffRef(structure[layer - 1], structure[layer]) = 1.0;
+            return;
+        }
 
         /**
          * @brief   Applies activation function to all neyrons in given layer.
@@ -285,31 +514,14 @@ namespace NeuralNetwork
          */
         void apply_activation_function_to_neuron_layer(
             Number layer
-        );
-
-        /**
-         * @brief   Linear activation function f(x) = x.
-         * 
-         * @param x some Scalar.
-         * @return Scalar
-         */
-        static Scalar activation_function(
-            Scalar x
         )
         {
-            return x;
-        }
-
-        /**
-         * @brief   Derivative of linear activation function f(x) = x.
-         * 
-         * @return Scalar
-         */
-        static Scalar activation_function_derivative(
-            Scalar
-        )
-        {
-            return 1;
+            Number neuron_amount{neuron_layers[layer]->size()};
+            if (layer != neuron_layers.size() - 1)
+                neuron_amount -= 1;
+            // activation function shoudn't be applied to bias neuron
+            for (Number neuron{0}; neuron < neuron_amount; ++neuron)
+                (*neuron_layers[layer])[neuron] = activation_function((*neuron_layers[layer])[neuron]);
         }
 
         /**
@@ -318,8 +530,16 @@ namespace NeuralNetwork
          * @param s vector pretending to be structure.
          */
         void validate_structure(
-            const std::vector<Number>& s
-        ) const;
+            const VectorNumber& s
+        ) const
+        {
+            if (s.size() < 2)
+                throw NetworkInvalidValue(exception_message_invalid_structure_length);
+
+            for (Number i{0}; i < s.size(); ++i)
+                if (s[i] < 1)
+                    throw NetworkInvalidValue(exception_message_invalid_neuron_amount);
+        }
 
         /**
          * @brief   Validates given learning rate according to its value.
@@ -328,7 +548,11 @@ namespace NeuralNetwork
          */
         void validate_learning_rate(
             Scalar l
-        ) const;
+        ) const
+        {
+            if (l <= 0)
+                throw NetworkInvalidValue(exception_message_invalid_learning_rate);
+        }
 
         /**
          * @brief   Validates given weights according to the structure.
@@ -336,8 +560,17 @@ namespace NeuralNetwork
          * @param w vector pretending to be weights.
          */
         void validate_weights(
-            std::vector<Matrix*> w
-        ) const;
+            VectorMatrixPtr w
+        ) const
+        {
+            if (w.size() != structure.size() - 1)
+                throw NetworkInvalidValue(exception_message_invalid_layers_amount);
+            for (Number layer{0}; layer < w.size() - 1; ++layer)
+                if (w[layer]->rows() != structure[layer] + 1 || w[layer]->cols() != structure[layer + 1] + 1)
+                    throw NetworkInvalidValue(exception_message_invalid_layer_matrix);
+            if (w.back()->rows() != structure.back() || w.back()->cols() != structure.back())
+                throw NetworkInvalidValue(exception_message_invalid_layer_matrix);
+        }
 
         /**
          * @brief   Validates given vectors of inputs and outputs
@@ -347,9 +580,13 @@ namespace NeuralNetwork
          * @param o_d vector pretending to be outputs.
          */
         void validate_data(
-            std::vector<RowVector*> i_d,
-            std::vector<RowVector*> o_d
-        ) const;
+            VectorRowPtr i_d,
+            VectorRowPtr o_d
+        ) const
+        {
+            if (i_d.size() != o_d.size())
+                throw NetworkInvalidValue(exception_message_invalid_data_sizes);
+        }
 
         /**
          * @brief   Validates given input according to network structure.
@@ -358,7 +595,11 @@ namespace NeuralNetwork
          */
         void validate_input(
             RowVector& i
-        ) const;
+        ) const
+        {
+            if (i.size() != structure.front())
+                throw NetworkInvalidValue(exception_message_invalid_input_size);
+        }
 
         /**
          * @brief   Validates given output according to network structure.
@@ -367,7 +608,23 @@ namespace NeuralNetwork
          */
         void validate_output(
             RowVector& o
-        ) const;
+        ) const
+        {
+            if (o.size() != structure.back())
+                throw NetworkInvalidValue(exception_message_invalid_output_size);
+        }
+
+        /**
+         * @brief Activation function of nerual network
+         * 
+         */
+        T activation_function;
+
+        /**
+         * @brief Activation function derivative
+         * 
+         */
+        T activation_function_derivative;
 
         // Storage objects for working of neural network:
 
@@ -380,7 +637,7 @@ namespace NeuralNetwork
          *          each of them must be > 0.
          * 
          */
-        std::vector<Number> structure;
+        VectorNumber structure;
 
         /**
          * @brief   Layers of network during calculations.
@@ -388,7 +645,7 @@ namespace NeuralNetwork
          *          Contains neurons of network including bias neuron.
          * 
          */
-        std::vector<RowVector*> neuron_layers;
+        VectorRowPtr neuron_layers;
 
         /**
          * @brief   Error contribution of each neuron.
@@ -397,7 +654,7 @@ namespace NeuralNetwork
          *          updating of weigts.
          * 
          */
-        std::vector<RowVector*> deltas;
+        VectorRowPtr deltas;
 
         /**
          * @brief   Connection weights between neurons.
@@ -405,7 +662,7 @@ namespace NeuralNetwork
          *          It must be conformed with structure of network.
          * 
          */
-        std::vector<Matrix*> weights;
+        VectorMatrixPtr weights;
 
         /**
          * @brief   Coeffitient of gradient decent rate.
@@ -415,8 +672,6 @@ namespace NeuralNetwork
          */
         Scalar learning_rate;
     };
-
-    Scalar sum(std::vector<Scalar> a);
 }
 
 #endif

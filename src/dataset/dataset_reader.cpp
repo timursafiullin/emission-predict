@@ -1,14 +1,80 @@
 #include <vector>
 #include "dataset_reader.h"
 
+
 CsvReader csv_reader;
-std::string filename = "../dataset/vehicle_emission_dataset.csv";
+
+std::vector<long double> DatasetCell::normalise_data() const
+{
+    std::vector<long double> v(amount_of_features);
+
+    v[(unsigned long long)Index::vehicle_type      ] = turn_vehicle_type_to_double(vehicle_type) / type_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::fuel_type         ] = turn_fuel_type_to_double(fuel_type) / type_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::engine_size       ] = engine_size;
+    v[(unsigned long long)Index::age               ] = age_of_vehicle / age_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::mileage           ] = mileage / mileage_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::speed             ] = speed / speed_normalization_constant* main_normalization_constant;
+    v[(unsigned long long)Index::acceleration      ] = acceleration / acceleration_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::road_type         ] = turn_road_type_to_double(road_type) / type_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::traffic_conditions] = turn_traffic_conditions_to_double(traffic_conditions) / type_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::temperature       ] = temperature / temperature_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::humidity          ] = humidity / humidity_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::wind_speed        ] = wind_speed / wind_speed_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::air_pressure      ] = air_pressure / air_pressure_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::CO2               ] = CO2_emissions / CO2_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::NOx               ] = NOx_emissions / NOx_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::PM                ] = PM_emissions / PM_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::VOC               ] = VOC_emissions / VOC_normalization_constant * main_normalization_constant;
+    v[(unsigned long long)Index::SO2               ] = SO2_emissions / SO2_normalization_constant * main_normalization_constant;
+
+    return v;
+}
+
+long double DatasetCell::turn_vehicle_type_to_double(std::string vehicle)
+{
+    if (vehicle == truck_type)
+        return (long double)(VehicleTypeValues::Truck);
+    if (vehicle == bus_type)
+        return (long double)(VehicleTypeValues::Bus);
+    if (vehicle == car_type)
+        return (long double)(VehicleTypeValues::Car);
+    return (long double)(VehicleTypeValues::Motorcycle);
+}
+
+long double DatasetCell::turn_fuel_type_to_double(std::string fuel)
+{
+    if (fuel == petrol_type)
+        return (long double)FuelTypeValues::Petrol;
+    if (fuel == diesel_type)
+        return (long double)FuelTypeValues::Diesel;
+    if (fuel == hybrid_type)
+        return (long double)FuelTypeValues::Hybrid;
+    return (long double)FuelTypeValues::Electric;
+}
+
+long double DatasetCell::turn_road_type_to_double(std::string road)
+{
+    if (road == city_type)
+        return (long double)RoadTypeValues::City;
+    if (road == highway_type)
+        return (long double)RoadTypeValues::Highway;
+    return (long double)RoadTypeValues::Rural;
+}
+
+long double DatasetCell::turn_traffic_conditions_to_double(std::string traffic)
+{
+    if (traffic == heavy_type)
+        return (long double)TrafficTypeValues::Heavy;
+    if (traffic == moderate_type)
+        return (long double)TrafficTypeValues::Moderate;
+    return (long double)TrafficTypeValues::FreeFlow;
+}
 
 DatasetCell get_cell()
 {
     if (!csv_reader.is_open())
     {
-        csv_reader.open_file(filename);
+        csv_reader.open_file(dataset_filename);
         csv_reader.read_row(); // get rid of csv columns header
     }
 
@@ -16,96 +82,96 @@ DatasetCell get_cell()
     std::vector<std::string> line = csv_reader.read_row();
     if (line == std::vector<std::string>{""})
         throw FileIsClosedError();
-    for (size_t i = 0; i < 18; ++i)
+    for (size_t i = 0; i < amount_of_features; ++i)
     {
         switch (i)
         {
-        case 0:
+        case (unsigned long long)Index::vehicle_type:
         {
             cell.vehicle_type = line[i];
             break;
         }
-        case 1:
+        case (unsigned long long)Index::fuel_type:
         {
             cell.fuel_type = line[i];
             break;
         }
-        case 2:
+        case (unsigned long long)Index::engine_size:
         {
             cell.engine_size = std::stold(line[i]);
             break;
         }
-        case 3:
+        case (unsigned long long)Index::age:
         {
             cell.age_of_vehicle = std::stoul(line[i]);
             break;
         }
-        case 4:
+        case (unsigned long long)Index::mileage:
         {
             cell.mileage = std::stoull(line[i]);
             break;
         }
-        case 5:
+        case (unsigned long long)Index::speed:
         {
             cell.speed = std::stold(line[i]);
             break;
         }
-        case 6:
+        case (unsigned long long)Index::acceleration:
         {
             cell.acceleration = std::stold(line[i]);
             break;
         }
-        case 7:
+        case (unsigned long long)Index::road_type:
         {
             cell.road_type = line[i];
             break;
         }
-        case 8:
+        case (unsigned long long)Index::traffic_conditions:
         {
             cell.traffic_conditions = line[i];
             break;
         }
-        case 9:
+        case (unsigned long long)Index::temperature:
         {
             cell.temperature = std::stold(line[i]);
             break;
         }
-        case 10:
+        case (unsigned long long)Index::humidity:
         {
             cell.humidity = std::stold(line[i]);
             break;
         }
-        case 11:
+        case (unsigned long long)Index::wind_speed:
         {
             cell.wind_speed = std::stold(line[i]);
             break;
         }
-        case 12:
+        case (unsigned long long)Index::air_pressure:
         {
             cell.air_pressure = std::stold(line[i]);
             break;
         }
-        case 13:
+        case (unsigned long long)Index::CO2:
         {
             cell.CO2_emissions = std::stold(line[i]);
             break;
         }
-        case 14:
+        case (unsigned long long)Index::NOx:
         {
             cell.NOx_emissions = std::stold(line[i]);
             break;
         }
-        case 15:
+        case (unsigned long long)Index::PM:
         {
             cell.PM_emissions = std::stold(line[i]);
             break;
         }
-        case 16:
+        case (unsigned long long)Index::VOC:
         {
             cell.VOC_emissions = std::stold(line[i]);
             break;
         }
-        case 17:
+        case (unsigned long long)Index::SO2:
         {
             cell.SO2_emissions = std::stold(line[i]);
             break;
