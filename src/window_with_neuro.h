@@ -877,7 +877,10 @@ private:
             current_cell.wind_speed = (is_string_double(inbox_values[10])) ? (std::stold(inbox_values[10])) : (NAN);
             current_cell.air_pressure = (is_string_double(inbox_values[11])) ? (std::stold(inbox_values[11])) : (NAN);
             current_cell.speed = (is_string_double(inbox_values[12])) ? (std::stold(inbox_values[12])) : (NAN);
+        }
 
+        void add_record_to_journal()
+        {
             journal.add_record(GLib::Point(journal_x, journal_y), callback_journal, current_cell);
         }
 
