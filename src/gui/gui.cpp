@@ -165,17 +165,17 @@ void callback_clear(GLib::Address, GLib::Address addr)
   for (size_t i = 0; i < gas_texts.size(); i++)
     window.detach(*gas_texts[i]); // delete all gas_texts
 
-  std::vector<GLib::Widget *> widgets = window.widgets; // copy widgets
+  std::vector<GLib::In_box *> inboxes = window.inboxes; // copy inboxes
 
-  for (size_t i = 0; i < widgets.size(); i++)
-    window.detach(*widgets[i]); // delete all widgets
+  for (size_t i = 0; i < inboxes.size(); i++)
+    window.detach(*inboxes[i]); // delete all inboxes
 
-  for (size_t i = 0; i < widgets.size(); i++)
-    window.attach(*widgets[i]); // restore all widgets
+  for (size_t i = 0; i < inboxes.size(); i++)
+    window.attach(*inboxes[i]); // restore all inboxes
 
-  reinterpret_cast<GLib::Box *>(window.widgets.back())->set_color(COLORS::WHITE); // restore cursor_box state. In fact always the last widget
-  reinterpret_cast<GLib::Box *>(window.widgets.back())->box(FL_BORDER_BOX);
-  reinterpret_cast<GLib::Box *>(window.widgets.back())->hide();
+  //reinterpret_cast<GLib::Box *>(window.widgets.back())->set_color(COLORS::WHITE); // restore cursor_box state. In fact always the last widget
+  //reinterpret_cast<GLib::Box *>(window.widgets.back())->box(FL_BORDER_BOX);
+  //reinterpret_cast<GLib::Box *>(window.widgets.back())->hide();
 
   window.redraw();
   std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
