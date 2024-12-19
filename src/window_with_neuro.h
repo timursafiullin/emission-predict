@@ -590,50 +590,77 @@ private:
                 if (inbox_values[age_of_vehicle_index].empty() || std::stold(inbox_values[age_of_vehicle_index]) < min_age_of_vehicle ||
                     std::stold(inbox_values[age_of_vehicle_index]) > max_age_of_vehicle
                     )
+                {
+                    inboxes[3]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_age_error_message;
+                }
 
                 if (inbox_values[mileage_index].empty() || std::stold(inbox_values[mileage_index]) < min_mileage ||
                     std::stold(inbox_values[mileage_index]) > max_mileage
                     )
+                {
+                    inboxes[4]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_mileage_error_message;
+                }
 
                 if (inbox_values[acceleration_index].empty() || std::stold(inbox_values[acceleration_index]) < min_acceleration ||
                     std::stold(inbox_values[acceleration_index]) > max_acceleration
                     )
+                {
+                    inboxes[5]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_acceleration_error_message;
+                }
 
                 if (inbox_values[road_type_index].empty() ||
                     inbox_values[road_type_index] != city_type &&
                     inbox_values[road_type_index] != highway_type &&
                     inbox_values[road_type_index] != rural_type
                     )
+                {
+                    inboxes[6]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_road_type_error_message;
+                }
 
                 if (inbox_values[traffic_conditions_index].empty() ||
                     inbox_values[traffic_conditions_index] != free_flow_type &&
                     inbox_values[traffic_conditions_index] != heavy_type &&
                     inbox_values[traffic_conditions_index] != moderate_type
                     )
+                {
+                    inboxes[7]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_traffic_conditions_error_message;
+                }
 
                 if (inbox_values[temperature_index].empty() || std::stold(inbox_values[temperature_index]) < min_temperature ||
                     std::stold(inbox_values[temperature_index]) > max_temperature)
+                {
+                    inboxes[8]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_temperature_error_message;
+                }
                 
                 if (inbox_values[humidity_index].empty() || std::stold(inbox_values[humidity_index]) < 0 ||
                     std::stold(inbox_values[humidity_index]) > max_humidity
                     )
+                {
+                    inboxes[9]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_humidity_error_message;
+                }
                 
                 if (inbox_values[wind_speed_index].empty() || std::stold(inbox_values[wind_speed_index]) < min_wind_speed ||
                     std::stold(inbox_values[wind_speed_index]) > max_wind_speed
                     )
+                {
+                    inboxes[10]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_wind_speed_error_message;
+                }
                 
                 if (inbox_values[air_pressure_index].empty() || std::stold(inbox_values[air_pressure_index]) < min_air_pressure ||
                     std::stold(inbox_values[air_pressure_index]) > max_air_pressure
                     )
+                {
+                    inboxes[11]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_pressure_error_message;
+                }
 
                 if (inbox_values[12] != "" && is_string_int(inbox_values[12]))
                 {
@@ -644,15 +671,21 @@ private:
                     }
                 }
                 else
+                {
+                    inboxes[12]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
+                }
             }
             else
+            {
+                for(int i {0}; i < inboxes.size(); ++i)
+                    inboxes[i]->set_color(COLORS::SOFT_PINK);
                 validated += all_empty_inboxes_error_message;
+            }
             message += validated;
             message += line_separator;
             if (validated != "")
                 std::cout << message << std::endl;
-            
             redraw();
             return validated;
         }

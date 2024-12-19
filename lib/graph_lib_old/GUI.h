@@ -8,6 +8,8 @@
 #include "Graph.h"
 #include "Window.h"
 
+constexpr unsigned int DEFAULT_LABEL_SIZE = 13;
+
 namespace Graph_lib {
 
 //------------------------------------------------------------------------------
@@ -92,7 +94,7 @@ private:
   Fl_Color box_color = FL_WHITE;
   Fl_Color box_color2 = COLORS::LIGHT_GRAY;
   Fl_Labeltype labeltype = FL_NORMAL_LABEL;
-  unsigned int labelsize = 13;
+  unsigned int labelsize = DEFAULT_LABEL_SIZE;
   Fl_Boxtype boxtype = FL_FLAT_BOX;
   Fl_Font labelfont = FL_HELVETICA;
 };
