@@ -416,7 +416,7 @@ void show_graph_labels(GLib::WindowWithNeuro &window, std::vector<double> evalua
   {
     GLib::Point origin_point{canvas_origin_x - 67, ((i != 0) ? (10) : (0)) + canvas_origin_y - 5 - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
     std::string value = to_string_exp(graph_labels_y[i]);
-    if (i == graph_labels_x.size())
+    if (i == graph_labels_x.size() - 1)
       window.end_label_y->set_label("Emissions, g/km (10^" + std::to_string(std::stoi(value.substr(value.find("e") + 1, value.size()))) + ")");
     graph_labels.push_back(new GLib::GasText{origin_point, value.substr(0, value.find("e"))});
   }
