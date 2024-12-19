@@ -59,7 +59,7 @@ namespace Graph_lib
         "' has invalid value.\n"
         };
     static const std::string invalid_max_speed_error_message {
-            "[ERROR] Invalid value of 'Max speed': must be greater than "
+            "[ERROR] Invalid value of 'Max speed': must be positive real number more than 1."
         };
     static const std::string invalid_engine_size_value_error_message {
             "[ERROR] Invalid value of 'Engine Size': must be positive and be real number in [" + std::to_string(double(min_engine_size)) + ", " + std::to_string(double(max_engine_size)) + "]\n"
@@ -830,20 +830,10 @@ private:
                     validated += invalid_pressure_error_message;
                 }
 
-                if (inbox_values[12] != "" && is_string_int(inbox_values[12]))
-                {
-                    /*
-                    if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
-                    {
-                        inboxes[12]->set_color(COLORS::SOFT_PINK);
-                        validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
-                    }
-                    */
-                }
-                else
+                if (inbox_values[12] == "" || !is_string_int(inbox_values[12]))
                 {
                     inboxes[12]->set_color(COLORS::SOFT_PINK);
-                    validated += invalid_max_speed_error_message + ".\n";
+                    validated += invalid_max_speed_error_message + "\n";
                 }
             }
             else

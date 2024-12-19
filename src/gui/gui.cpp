@@ -192,7 +192,8 @@ std::string help_message
     " - Button 'predict' will show the prediction graph.\n" \
     " - Button 'save' will save the current parameters and the prediction in a file.\n" \
     " - Button 'load' will load the parameters and the prediction from a file.\n" \
-    " - Button 'clear' will clear the parameters and the prediction.\n\n" \
+    " - Button 'clear' will clear the parameters and the prediction.\n" \
+    " - Button 'journal' will expend the window and show last configurations.\n" \
     "There is also two buttons to navigate through the historical data: " \
     "'<' and '>'.\nThey are located at the right top of the graph canvas.\n\n" \
     "This program provides a user-friendly interface for predicting vehicle " \
