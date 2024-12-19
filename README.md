@@ -5,8 +5,7 @@
 The Emission Prediction Program is designed to predict vehicle emissions (CO2, NOX, PM, VOC, SO2) based on various input parameters using a neural network. The program features a graphical user interface (GUI) that allows users to input vehicle data, visualize predictions, and manage historical data.
 
 \
-![image](https://github.com/user-attachments/assets/9ab911af-68c6-4a25-aace-100d93878430)
-
+![image](https://github.com/user-attachments/assets/a771af9b-7884-4668-8425-482f829de15f)
 
 #### Program Structure
 
@@ -48,11 +47,12 @@ The Emission Prediction Program is designed to predict vehicle emissions (CO2, N
 2. **Buttons**:
 
     - **Predict**: Click this button to calculate emissions based on the input parameters. The results will be displayed in the graph area.
-    - **Save**: Saves the current input parameters to a file named `saved_inputs.txt`.
-    - **Load**: Loads previously saved input parameters from `saved_inputs.txt` into the input fields.
+    - **Save**: Saves the current input parameters in file.
+    - **Load**: Loads previously saved input parameters from file.
     - **Clear**: Clears all input fields and resets the graph.
     - **Help**: Displays a help window with instructions on how to use the program.
     - **Next/Previous Gas**: Navigate through different gas emissions (CO₂, NOx, PM2.5, VOCs, SO₂) to view their respective graphs.
+    - **Journal**: Expend the window and show last input configurations.
 3. **Graph Visualization**: The program will display a graph representing the predicted emissions based on the input parameters. The graph will update when predictions are made.
 
 
