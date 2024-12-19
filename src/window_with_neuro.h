@@ -396,7 +396,8 @@ private:
         {
             for (unsigned int i = 0; i < journal.journal_records.size(); ++i)
                 attach(*journal.journal_records[i]);
-            detach(*journal.journal_records[journal.journal_records.size() - 1]);
+            detach(*journal.journal_records[0]);
+            std::cout << journal.journal_records.size() << std::endl;
         }
 
 
