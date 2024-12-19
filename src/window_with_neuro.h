@@ -347,7 +347,7 @@ private:
 
         std::vector<GLib::In_box *> inboxes;
         std::vector<GLib::GasText *> gas_texts;
-        std::vector<GLib::Button *> journal_buttons;
+        std::vector<GLib::Button *> buttons;
         std::vector<GLib::FunctionStepping *> functions;
         GLib::Text *end_label_y;
 
@@ -406,20 +406,20 @@ private:
                     shapes.erase(shapes.begin() + (i - 1));
         }
 
-        void attach(GLib::JournalRecord &w)
+        void attach(GLib::Button &w)
         {
-            journal_buttons.push_back(&w);
+            buttons.push_back(&w);
             begin();
             w.attach(*this);
             end();
             widgets.push_back(&w);
         }
         
-        void detach(GLib::JournalRecord &w)
+        void detach(GLib::Button &w)
         {
-            for (unsigned int i = 0; i < journal_buttons.size(); ++i)
-                if (journal_buttons[i] == &w)
-                    journal_buttons.erase(journal_buttons.begin() + (i));
+            for (unsigned int i = 0; i < buttons.size(); ++i)
+                if (buttons[i] == &w)
+                    buttons.erase(buttons.begin() + (i));
 
             w.hide();
             for (unsigned int i = 0; i < widgets.size(); ++i)
@@ -427,8 +427,21 @@ private:
                     widgets.erase(widgets.begin() + (i));
         }
 
+        //void detach(GLib::JournalRecord &w)
+        //{
+        //    for (unsigned int i = 0; i < buttons.size(); ++i)
+        //        if (buttons[i] == &w)
+        //            buttons.erase(buttons.begin() + (i));
+//
+        //    w.hide();
+        //    for (unsigned int i = 0; i < widgets.size(); ++i)
+        //        if (widgets[i] == &w)
+        //            widgets.erase(widgets.begin() + (i));
+        //}
+
         void draw_journal_buttons()
         {
+            detach(*journal.journal_records[journal.journal_records.size() - 1]);
             for (unsigned int i = 0; i < journal.journal_records.size(); ++i)
             {
                 attach(*journal.journal_records[i]);
