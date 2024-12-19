@@ -227,13 +227,20 @@ public:
 
     void add_record(Point p, Callback c, const DatasetCell& cell)
     {
-        //char* temporary_time;
-        //time_t rawtime(time_t *t);
-        //size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timp);
-        //struct tm *timeinfo;
-        //strftime(temporary_time, 20, "%H:%M:%S", timeinfo);
+        time_t rawtime;
+        struct tm *timeinfo;
+        char buffer[80];
 
-        JournalRecord* record = new JournalRecord{p, cell_w, cell_h, (std::string)"1234", c};
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+
+        strftime(buffer, sizeof(buffer), "%H:%M:%S", timeinfo);
+
+        for (int i{0}; i < journal_records.size(); ++i)
+        {
+            journal_records[i]->move(0, cell_h + 1);
+        }
+        JournalRecord* record = new JournalRecord{p, cell_w, cell_h, (std::string)buffer, c};
 
         record->vehicle_type = cell.vehicle_type;
         record->fuel_type = cell.fuel_type;
@@ -249,10 +256,9 @@ public:
         record->air_pressure = cell.air_pressure;
         record->max_speed = cell.speed;
 
-        if (journal_records.size() >= MAX_RECORDS)
-            journal_records.erase(journal_records.begin());
-
         journal_records.push_back(record);
+
+        delete_last_record();
     }
 
     void set_header(std::string name)
@@ -277,19 +283,27 @@ public:
         this->border_color = border_color;
         this->inner_color = inner_color;
         this->text_color = text_color;
+        this->cell_w = w;
+        this->cell_h = (h - (MAX_RECORDS - 1)) / (MAX_RECORDS);
     }
 
     std::vector<JournalRecord*>  journal_records;
     int cell_w, cell_h;
 
 private:
-    static const size_t         MAX_RECORDS = 10;
+    static const size_t         MAX_RECORDS = 18;
     int                         x, y, w, h;
     std::string                 header_name;
     Fl_Color                    background_color;
     Fl_Color                    border_color;
     Fl_Color                    inner_color;
     Fl_Color                    text_color;
+
+    void delete_last_record()
+    {
+        if (journal_records.size() >= MAX_RECORDS)
+            journal_records.erase(journal_records.begin());
+    }
 };
 
     class WindowWithNeuro : public GLib::Window
@@ -415,17 +429,11 @@ private:
 
         void draw_journal_buttons()
         {
-            for (unsigned int i = 0; i < journal_buttons.size(); ++i)
+            for (unsigned int i = 0; i < journal.journal_records.size(); ++i)
             {
                 attach(*journal.journal_records[i]);
             }
-                // GLib::Button* button = new GLib::Button{
-                //     GLib::Point(journal_x+1, journal_y+1),
-                //     journal.cell_w,
-                //     journal.cell_h,
-                //     (std::string) record_variable.record_time,
-                //     callback_journal};
-            }
+        }
 
 
         void reset_inboxes_colors()
@@ -763,7 +771,7 @@ private:
             current_cell.air_pressure = (is_string_double(inbox_values[11])) ? (std::stold(inbox_values[11])) : (NAN);
             current_cell.speed = (is_string_double(inbox_values[12])) ? (std::stold(inbox_values[12])) : (NAN);
 
-            journal.add_record(GLib::Point(journal_x+1, journal_y+1), callback_journal, current_cell);
+            journal.add_record(GLib::Point(journal_x, journal_y), callback_journal, current_cell);
         }
 
         void update_journal(
