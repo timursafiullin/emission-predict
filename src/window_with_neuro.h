@@ -30,6 +30,7 @@ namespace Graph_lib
     constexpr long double max_wind_speed                                { 20.0    };
     constexpr long double min_wind_speed                                { 0.0     };
     constexpr long double max_humidity                                  { 100.0   };
+    constexpr unsigned long long max_speed                              { 130     };
 
     static const std::string bad_graphing_range_error_message           { "bad graphing range"          };
     static const std::string non_positive_graphing_count_error_message  { "non-positive graphing count" };
@@ -760,33 +761,39 @@ private:
                     validated += invalid_fuel_type_error_message;
                 }
 
-                if (inbox_values[engine_size_index].empty() || std::stold(inbox_values[engine_size_index]) < min_engine_size || 
-                    std::stold(inbox_values[engine_size_index]) > max_engine_size 
-                    )
+                if (
+                    inbox_values[engine_size_index].empty() ||
+                    !is_string_double(inbox_values[engine_size_index]) ||
+                    std::stold(inbox_values[engine_size_index]) < min_engine_size ||
+                    std::stold(inbox_values[engine_size_index]) > max_engine_size)
                 {
                     inboxes[2]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_engine_size_value_error_message;
                 }
 
-                if (inbox_values[age_of_vehicle_index].empty() || std::stold(inbox_values[age_of_vehicle_index]) < min_age_of_vehicle ||
-                    std::stold(inbox_values[age_of_vehicle_index]) > max_age_of_vehicle
-                    )
+                if (inbox_values[age_of_vehicle_index].empty() ||
+                    !is_string_int(inbox_values[age_of_vehicle_index]) ||
+                    std::stold(inbox_values[age_of_vehicle_index]) < min_age_of_vehicle ||
+                    std::stold(inbox_values[age_of_vehicle_index]) > max_age_of_vehicle)
                 {
                     inboxes[3]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_age_error_message;
                 }
 
-                if (inbox_values[mileage_index].empty() || std::stold(inbox_values[mileage_index]) < min_mileage ||
-                    std::stold(inbox_values[mileage_index]) > max_mileage
-                    )
+                if (inbox_values[mileage_index].empty() ||
+                    !is_string_int(inbox_values[mileage_index]) ||
+                    std::stold(inbox_values[mileage_index]) < min_mileage ||
+                    std::stold(inbox_values[mileage_index]) > max_mileage)
                 {
                     inboxes[4]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_mileage_error_message;
                 }
 
-                if (inbox_values[acceleration_index].empty() || std::stold(inbox_values[acceleration_index]) < min_acceleration ||
-                    std::stold(inbox_values[acceleration_index]) > max_acceleration
-                    )
+                if (
+                    inbox_values[acceleration_index].empty() ||
+                    !is_string_double(inbox_values[acceleration_index]) ||
+                    std::stold(inbox_values[acceleration_index]) < min_acceleration ||
+                    std::stold(inbox_values[acceleration_index]) > max_acceleration)
                 {
                     inboxes[5]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_acceleration_error_message;
@@ -812,14 +819,20 @@ private:
                     validated += invalid_traffic_conditions_error_message;
                 }
 
-                if (inbox_values[temperature_index].empty() || std::stold(inbox_values[temperature_index]) < min_temperature ||
+                if (
+                    inbox_values[temperature_index].empty() ||
+                    !is_string_double(inbox_values[temperature_index]) ||
+                    std::stold(inbox_values[temperature_index]) < min_temperature ||
                     std::stold(inbox_values[temperature_index]) > max_temperature)
                 {
                     inboxes[8]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_temperature_error_message;
                 }
                 
-                if (inbox_values[humidity_index].empty() || std::stold(inbox_values[humidity_index]) < 0 ||
+                if (
+                    inbox_values[humidity_index].empty() ||
+                    !is_string_double(inbox_values[humidity_index]) ||
+                    std::stold(inbox_values[humidity_index]) < 0 ||
                     std::stold(inbox_values[humidity_index]) > max_humidity
                     )
                 {
@@ -827,7 +840,10 @@ private:
                     validated += invalid_humidity_error_message;
                 }
                 
-                if (inbox_values[wind_speed_index].empty() || std::stold(inbox_values[wind_speed_index]) < min_wind_speed ||
+                if (
+                    inbox_values[wind_speed_index].empty() ||
+                    !is_string_double(inbox_values[wind_speed_index]) ||
+                    std::stold(inbox_values[wind_speed_index]) < min_wind_speed ||
                     std::stold(inbox_values[wind_speed_index]) > max_wind_speed
                     )
                 {
@@ -835,7 +851,10 @@ private:
                     validated += invalid_wind_speed_error_message;
                 }
                 
-                if (inbox_values[air_pressure_index].empty() || std::stold(inbox_values[air_pressure_index]) < min_air_pressure ||
+                if (
+                    inbox_values[air_pressure_index].empty() ||
+                    !is_string_double(inbox_values[air_pressure_index]) ||
+                    std::stold(inbox_values[air_pressure_index]) < min_air_pressure ||
                     std::stold(inbox_values[air_pressure_index]) > max_air_pressure
                     )
                 {
@@ -843,7 +862,12 @@ private:
                     validated += invalid_pressure_error_message;
                 }
 
-                if (inbox_values[12] == "" || !is_string_int(inbox_values[12]))
+                if (
+                    inbox_values[12].empty() ||
+                    !is_string_int(inbox_values[12]) ||
+                    std::stoi(inbox_values[12]) < 0 ||
+                    std::stoi(inbox_values[12]) > max_speed
+                    )
                 {
                     inboxes[12]->set_color(COLORS::SOFT_PINK);
                     validated += invalid_max_speed_error_message + "\n";
