@@ -516,6 +516,7 @@ private:
                 attach(*journal.journal_records[i]);
             if (journal.journal_records.size() > 1)
                 detach(*journal.journal_records[0]);
+            reset_inboxes_colors();
         }
 
 
