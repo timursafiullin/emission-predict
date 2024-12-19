@@ -5,15 +5,20 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
-
 #include <cmath>
+#include <regex>
+#include <iterator>
+
+#if (defined(_WIN32) || defined(_WIN64))
+#include <winuser.h>
+#endif
 
 #define GLib Graph_lib
 
 std::string to_string_exp(double d)
 {
   std::ostringstream os;
-  os << std::scientific << std::setprecision(5) << d;
+  os << std::scientific << std::setprecision(6) << d;
   return os.str();
 }
 
@@ -33,6 +38,7 @@ dlcList<EmissionState> emissions{};
 static void show_gas_label(GLib::WindowWithNeuro &window, std::string gas_label);
 void show_graph(GLib::WindowWithNeuro &window, EmissionState &state);
 void show_error_message(GLib::WindowWithNeuro &window, std::string message);
+void show_graph_labels(GLib::WindowWithNeuro &window, std::vector<double> evaluations, int max_speed);
 
 // CALLBACKS
 void callback_predict(GLib::Address, GLib::Address addr)
@@ -94,19 +100,30 @@ void callback_load(GLib::Address, GLib::Address addr)
     return;
 
   std::ifstream save_file(path);
-  std::vector<std::string> inbox_values;
-  if (save_file.is_open())
-  {
-    std::string value;
-    while (std::getline(save_file, value))
-      inbox_values.push_back(value);
-  }
-  else
+  if (!save_file.is_open())
   {
     std::cerr << "[ERROR] History file not found" << std::endl;
+    show_error_message(window, "[ERROR] History file not found");
     return;
   }
+  std::string file_contents(std::istreambuf_iterator<char>{save_file}, {});
   save_file.close();
+
+  std::regex file_regex_wrapped(file_regex, std::regex_constants::icase);
+  if (!std::regex_match(file_contents.begin(), file_contents.end(), file_regex_wrapped))
+  {
+    std::cerr << "[ERROR] History file is not in the correct format" << std::endl;
+    show_error_message(window, "[ERROR] History file is not in the correct format");
+    return;
+  }
+
+  std::vector<std::string> inbox_values;
+  std::regex del("\n");
+  std::sregex_token_iterator token_iterator(file_contents.begin(), file_contents.end(), del, -1);
+  std::sregex_token_iterator end;
+
+  for (; token_iterator != end; ++token_iterator)
+    inbox_values.push_back(*token_iterator);
 
   std::vector<GLib::In_box *> inboxes = window.inboxes; // copy inboxes
 
@@ -114,6 +131,7 @@ void callback_load(GLib::Address, GLib::Address addr)
     inboxes[i]->set_string(inbox_values[i]);
 
   std::cout << "[ACTION] Data pasted successfully." << std::endl;
+  show_error_message(window, "[ACTION] Data pasted successfully.");
 }
 
 void callback_clear(GLib::Address, GLib::Address addr)
@@ -121,7 +139,14 @@ void callback_clear(GLib::Address, GLib::Address addr)
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
 
+  window.graph_points = {}; // clear graph points
+
   window.end_label_y->set_label("Emissions, g/km"); // clear y axis label
+
+  std::vector<GLib::Line *> axis_labels = window.axis_labels; // copy axis lines
+
+  for (size_t i = 0; i < axis_labels.size(); i++)
+    window.detach(*axis_labels[i]); // delete axis lines
 
   std::vector<GLib::FunctionStepping *> functions = window.functions; // copy functions
 
@@ -141,8 +166,13 @@ void callback_clear(GLib::Address, GLib::Address addr)
   for (size_t i = 0; i < widgets.size(); i++)
     window.attach(*widgets[i]); // restore all widgets
 
+  reinterpret_cast<GLib::Box *>(window.widgets.back())->set_color(COLORS::WHITE); // restore cursor_box state. In fact always the last widget
+  reinterpret_cast<GLib::Box *>(window.widgets.back())->box(FL_BORDER_BOX);
+  reinterpret_cast<GLib::Box *>(window.widgets.back())->hide();
+
   window.redraw();
   std::cout << "[ACTION] Shapes and input boxes have been cleared." << std::endl;
+  show_error_message(window, "[ACTION] Shapes and input boxes have been cleared.");
 }
 
 std::string help_message 
@@ -285,38 +315,107 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
     GLib::FunctionStepping *func = new GLib::FunctionStepping{
         evaluations, 0, window.current_cell.speed, GLib::Point(canvas_origin_x, canvas_origin_y)};
 
+    window.graph_points = func->points;
+    window.graph_evaluations = evaluations;
+
+    show_graph_labels(window, evaluations, max_speed);
+
     window.attach(*func);
-
-    fl_color(COLORS::BLACK);
-    std::vector<GLib::GasText *> graph_labels;
-
-    double max_graph = *std::max_element(evaluations.begin(), evaluations.end());
-    double min_graph = *std::min_element(evaluations.begin(), evaluations.end());
-
-    for (size_t i = 0; i <= num_of_graph_labels_x; ++i)
-    {
-      std::string value = std::to_string(int((double)(max_speed - 0) / (double)num_of_graph_labels_x * (double)i));
-      GLib::GasText *current_text = new GLib::GasText{GLib::Point{0, 0}, value};
-      GLib::Point origin_point{((i != 0) ? (-int(current_text->get_size() * 1.5) / 2) : (0)) + canvas_origin_x + 5 + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y + 21};
-      current_text->move(origin_point.x, origin_point.y);
-      graph_labels.push_back(current_text);
-    }
-    for (size_t i = 0; i <= num_of_graph_labels_y; ++i)
-    {
-      GLib::Point origin_point{canvas_origin_x - 62, ((i != 0) ? (10) : (0)) + canvas_origin_y - 5 - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-      std::string value = to_string_exp((double)min_graph + (double)(max_graph - min_graph) / (double)num_of_graph_labels_y * (double)i);
-      if (i == num_of_graph_labels_y)
-        window.end_label_y->set_label("Emissions, g/km (10^" + std::to_string(std::stoi(value.substr(value.find("e") + 1, value.size()))) + ")");
-      graph_labels.push_back(new GLib::GasText { origin_point, value.substr(0, value.find("e"))});
-    }
-
-    for (size_t i = 0; i < graph_labels.size(); ++i)
-      window.attach(*graph_labels[i]);
   }
   else
   {
     show_error_message(window, error_message);
   }
+}
+
+void show_graph_labels(GLib::WindowWithNeuro &window, std::vector<double> evaluations, int max_speed)
+{
+
+  std::vector<GLib::Line *> axis_labels = window.axis_labels; // copy axis lines
+
+  for (size_t i = 0; i < axis_labels.size(); i++)
+    window.detach(*axis_labels[i]); // delete axis lines
+
+  double max_graph = *std::max_element(evaluations.begin(), evaluations.end());
+  double min_graph = *std::min_element(evaluations.begin(), evaluations.end());
+
+  // generate x and y label numbers
+  std::vector<unsigned int> graph_labels_x;
+  std::vector<double> graph_labels_y;
+
+  for (size_t i = 0; i < graph_labels_steps.size(); ++i)
+  {
+    if ((double)max_speed / (double)graph_labels_steps[i] <= max_num_of_graph_labels) // find lowest beautiful step
+    {
+      for (size_t j = 0; j <= (double)max_speed / (double)graph_labels_steps[i]; ++j)
+      {
+        graph_labels_x.push_back(graph_labels_steps[i] * j);
+      }
+      break;
+    }
+  }
+  for (size_t i = 0; i < graph_labels_x.size(); ++i)
+  {
+    graph_labels_y.push_back((double)min_graph + (double)(max_graph - min_graph) / (double)graph_labels_x.size() * (double)i);
+  }
+
+  // marks and lines
+  fl_color(COLORS::BLACK);
+  std::vector<GLib::GasText *> graph_labels;
+
+  // x
+  for (size_t i = 1; i < graph_labels_x.size(); ++i)
+  {
+    fl_color(COLORS::LIGHT_GRAY);
+    GLib::Point origin_point_low_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y};
+    GLib::Point origin_point_high_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y - int(canvas_origin_y - graph_canvas_y)};
+    GLib::Line *axis_line = new GLib::Line{origin_point_low_graph, origin_point_high_graph};
+    axis_line->set_style(1);
+    window.attach(*axis_line);
+    fl_color(COLORS::BLACK);
+
+    GLib::Point origin_point_low{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y + 5};
+    GLib::Point origin_point_high{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y - 5};
+    window.attach(*(new GLib::Line(origin_point_low, origin_point_high)));
+  }
+  // y
+  for (size_t i = 1; i < graph_labels_x.size(); ++i)
+  {
+    fl_color(COLORS::LIGHT_GRAY);
+    GLib::Point origin_point_left_graph{canvas_origin_x, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    GLib::Point origin_point_right_graph{canvas_origin_x + int(graph_canvas_x + graph_canvas_w - canvas_origin_x), canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    GLib::Line *axis_line = new GLib::Line{origin_point_left_graph, origin_point_right_graph};
+    axis_line->set_style(1);
+    window.attach(*axis_line);
+    fl_color(COLORS::BLACK);
+
+    GLib::Point origin_point_left{canvas_origin_x - 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    GLib::Point origin_point_right{canvas_origin_x + 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    window.attach(*(new GLib::Line(origin_point_left, origin_point_right)));
+  }
+
+  // numbers
+  // x
+  for (size_t i = 0; i < graph_labels_x.size(); ++i)
+  {
+    std::string value = std::to_string(graph_labels_x[i]);
+    GLib::GasText *current_text = new GLib::GasText{GLib::Point{0, 0}, value};
+    GLib::Point origin_point{((i != 0) ? (-int(current_text->get_size() * 1.5) / 2) : (0)) + canvas_origin_x + 5 + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)max_speed * (double)graph_labels_x[i]), canvas_origin_y + 21};
+    current_text->move(origin_point.x, origin_point.y);
+    graph_labels.push_back(current_text);
+  }
+  // y
+  for (size_t i = 0; i < graph_labels_x.size(); ++i)
+  {
+    GLib::Point origin_point{canvas_origin_x - 67, ((i != 0) ? (10) : (0)) + canvas_origin_y - 5 - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)graph_labels_x.size() * (double)i)};
+    std::string value = to_string_exp(graph_labels_y[i]);
+    if (i == graph_labels_x.size())
+      window.end_label_y->set_label("Emissions, g/km (10^" + std::to_string(std::stoi(value.substr(value.find("e") + 1, value.size()))) + ")");
+    graph_labels.push_back(new GLib::GasText{origin_point, value.substr(0, value.find("e"))});
+  }
+
+  for (size_t i = 0; i < graph_labels.size(); ++i)
+    window.attach(*graph_labels[i]);
 }
 
 void show_error_message(GLib::WindowWithNeuro &window, std::string message)
@@ -427,39 +526,55 @@ try
   //INBOXES
   for (size_t i = 0; i < table_rows - 1; ++i)
   {
-    win.attach(*(new GLib::In_box{
-        GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
-        inbox_w, inbox_h, ""}));
-  }
-
-  //AXIS LABELS
-  for (size_t i = 1; i <= num_of_graph_labels_x; ++i)
-  {
-    fl_color(COLORS::LIGHT_GRAY);
-    GLib::Point origin_point_low_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y};
-    GLib::Point origin_point_high_graph{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y - int(canvas_origin_y - graph_canvas_y)};
-    GLib::Line *axis_line = new GLib::Line{origin_point_low_graph, origin_point_high_graph};
-    axis_line->set_style(1);
-    win.attach(*axis_line);
-    fl_color(COLORS::BLACK);
-
-    GLib::Point origin_point_low{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y + 5};
-    GLib::Point origin_point_high{canvas_origin_x + int((double)(graph_canvas_x + graph_canvas_w - canvas_origin_x - (graph_canvas_w * 0.1)) / (double)num_of_graph_labels_x * (double)i), canvas_origin_y - 5};
-    win.attach(*(new GLib::Line(origin_point_low, origin_point_high)));
-  }
-  for (size_t i = 1; i <= num_of_graph_labels_y; ++i)
-  {
-    fl_color(COLORS::LIGHT_GRAY);
-    GLib::Point origin_point_left_graph{canvas_origin_x, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-    GLib::Point origin_point_right_graph{canvas_origin_x + int(graph_canvas_x + graph_canvas_w - canvas_origin_x), canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-    GLib::Line *axis_line = new GLib::Line{origin_point_left_graph, origin_point_right_graph};
-    axis_line->set_style(1);
-    win.attach(*axis_line);
-    fl_color(COLORS::BLACK);
-
-    GLib::Point origin_point_left{canvas_origin_x - 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-    GLib::Point origin_point_right{canvas_origin_x + 5, canvas_origin_y - int((double)(canvas_origin_y - graph_canvas_y - (graph_canvas_h * 0.1)) / (double)num_of_graph_labels_y * (double)i)};
-    win.attach(*(new GLib::Line(origin_point_left, origin_point_right)));
+    if (i == 0)
+    {
+      GLib::Choose_In_box *in_box = new GLib::Choose_In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      in_box->add("Truck");
+      in_box->add("Car");
+      in_box->add("Motorcycle");
+      in_box->add("Bus");
+      win.attach(*in_box);
+    }
+    else if (i == 1)
+    {
+      GLib::Choose_In_box *in_box = new GLib::Choose_In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      in_box->add("Petrol");
+      in_box->add("Electric");
+      in_box->add("Diesel");
+      in_box->add("Hybrid");
+      win.attach(*in_box);
+    }
+    else if (i == 6)
+    {
+      GLib::Choose_In_box *in_box = new GLib::Choose_In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      in_box->add("City");
+      in_box->add("Highway");
+      in_box->add("Rural");
+      win.attach(*in_box);
+    }
+    else if (i == 7)
+    {
+      GLib::Choose_In_box *in_box = new GLib::Choose_In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      in_box->add("Free flow");
+      in_box->add("Heavy");
+      in_box->add("Moderate");
+      win.attach(*in_box);
+    }
+    else
+    {
+      GLib::In_box *in_box =  new GLib::In_box{
+          GLib::Point(inbox_x, inbox_y + (inbox_h + 1) * i),
+          inbox_w, inbox_h, ""};
+      win.attach(*in_box);
+    }
   }
 
   GLib::Text *end_label_y = new GLib::Text{GLib::Point(graph_canvas_x + 22, graph_canvas_y + 20), "Emissions, g/km"};
@@ -471,7 +586,55 @@ try
 
   win.load_networks();
 
+  GLib::Box *cursor_box = new GLib::Box(GLib::Point(0, 0), 170, 35, "");
+  win.attach(*cursor_box);
+  cursor_box->set_color(COLORS::WHITE);
+  cursor_box->box(FL_BORDER_BOX);
+  cursor_box->hide();
+
+#if (defined(_WIN32) || defined(_WIN64))
+  while (true)
+  {
+    POINT p;
+    if (GetCursorPos(&p))
+    {
+      int window_x = win.x_root();
+      int window_y = win.y_root();
+      int x = p.x - window_x;
+      int y = p.y - window_y;
+
+      for (size_t i = 0; i < win.graph_points.size(); ++i)
+      {
+        GLib::Point current_point = win.graph_points[i];
+
+        if (x - 6 <= current_point.x && x + 6 >= current_point.x && y - 6 <= current_point.y && y + 6 >= current_point.y)
+        {
+          double graph_evaluation = win.graph_evaluations[i];
+          std::string label_string = "Speed: " + std::to_string(i) + "\nEmissions: " + to_string_exp(graph_evaluation);
+          cursor_box->position(GLib::Point(x, y - 35));
+          if (label_string != cursor_box->get_label())
+            cursor_box->set_label(label_string);
+          cursor_box->show();
+          break;
+        }
+        else
+        {
+          cursor_box->hide();
+        }
+      }
+    }
+    else
+      throw std::runtime_error("can't fetch cursor");
+    if (!win.shown())
+    {
+      return 0;
+    }
+    win.redraw();
+    Fl::wait();
+  }
+#else
   return Fl::run();
+#endif
 }
 catch (std::exception &e)
 {

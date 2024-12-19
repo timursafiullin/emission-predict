@@ -82,14 +82,17 @@ const unsigned int graph_canvas_w{504};
 const unsigned int graph_canvas_h{505};
 const unsigned int canvas_origin_x{96}; // was 62
 const unsigned int canvas_origin_y{489};
-const unsigned int num_of_graph_labels_x{8};
-const unsigned int num_of_graph_labels_y{8};
+const unsigned int max_num_of_graph_labels{8};
+const std::vector<unsigned int> graph_labels_steps = {1, 2, 5, 10, 25, 50, 100, 500, 1000};
 
 // FDFK
 const unsigned int inbox_x{1 + table_x + table_width / table_cols};
 const unsigned int inbox_y{1 + table_y + table_height / table_rows};
 const unsigned int inbox_w{-1 + table_width / table_cols};
 const unsigned int inbox_h{-1 + table_height / table_rows};
+
+// SAVE FILE REGEX
+const std::string file_regex = "^(Truck|Car|Motorcycle|Bus)\n(Petrol|Electric|Diesel|hybrid)\n([0-9]+[.])?[0-9]+\n[0-9]+\n[0-9]+\n([0-9]+[.])?[0-9]+\n(City|Highway|Rural)\n(Free flow|Heavy|Moderate)\n[+-]?([0-9]+[.])?[0-9]+\n([0-9]+[.])?[0-9]+\n([0-9]+[.])?[0-9]+\n([0-9]+[.])?[0-9]+\n[0-9]+\n$";
 
 extern LabelsList labels_list;
 

@@ -52,10 +52,14 @@ public:
 
   virtual void attach (Window&) = 0;
 
+  void clean_pointer () { delete pw; }
+
   virtual void draw()
   {
     pw->draw();
   };  // Add virtual draw method
+
+  bool visible () { return pw->visible(); }
 
   Window& window () { return *own; }
 
@@ -106,15 +110,15 @@ struct In_box : Widget
   In_box(Point xy, int w, int h, const std::string& s) : Widget{xy, w, h, s, nullptr} {}
 
   int get_int ();
-  std::string get_string ();
-  void set_string (std::string s)
+  virtual std::string get_string ();
+  virtual void set_string (std::string s)
   {
     reinterpret_cast<Fl_Input *>(pw)->value(s.c_str());
   }
 
   void set_color (Fl_Color c) { pw->color(c); }
 
-  void attach (Window& win);
+  virtual void attach (Window& win);
 };
 
 //------------------------------------------------------------------------------

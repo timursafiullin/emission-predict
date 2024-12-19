@@ -125,6 +125,96 @@ namespace Graph_lib
         max_speed_index
     };
 
+    class Box : public GLib::Widget
+    {
+    public:
+        Box(Point xy, int w, int h, const std::string &s) : Widget{xy, w, h, s, nullptr}, label{s} {}
+
+        void attach(GLib::Window &win) override
+        {
+            pw = new Fl_Box(loc.x, loc.y, width, height, label.c_str());
+            pw->box(FL_FLAT_BOX);
+            own = &win;
+        }
+
+        void position(GLib::Point xy)
+        {
+            reinterpret_cast<Fl_Box *>(pw)->position(xy.x, xy.y);
+        }
+
+        void set_label(const std::string &s)
+        {
+            label = s;
+            pw->label(label.c_str());
+        }
+
+        std::string get_label()
+        {
+            return label;
+        }
+
+        void box(const Fl_Boxtype &b)
+        {
+            pw->box(b);
+        }
+
+        void set_color(const Fl_Color &c)
+        {
+            pw->color(c);
+        }
+
+        bool visible()
+        {
+            return pw->visible();
+        }
+
+        void align(Fl_Align alignment)
+        {
+            pw->align(alignment);
+        }
+
+    private:
+        std::string label;
+    };
+
+    class Choose_In_box : public GLib::In_box
+    {
+    public:
+        Choose_In_box(Point xy, int w, int h, std::string s) : In_box(xy, w, h, s) {}
+
+        void add(std::string s)
+        {
+            values.push_back(s);
+        }
+
+        std::string get_string() override
+        {
+            int index = reinterpret_cast<Fl_Choice *>(pw)->value();
+            if (index == -1)
+                return "";
+            return values[index];
+        }
+
+        void set_string(std::string s) override
+        {
+            s[0] = std::toupper(s[0]);
+            reinterpret_cast<Fl_Choice *>(pw)->value(std::find(values.begin(), values.end(), s) - values.begin());
+        }
+
+        void attach(GLib::Window &win) override
+        {
+            pw = new Fl_Choice(loc.x, loc.y, width, height, nullptr);
+            reinterpret_cast<Fl_Choice *>(pw)->down_box(FL_FLAT_BOX);
+            pw->box(FL_FLAT_BOX);
+            for (size_t i = 0; i < values.size(); i++)
+                reinterpret_cast<Fl_Choice *>(pw)->add(values[i].c_str());
+            own = &win;
+        }
+
+    private:
+        std::vector<std::string> values;
+    };
+
     class FunctionStepping : public GLib::Shape
     {
     public:
@@ -314,7 +404,16 @@ private:
         std::vector<GLib::GasText *> gas_texts;
         std::vector<GLib::Button *> buttons;
         std::vector<GLib::FunctionStepping *> functions;
+        std::vector<GLib::Line *> axis_labels;
         GLib::Text *end_label_y;
+        std::vector<Point> graph_points = {};
+        std::vector<double> graph_evaluations = {};
+
+        void attach(GLib::Line &s)
+        {
+            axis_labels.push_back(&s);
+            shapes.push_back(&s);
+        }
 
         void attach(GLib::In_box &w)
         {
@@ -331,10 +430,29 @@ private:
             shapes.push_back(&s);
         }
 
+        void attach(GLib::Box &b)
+        {
+            begin();
+            b.attach(*this);
+            end();
+            widgets.push_back(&b);
+        }
+
         void attach(GLib::FunctionStepping &s)
         {
             functions.push_back(&s);
             shapes.push_back(&s);
+        }
+
+        void detach(GLib::Line &s)
+        {
+            for (unsigned int i = axis_labels.size(); 0 < i; --i)
+                if (axis_labels[i - 1] == &s)
+                    axis_labels.erase(axis_labels.begin() + (i - 1));
+
+            for (unsigned int i = shapes.size(); 0 < i; --i)
+                if (shapes[i - 1] == &s)
+                    shapes.erase(shapes.begin() + (i - 1));
         }
 
         void detach(GLib::In_box &w)
@@ -407,7 +525,6 @@ private:
             {
                 inboxes[i]->set_color(COLORS::WHITE);
             }
-            std::cout << "a" << std::endl;
             redraw();
         }
 
@@ -535,7 +652,7 @@ private:
             int max_speed = current_cell.speed;
             std::vector<double> evaluations;
 
-            for (size_t current_speed = 0; current_speed < max_speed; ++current_speed)
+            for (size_t current_speed = 0; current_speed <= max_speed; ++current_speed)
             {
                 current_cell.speed = current_speed;
                 std::vector<NeuralNetwork::Scalar> ans;
@@ -715,11 +832,13 @@ private:
 
                 if (inbox_values[12] != "" && is_string_int(inbox_values[12]))
                 {
+                    /*
                     if (int(std::stold(inbox_values[12])) < num_of_graph_labels_x)
                     {
                         inboxes[12]->set_color(COLORS::SOFT_PINK);
                         validated += invalid_max_speed_error_message + std::to_string(num_of_graph_labels_x) + ".\n";
                     }
+                    */
                 }
                 else
                 {

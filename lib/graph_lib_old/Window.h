@@ -17,10 +17,10 @@ class Shape;  // "forward declare" Shape
 class Widget;
 
 
-class Window : public Fl_Window
+class Window : public Fl_Double_Window
 {
 public:
-  using Fl_Window::resize;
+  using Fl_Double_Window::resize;
 
   Window(int ww, int hh, const std::string& title, Fl_Color background_color = FL_WHITE);
   Window(int w, int h, const std::string& title);            // let the system pick the location
