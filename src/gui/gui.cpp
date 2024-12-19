@@ -54,6 +54,13 @@ void callback_predict(GLib::Address, GLib::Address addr)
   EmissionState state = emissions.get_current();
   show_graph(window, state);
 
+  bool validated = window.validate_inboxes() == "";
+  if (validated)
+  {
+    window.add_record_to_journal();
+    window.draw_journal_buttons();
+  }
+
   window.redraw();
 }
 
@@ -306,7 +313,6 @@ void show_graph(GLib::WindowWithNeuro &window, EmissionState &state)
   {
     show_gas_label(window, state.gas_label);
     window.update_current_cell();
-    window.draw_journal_buttons();
     int max_speed = window.current_cell.speed;
     std::vector<double> evaluations;
 
