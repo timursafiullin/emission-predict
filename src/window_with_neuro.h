@@ -623,8 +623,9 @@ private:
             return ans;
         }
 
-        bool is_string_double(const std::string &str)
+        bool is_string_double(std::string str)
         {
+            str = remove_trailing_zeros(str);
             if (str.empty())
                 return false;
             for (char const &c : str)
@@ -635,8 +636,9 @@ private:
             return true;
         }
 
-        bool is_string_int(const std::string &str)
+        bool is_string_int(std::string str)
         {
+            str = remove_trailing_zeros(str);
             if (str.empty())
                 return false;
             for (char const &c : str)
@@ -645,6 +647,16 @@ private:
                     return false;
             }
             return true;
+        }
+
+        static std::string remove_trailing_zeros(std::string number)
+        {
+            if (number.find('.') != std::string::npos)
+            {
+                number.erase(number.find_last_not_of('0') + 1, std::string::npos);
+                number.erase(number.find_last_not_of('.') + 1, std::string::npos);
+            }
+            return number;
         }
 
         std::vector<double> evaluate_network(char network)
@@ -856,7 +868,7 @@ private:
             auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
             std::vector<std::string> inbox_values{pb->get_data()};
             for (size_t i = 0; i < window.inboxes.size(); i++)
-                window.inboxes[i]->set_string(inbox_values[i]);
+                window.inboxes[i]->set_string(remove_trailing_zeros(inbox_values[i]));
         }
 
 
