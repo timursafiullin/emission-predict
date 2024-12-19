@@ -84,7 +84,6 @@ void callback_save(GLib::Address, GLib::Address addr)
 }
 
 void callback_load(GLib::Address, GLib::Address addr)
-void callback_load(GLib::Address, GLib::Address addr)
 {
   auto *pb = static_cast<GLib::Button *>(addr);
   auto &window = static_cast<GLib::WindowWithNeuro &>(pb->window());
@@ -375,7 +374,6 @@ try
       GLib::Point(load_button_x, load_button_y),
       button_w, button_h,
       load_button_label,
-      callback_load};
       callback_load};
   win.attach(load_button);
 
